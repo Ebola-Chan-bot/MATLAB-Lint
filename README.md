@@ -1,2 +1,1 @@
-# MATLAB-Lint
-超高校级MATLAB代码风格审查器
+当前市面上缺少一款纯MATLAB编写的高级代码风格审查器
