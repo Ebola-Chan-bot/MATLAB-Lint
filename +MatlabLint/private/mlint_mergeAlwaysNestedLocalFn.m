@@ -53,7 +53,7 @@ for k = 1:numel(localFnNames)
         if isempty(cs) || startsWith(cs, '%')
             continue;
         end
-        cs = char(MatlabLint.stripStringLiterals(cs));
+        cs = codeLine(cs);
         if startsWith(cs, "function ")
             continue;
         end

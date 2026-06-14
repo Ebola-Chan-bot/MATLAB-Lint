@@ -6,10 +6,9 @@ if nargin == 0
     return;
 end
 lines = splitlines(string(fileread(filePath)));
-nLines = numel(lines);
 
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
-funcs = iSplitFunctions(lines, nLines);
+funcs = splitFunctions(lines, numel(lines));
 
 for f = 1:numel(funcs)
     fnStart = funcs(f).start;
@@ -22,41 +21,15 @@ for f = 1:numel(funcs)
         % 找到首次追加行作为报告位置
         firstAppend = iFindFirstStructAppend(lines, fnStart, fnEnd, vn);
         if firstAppend > 0
-            issuesBuilder = appendIssue(issuesBuilder, makeIssue(filePath, firstAppend, ...
+            issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, firstAppend, ...
                 "mlint_noStructAccumulator", ...
                 sprintf('变量 "%s" 为 struct 数组累积器，应改用 MATLAB.DataTypes.InsertiveTable（每个 struct 字段一列）', ...
-                vn))); %#ok<AGROW>
+                vn)}; %#ok<AGROW>
         end
     end
 end
 
 issues = table(issuesBuilder);
-end
-
-% -------------------------------------------------------------------------
-function funcs = iSplitFunctions(lines, nLines)
-funcsBuilder = MATLAB.DataTypes.ArrayBuilder();
-depth = 0;
-fnStart = 0;
-for i = 1:nLines
-    kw = iLeadingKeyword(char(lines(i)));
-    if kw == "function" && depth == 0
-        fnStart = i;
-    end
-    if ismember(kw, ["if","for","parfor","while","switch","try","function"])
-        depth = depth + 1;
-    elseif kw == "end"
-        depth = depth - 1;
-        if depth == 0 && fnStart > 0
-            funcsBuilder.Append(struct('start', fnStart, 'end', i));
-            fnStart = 0;
-        end
-    end
-end
-funcs = funcsBuilder.Harvest();
-if isempty(funcs)
-    funcs = struct('start', {}, 'end', {});
-end
 end
 
 % -------------------------------------------------------------------------
@@ -68,13 +41,7 @@ for i = fnStart:fnEnd
     if isempty(raw) || raw(1) == '%'
         continue;
     end
-    code = char(MatlabLint.stripStringLiterals(raw));
-    cp = strfind(code, '%');
-    if ~isempty(cp)
-        code = strtrim(code(1:cp(1)-1));
-    else
-        code = strtrim(code);
-    end
+    code = codeLine(raw);
     if isempty(code)
         continue;
     end
@@ -108,9 +75,8 @@ if ~startsWith(rhs, 'struct(')
     return;
 end
 % 提取变量名（去索引后缀）
-pat = lettersPattern(1) + asManyOfPattern(characterListPattern('A':'Z') | ...
-    characterListPattern('a':'z') | characterListPattern('0':'9') | "_", 0);
-idx = extract(lhs, pat);
+idx = extract(lhs, lettersPattern(1) + asManyOfPattern(characterListPattern('A':'Z') | ...
+    characterListPattern('a':'z') | characterListPattern('0':'9') | "_", 0));
 if strlength(idx) == 0
     return;
 end
@@ -144,39 +110,13 @@ for i = fnStart:fnEnd
     if isempty(raw) || raw(1) == '%'
         continue;
     end
-    code = char(MatlabLint.stripStringLiterals(raw));
-    cp = strfind(code, '%');
-    if ~isempty(cp)
-        code = strtrim(code(1:cp(1)-1));
-    else
-        code = strtrim(code);
-    end
+    code = codeLine(raw);
     vn = iExtractStructAppendVar(code);
     if strlength(vn) > 0 && string(vn) == string(varName)
         firstLine = i;
         return;
     end
 end
-end
-
-% -------------------------------------------------------------------------
-function kw = iLeadingKeyword(line)
-s = strtrim(char(line));
-if isempty(s) || s(1) == '%'
-    kw = "";
-    return;
-end
-kwds = ["function","if","for","parfor","while","switch","try","end"];
-for ki = 1:numel(kwds)
-    k = kwds(ki);
-    L = strlength(k);
-    if strlength(s) >= L && strcmp(s(1:L), k) && ...
-            (strlength(s) == L || ~isstrprop(s(L+1), 'alphanum') && s(L+1) ~= '_')
-        kw = k;
-        return;
-    end
-end
-kw = "";
 end
 
 

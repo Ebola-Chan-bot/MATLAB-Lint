@@ -14,10 +14,14 @@ nLines = numel(lines);
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
 % ── 全局结构解析 ──
-[ctrlBlocks, loopBlocks, functionEnds] = iParseControlFlow(lines, nLines);
+ctrlFlow = iParseControlFlow(lines, nLines);
+ctrlBlocks = iCtrlBlocksFromTable(ctrlFlow);
+loopBlocks = iLoopBlocksFromTable(ctrlFlow);
+functionEnds = iFunctionEndsFromTable(ctrlFlow);
 persistentVars = iCollectPersistent(lines, nLines);
 forLoopVars     = iCollectForLoopVars(lines, nLines);
 outputVars      = iCollectOutputVars(lines, nLines);
+propertyVars    = iCollectProperties(lines, nLines);
 assignments     = iCollectAssignments(lines, nLines);
 
 delim = [" ", newline, ";", ",", "(", ")", "=", "+", "-", "*", "/", "~", ...
@@ -31,23 +35,21 @@ allVars = unique(string({assignments.var}));
 
 for v = 1:numel(allVars)
     varName = allVars(v);
-    if any(persistentVars == varName) || any(forLoopVars == varName)
+    if any(persistentVars == varName) || any(forLoopVars == varName) || any(propertyVars == varName)
         continue;
     end
     isOutput = any(outputVars == varName);
 
     % 该变量的全部赋值索引
-    allVarNames = string({assignments.var});
-    varAssignIdx = find(allVarNames == varName);
+    varAssignIdx = find(string({assignments.var}) == varName);
 
     for ai = 1:numel(varAssignIdx)
         a = varAssignIdx(ai);
         assignLine = assignments(a).line;
         rhs        = assignments(a).rhs;
-        codeLine   = assignments(a).code;
 
         % 基础过滤
-        if iShouldAlwaysSkip2(codeLine, rhs)
+        if iShouldAlwaysSkip2(assignments(a).code, rhs)
             continue;
         end
 
@@ -55,8 +57,8 @@ for v = 1:numel(allVars)
         [killLine, killIsOtherBranch] = iFindKillingAssignmentCFG(...
             assignments, a, ctrlBlocks, lines, functionEnds);
 
-        % 输出变量末次赋值
-        if isOutput && (killLine == 0 || killIsOtherBranch)
+        % 输出变量末次赋值 或 分支合并模式
+        if (isOutput && (killLine == 0 || killIsOtherBranch)) || killIsOtherBranch
             continue;
         end
 
@@ -67,8 +69,7 @@ for v = 1:numel(allVars)
             varName, isOutput, funcEnd, delim);
 
         % 循环体赋值且紧跟 continue：跨迭代引用，豁免。
-        loopEnd = iBlockEnd(assignLine, loopBlocks);
-        if loopEnd > 0 && ~isOutput
+        if iBlockEnd(assignLine, loopBlocks) > 0 && ~isOutput
             nextLine = iFindNextLine(lineKinds, assignLine + 1, nLines);
             if ~isempty(nextLine) && lineKinds(nextLine(1)) == "continue"
                 continue;
@@ -77,29 +78,27 @@ for v = 1:numel(allVars)
 
         % 规则 1: 全路径零引用？
         if result.maxRefs == 0
-            issuesBuilder = appendIssue(issuesBuilder, makeIssue(filePath, assignLine, ...
+            issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, assignLine, ...
                 "mlint_singleUseVariable", ...
-                sprintf('变量"%s"已赋值但未使用', varName))); %#ok<AGROW>
+                sprintf('变量"%s"已赋值但未使用', varName)}; %#ok<AGROW>
         end
 
-        % 规则 2: 恰好一次引用且路径无分叉？
-        if result.totalDistinctRefs == 1 && result.pathToRefIsLinear
+        % 规则 2: 恰好一次引用；仅当赋值到该引用之间存在“分支合并”才抑制报警
+        if result.totalRefOccurrences == 1
             useLine = result.refLines(1);
-            % 0 = 隐式 return 使用，跳过（无法内联到 return 上）
-            if useLine == 0
+            % 0 = 隐式 return 使用 / 唯一引用在 return 上 → 跳过
+            if useLine == 0 || lineKinds(useLine) == "return" || ...
+                    iIsLoopCarriedSingleUse(assignLine, useLine, loopBlocks, lineKinds, lines) || ...
+                    iHasBranchMergeBetweenLines(assignLine, useLine, succ, lineKinds, funcEnd, killLine, killIsOtherBranch) || ...
+                    (contains(iCodeOnlyLine(char(lines(useLine))), varName + "(" | varName + " (") && ...
+                    endsWith(strtrim(rhs), ")" | ");"))
                 continue;
             end
-            % 豁免函数调用返回值模式：y = f(x);  f 在函数调用中"使用"x
-            useCode = iCodeOnlyLine(char(lines(useLine)));
-            if contains(useCode, varName + "(" | varName + " (")
-                if endsWith(strtrim(rhs), ")") || endsWith(strtrim(rhs), ");")
-                    continue;
-                end
-            end
-            issuesBuilder = appendIssue(issuesBuilder, makeIssue(filePath, assignLine, ...
+
+            issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, assignLine, ...
                 "mlint_singleUseVariable", ...
                 sprintf('变量"%s"赋值后仅使用一次（第 %d 行），建议内联', ...
-                varName, useLine))); %#ok<AGROW>
+                varName, useLine)}; %#ok<AGROW>
         end
     end
 end
@@ -179,19 +178,16 @@ for i = 1:nLines
         continue;
     end
 
-    kind = lineKinds(i);
     next = iFindNextLine(lineKinds, i + 1, nLines);
 
-    switch kind
+    switch lineKinds(i)
         case "stmt"
             succ{i} = next;
             if ~isempty(next)
-                nextKind = lineKinds(next);
-                if ismember(nextKind, ["elseif","else","catch","case"])
+                if ismember(lineKinds(next), ["elseif","else","catch","case"])
                     ownerHdr = iFindOwningBranchHeader(lineKinds, next, nLines);
                     if ownerHdr > 0
-                        ownerEnd = iFindMatchingEnd(lineKinds, ownerHdr, nLines);
-                        succ{i} = iFindNextLine(lineKinds, ownerEnd + 1, nLines);
+                        succ{i} = iFindNextLine(lineKinds, iFindMatchingEnd(lineKinds, ownerHdr, nLines) + 1, nLines);
                     end
                 end
             end
@@ -226,8 +222,7 @@ for i = 1:nLines
         case "break"
             loopHdr = iFindEnclosingLoopHeader(lineKinds, i);
             if loopHdr > 0
-                loopEnd = iFindMatchingEnd(lineKinds, loopHdr, nLines);
-                succ{i} = iFindNextLine(lineKinds, loopEnd + 1, nLines);
+                succ{i} = iFindNextLine(lineKinds, iFindMatchingEnd(lineKinds, loopHdr, nLines) + 1, nLines);
             else
                 succ{i} = [];  % 死路径
             end
@@ -373,7 +368,7 @@ function result = iEnumeratePaths(lines, succ, lineKinds, ...
 % 返回 minRefs/maxRefs/totalDistinctRefs 等结果。
 
 result = struct('minRefs', 0, 'maxRefs', 0, ...
-    'totalDistinctRefs', 0, 'refLines', [], ...
+    'totalDistinctRefs', 0, 'totalRefOccurrences', 0, 'refLines', [], ...
     'pathToRefIsLinear', false, ...
     'pathWithZeroRefsIsDead', false);
 
@@ -427,6 +422,7 @@ end
 visited(queue) = true;
 
 totalRefLines = [];
+totalRefOccurrences = 0;
 branchingSeen = false;
 head = 1;
 while head <= numel(queue)
@@ -446,6 +442,7 @@ while head <= numel(queue)
 
     if nodeRefCount(ln) > 0
         totalRefLines = union(totalRefLines, ln);
+        totalRefOccurrences = totalRefOccurrences + nodeRefCount(ln);
     end
 
     nxt = succ{ln};
@@ -469,6 +466,7 @@ end
 result.maxRefs = numel(totalRefLines);
 result.minRefs = result.maxRefs;  % BFS 不区分路径，min=max
 result.totalDistinctRefs = result.maxRefs;
+result.totalRefOccurrences = totalRefOccurrences;
 result.refLines = totalRefLines;
 result.pathToRefIsLinear = ~branchingSeen && result.totalDistinctRefs <= 1;
 result.pathWithZeroRefsIsDead = false;
@@ -484,8 +482,7 @@ code = char(MatlabLint.stripStringLiterals(sj));
 if isKillLine
     eqj = iFindAssignmentEqPos(code);
     if eqj > 0
-        rhsj = strtrim(string(code(eqj+1:end)));
-        c = sum(split(rhsj, delim) == varName);
+        c = sum(split(strtrim(string(code(eqj+1:end))), delim) == varName);
     else
         c = 0;
     end
@@ -524,6 +521,27 @@ for k = 1:numel(blocks.starts)
         if span < bestSpan
             bestSpan = span;
             endLine = e;
+        end
+    end
+end
+end
+
+function tf = iIsLoopCarriedSingleUse(assignLine, useLine, loopBlocks, lineKinds, lines)
+tf = false;
+if useLine <= 0 || useLine >= assignLine || isempty(loopBlocks.starts)
+    return;
+end
+
+bestSpan = inf;
+for k = 1:numel(loopBlocks.starts)
+    s = loopBlocks.starts(k);
+    e = loopBlocks.ends(k);
+    inWhileHeader = (useLine == s) && lineKinds(s) == "loop" && startsWith(iCodeOnlyLine(char(lines(s))), "while ");
+    if (inWhileHeader || (s < useLine && useLine < assignLine)) && assignLine < e
+        span = e - s;
+        if span < bestSpan
+            bestSpan = span;
+            tf = true;
         end
     end
 end
@@ -634,12 +652,8 @@ end
 %  Phase 1 — 控制流解析
 % ========================================================================
 
-function [ctrlBlocks, loopBlocks, functionEnds] = iParseControlFlow(lines, nLines)
-ctrlStarts = MATLAB.Containers.Vector();
-ctrlEnds   = MATLAB.Containers.Vector();
-loopStarts = MATLAB.Containers.Vector();
-loopEnds   = MATLAB.Containers.Vector();
-fnEnds     = MATLAB.Containers.Vector();
+function ctrlFlow = iParseControlFlow(lines, nLines)
+tblBuilder = MATLAB.DataTypes.InsertiveTable();
 ctrlStack  = MATLAB.Containers.Vector();
 loopStack  = MATLAB.Containers.Vector();
 fnStack    = MATLAB.Containers.Vector();
@@ -660,27 +674,60 @@ for i = 1:nLines
             if ~isempty(ctrlStack.Data)
                 cs = ctrlStack.Back();
                 ctrlStack.PopBack();
-                ctrlStarts.PushBack(cs);
-                ctrlEnds.PushBack(i);
-                if ~isempty(loopStack.Data) && loopStack.Back() == cs
+                isLoop = ~isempty(loopStack.Data) && loopStack.Back() == cs;
+                isFn   = ~isempty(fnStack.Data) && fnStack.Back() == cs;
+                tblBuilder(end+1, {'ctrlStart','ctrlEnd','loopStart','loopEnd','fnEnd'}) = ...
+                    {cs, i, ternary(isLoop, cs, 0), ternary(isLoop, i, 0), ternary(isFn, i, 0)};
+                if isLoop
                     loopStack.PopBack();
-                    loopStarts.PushBack(cs);
-                    loopEnds.PushBack(i);
                 end
-                if ~isempty(fnStack.Data) && fnStack.Back() == cs
+                if isFn
                     fnStack.PopBack();
-                    fnEnds.PushBack(i);
                 end
             end
         end
     end
 end
 
-ctrlBlocks = struct('starts', double(ctrlStarts.Data(:)), ...
-                    'ends',   double(ctrlEnds.Data(:)));
-loopBlocks = struct('starts', double(loopStarts.Data(:)), ...
-                    'ends',   double(loopEnds.Data(:)));
-functionEnds = double(fnEnds.Data(:));
+ctrlFlow = table(tblBuilder);
+end
+
+function ctrlBlocks = iCtrlBlocksFromTable(ctrlFlow)
+if isempty(ctrlFlow)
+    ctrlBlocks = struct('starts', [], 'ends', []);
+    return;
+end
+ctrlBlocks = struct('starts', double(ctrlFlow{:, 'ctrlStart'}), ...
+                    'ends', double(ctrlFlow{:, 'ctrlEnd'}));
+end
+
+function loopBlocks = iLoopBlocksFromTable(ctrlFlow)
+if isempty(ctrlFlow)
+    loopBlocks = struct('starts', [], 'ends', []);
+    return;
+end
+loopStarts = double(ctrlFlow{:, 'loopStart'});
+loopEnds = double(ctrlFlow{:, 'loopEnd'});
+loopBlocks = struct('starts', loopStarts(loopStarts > 0), ...
+                    'ends', loopEnds(loopEnds > 0));
+end
+
+function functionEnds = iFunctionEndsFromTable(ctrlFlow)
+if isempty(ctrlFlow)
+    functionEnds = [];
+    return;
+end
+fe = double(ctrlFlow{:, 'fnEnd'});
+functionEnds = fe(fe > 0);
+end
+
+% -------------------------------------------------------------------------
+function v = ternary(cond, t, f)
+if cond
+    v = t;
+else
+    v = f;
+end
 end
 
 function vars = iCollectPersistent(lines, nLines)
@@ -717,8 +764,7 @@ end
 function vars = iCollectOutputVars(lines, nLines)
 v = MATLAB.Containers.Vector();
 for i = 1:nLines
-    cs = strtrim(char(lines(i)));
-    code = iCodeOnlyLine(cs);
+    code = iCodeOnlyLine(strtrim(char(lines(i))));
     if ~startsWith(code, "function ")
         continue;
     end
@@ -735,6 +781,44 @@ for i = 1:nLines
                     v.PushBack(pv);
                 end
             end
+        end
+    end
+end
+vars = string(v.Data(:));
+end
+
+function vars = iCollectProperties(lines, nLines)
+% 收集 properties 块中定义的变量名，这些是类属性，不应被检查。
+v = MATLAB.Containers.Vector();
+inProps = false;
+for i = 1:nLines
+    code = codeLine(strtrim(char(lines(i))));
+    if strlength(code) == 0
+        continue;
+    end
+    if startsWith(lower(code), "properties")
+        inProps = true;
+        continue;
+    end
+    if inProps
+        cs2 = strtrim(char(lines(i)));
+        if isempty(cs2) || startsWith(cs2, '%')
+            continue;
+        end
+        if strcmp(code, "end")
+            inProps = false;
+            continue;
+        end
+        % 简单属性名（可选默认值）：name 或 name = ...
+        eqPos = strfind(code, '=');
+        if isempty(eqPos)
+            name = code;
+        else
+            name = strtrim(code(1:eqPos(1)-1));
+        end
+        nc = char(name);
+        if ~isempty(nc) && (isstrprop(nc(1), 'alpha') || nc(1) == '_')
+            v.PushBack(string(name));
         end
     end
 end
@@ -781,6 +865,90 @@ if startsWith(codeLine, "for ") || ...
         contains(rhs, string(extractBefore(string(codeLine), " =")))
     skip = true;
     return;
+end
+end
+
+function tf = iHasBranchMergeBetweenLines(assignLine, useLine, succ, lineKinds, funcEnd, killLine, killIsOtherBranch)
+% 检查 [assignLine+1, useLine] 区间内是否存在“赋值路径”和“其他路径”在同一点合并。
+tf = false;
+if useLine <= 0 || useLine <= assignLine
+    return;
+end
+
+upper = min(useLine, funcEnd);
+if killLine > 0 && ~killIsOtherBranch
+    upper = min(upper, killLine - 1);
+end
+if upper <= assignLine
+    return;
+end
+
+nLines = numel(lineKinds);
+visited = false(nLines, 1);
+reachableFromAssign = false(nLines, 1);
+
+startNodes = succ{assignLine};
+if isempty(startNodes)
+    startNodes = iFindNextLine(lineKinds, assignLine + 1, nLines);
+end
+startNodes = unique(startNodes(startNodes >= assignLine + 1 & startNodes <= upper));
+if isempty(startNodes)
+    return;
+end
+
+queue = startNodes(:)';
+visited(startNodes) = true;
+reachableFromAssign(startNodes) = true;
+
+head = 1;
+while head <= numel(queue)
+    from = queue(head);
+    head = head + 1;
+
+    nextNodes = succ{from};
+    if isempty(nextNodes)
+        continue;
+    end
+
+    for ni = 1:numel(nextNodes)
+        to = nextNodes(ni);
+        if to < assignLine + 1 || to > upper
+            continue;
+        end
+        reachableFromAssign(to) = true;
+        if ~visited(to)
+            visited(to) = true;
+            queue(end+1) = to; %#ok<AGROW>
+        end
+    end
+end
+
+predFromAssignPath = false(nLines, 1);
+predFromOtherPath = false(nLines, 1);
+
+for from = 1:nLines
+    nextNodes = succ{from};
+    if isempty(nextNodes)
+        continue;
+    end
+    for ni = 1:numel(nextNodes)
+        to = nextNodes(ni);
+        if to < assignLine + 1 || to > upper
+            continue;
+        end
+        if from == assignLine || (from >= 1 && from <= nLines && reachableFromAssign(from))
+            predFromAssignPath(to) = true;
+        else
+            predFromOtherPath(to) = true;
+        end
+    end
+end
+
+for ln = assignLine + 1:upper
+    if predFromAssignPath(ln) && predFromOtherPath(ln)
+        tf = true;
+        return;
+    end
 end
 end
 

@@ -8,7 +8,7 @@ for f = 1:numel(fileList)
         out = rules(r).fn(fileList(f));
         for ri = 1:height(out)
             issuesBuilder(end+1, {'file','line','rule','message'}) = ...
-                {out.file(ri), out.line(ri), out.rule(ri), out.message(ri)};
+                {char(string(out.file(ri))), out.line(ri), char(string(out.rule(ri))), char(string(out.message(ri)))};
         end
     end
 end

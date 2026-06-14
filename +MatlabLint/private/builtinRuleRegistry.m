@@ -2,7 +2,8 @@ function builtinFns = builtinRuleRegistry()
 %BUILTINRULEREGISTRY 内置规则注册表（规则 ID -> 规则函数句柄）。
 
 persistent cachedBuiltinFns
-if ~isempty(cachedBuiltinFns)
+if ~isempty(cachedBuiltinFns) && isstruct(cachedBuiltinFns) && ...
+        ~isempty(fieldnames(cachedBuiltinFns))
     builtinFns = cachedBuiltinFns;
     return;
 end

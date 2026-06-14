@@ -11,8 +11,7 @@ issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 nLines = numel(lines);
 i = 1;
 while i <= nLines
-    kw = iLeadingKeyword(char(lines(i)));
-    if kw ~= "switch"
+    if leadingKeyword(char(lines(i))) ~= "switch"
         i = i + 1;
         continue;
     end
@@ -37,11 +36,10 @@ while i <= nLines
         end
         chainLen = b - chainStart;
         if chainLen >= 2
-            merged = strjoin(caseValues(chainStart:b-1), " ");
-            issuesBuilder = appendIssue(issuesBuilder, makeIssue(filePath, i, ...
+            issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, i, ...
                 "mlint_mergeIdenticalCaseBranches", ...
                 sprintf('switch 中 %d 个连续 case 分支内容相同，应合并为 case {%s}', ...
-                chainLen, merged))); %#ok<AGROW>
+                chainLen, strjoin(caseValues(chainStart:b-1), " "))}; %#ok<AGROW>
         end
     end
 
@@ -52,30 +50,10 @@ issues = table(issuesBuilder);
 end
 
 % -------------------------------------------------------------------------
-function kw = iLeadingKeyword(line)
-s = strtrim(char(line));
-if isempty(s) || s(1) == '%'
-    kw = "";
-    return;
-end
-kwds = ["switch","case","otherwise","end","if","for","parfor","while","try","function"];
-for ki = 1:numel(kwds)
-    k = kwds(ki);
-    L = strlength(k);
-    if strlength(s) >= L && strcmp(s(1:L), k) && ...
-            (strlength(s) == L || ~isstrprop(s(L+1), 'alphanum') && s(L+1) ~= '_')
-        kw = k;
-        return;
-    end
-end
-kw = "";
-end
-
-% -------------------------------------------------------------------------
 function endLine = iFindMatchingEnd(startLine, lines, nLines)
 depth = 0;
 for k = startLine:nLines
-    kw = iLeadingKeyword(char(lines(k)));
+    kw = leadingKeyword(char(lines(k)));
     if ismember(kw, ["if","for","parfor","while","switch","try","function"])
         depth = depth + 1;
     elseif kw == "end"
@@ -101,7 +79,7 @@ for k = swLine + 1:swEnd - 1
     if isempty(raw) || raw(1) == '%'
         continue;
     end
-    kw = iLeadingKeyword(raw);
+    kw = leadingKeyword(raw);
     if ismember(kw, ["if","for","parfor","while","switch","try","function"])
         depth = depth + 1;
         continue;
@@ -130,7 +108,7 @@ end
 
 % -------------------------------------------------------------------------
 function val = iCaseValue(raw)
-if strcmp(iLeadingKeyword(raw), "otherwise")
+if strcmp(leadingKeyword(raw), "otherwise")
     val = "otherwise";
 else
     p = strfind(raw, "case");
@@ -143,19 +121,12 @@ function sig = iBodySig(fromLine, toLine, lines)
 % 完整提取分支体签名（含嵌套块），按行规范化后拼接比较。
 bodyBuf = MATLAB.DataTypes.ArrayBuilder();
 depth = 0;
-started = false;
 for k = fromLine + 1:toLine
     raw = strtrim(char(lines(k)));
     if isempty(raw) || raw(1) == '%'
         continue;
     end
-    kw = iLeadingKeyword(raw);
-    if ~started
-        if ismember(kw, ["case","otherwise"])
-            break;
-        end
-        started = true;
-    end
+    kw = leadingKeyword(raw);
     if ismember(kw, ["case","otherwise"])
         break;
     end

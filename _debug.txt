@@ -852,3 +852,1652 @@ MATLAB:Exception:Deliberately_not_supporting：InsertiveTable不支持vertcat方
     C = cat(1, varargin{:});
         ^^^^^^^^^^^^^^^^^^^
 } 
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); idx = issues.rule == "mlint_noMultiColumnUnpack"; if any(idx), fprintf('%d hits:\n', sum(idx)); disp(issues(idx,{'file','line','message'})); else disp('No hits'); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); idx = issues.rule == "mlint_noMultiColumnUnpack"; if any(idx), fprintf('%d hits:\n', sum(idx)); disp(issues(idx,{'file','line','message'})); else disp('No hits'); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); idx = issues.rule == "mlint_noMultiColumnUnpack"; if any(idx), fprintf('%d hits:\n', sum(idx)); disp(issues(idx,{'file','line','message'})); else disp('No hits'); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); idx = issues.rule == "mlint_noMultiColumnUnpack"; if any(idx), fprintf('%d hits:\n', sum(idx)); disp(issues(idx,{'file','line','message'})); else disp('No hits'); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); idx = issues.rule == "mlint_noMultiColumnUnpack"; if any(idx), fprintf('%d hits:\n', sum(idx)); disp(issues(idx,{'file','line','message'})); else disp('No hits'); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); idx = issues.rule == "mlint_noMultiColumnUnpack"; if any(idx), fprintf('%d hits:\n', sum(idx)); disp(issues(idx,{'file','line','message'})); else disp('No hits'); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(issues(:,{'file','line','rule'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(issues(:,{'file','line','rule'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(issues(:,{'file','line','rule'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(issues(:,{'file','line','rule'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(issues(:,{'file','line','rule'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; try; MatlabLint.lint('+MatlabLint/private/mlint_mergeAlwaysNestedLocalFn.m'); catch e; disp(e.message); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; try; MatlabLint.lint('+MatlabLint/private/mlint_mergeAlwaysNestedLocalFn.m'); catch e; disp(e.message); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(groupcounts(issues,'rule')); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/codeLine.m'); if isempty(issues), disp('codeLine OK'); else disp(issues(:,{'line','rule'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(issues(:,{'file','line','rule'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(issues(:,{'file','line','rule'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); if isempty(issues), disp('OK'); else disp(issues(:,{'line','rule'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(issues(:,{'file','line','rule'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; 
+files = dir('+MatlabLint/private/mlint_*.m');
+for f = 1:numel(files)
+    if files(f).name == "mlint_singleUseVariable.m", continue; end
+    fp = fullfile(files(f).folder, files(f).name);
+    try
+        issues = MatlabLint.lint(fp);
+    catch ME
+        fprintf('ERROR in %s: %s\n', files(f).name, ME.message);
+    end
+end
+fprintf('All done.\n');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+nonMlint = dir('+MatlabLint/*.m');
+for f = 1:numel(nonMlint)
+    fp = fullfile(nonMlint(f).folder, nonMlint(f).name);
+    try
+        issues = MatlabLint.lint(fp);
+    catch ME
+        fprintf('ERROR in %s: %s\n', nonMlint(f).name, ME.message);
+    end
+end
+privateNon = dir('+MatlabLint/private/*.m');
+for f = 1:numel(privateNon)
+    nm = privateNon(f).name;
+    if startsWith(nm, 'mlint_'), continue; end
+    fp = fullfile(privateNon(f).folder, nm);
+    try
+        issues = MatlabLint.lint(fp);
+    catch ME
+        fprintf('ERROR in %s: %s\n', nm, ME.message);
+    end
+end
+fprintf('Done.\n');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/listRules.m');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);lines = splitlines(string(fileread('+MatlabLint/listRules.m'))); s = lines(123); disp(s); c = char(s); disp(['len=' num2str(numel(c))]); out = codeLine(c); disp(['out=[' out ']']);
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);addpath('+MatlabLint/private'); r = codeLine('  x = 1; % comment'); disp(size(r)); disp(['"' r '"']); r = codeLine(char("  x = 1; % comment")); disp(size(r)); disp(['"' r '"']);
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/listRules.m');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(issues(:,{'file','line','rule'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(issues(:,{'file','line','rule'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(issues(:,{'file','line','rule'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(issues(:,{'file','line','rule'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(issues(:,{'file','line','rule'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(issues(:,{'file','line','rule'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(issues(:,{'file','line','rule'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(issues(:,{'file','line','rule'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/collectStatements.m'); idx = issues.rule == "mlint_mergeSyncAccumulatorPairs"; if any(idx), disp(issues(idx,{'line','message'})); else disp('collectStatements: No hits'); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/collectStatements.m'); if ~isempty(issues), disp(issues); else disp('No issues on collectStatements'); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; MatlabLint.lint('+MatlabLint/private/collectStatements.m');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; MatlabLint.lint('+MatlabLint/private/collectStatements.m');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/collectStatements.m'); if ~isempty(issues), disp(issues(:,{'line','message'})); else disp('No issues'); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(groupcounts(issues,'rule')); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/collectStatements.m'); fprintf('collectStatements: %d issues\n', height(issues));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(groupcounts(issues,'rule')); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(groupcounts(issues,'rule')); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(groupcounts(issues,'rule')); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(groupcounts(issues,'rule')); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(groupcounts(issues,'rule')); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(groupcounts(issues,'rule')); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(groupcounts(issues,'rule')); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);lines = splitlines(string(fileread('+MatlabLint/private/mlint_noDescendingColonRange.m'))); disp(lines(28:32));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_noDescendingColonRange.m'); idx = issues.rule == "mlint_singleUseVariable" & contains(issues.message, "starts"); if any(idx), disp(issues(idx,:)); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);lines = splitlines(string(fileread('+MatlabLint/private/mlint_noDescendingColonRange.m'))); for i = 25:75, fprintf('%d: %s\n', i, lines(i)); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(groupcounts(issues,'rule')); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(groupcounts(issues,'rule')); end
+feature('HotLinks',0);addpath(genpath('.')); issues = MatlabLint.lint('.'); T = struct2table(issues); if isempty(T), disp('NO_ISSUES'); else T = sortrows(T, {'Rule','File','Line'}); disp(T(:, {'Rule','File','Line','Message'})); end
+feature('HotLinks',0);addpath(genpath('.')); issues = MatlabLint.lint('.'); disp(issues);
+feature('HotLinks',0);addpath(genpath('.')); issues = MatlabLint.lint('.'); disp(issues);
+feature('HotLinks',0);addpath(genpath('.')); issues = MatlabLint.lint('.'); disp(issues);
+feature('HotLinks',0);addpath(genpath('.')); issues = MatlabLint.lint('.'); disp(issues);
+feature('HotLinks',0);addpath(genpath('.'));
+% Case A: 正常写入
+b = MATLAB.DataTypes.InsertiveTable();
+b(end+1, {'stmt','line'}) = {"a", 1};
+tA = table(b);
+
+% Case B: stmt 写入 missing string
+b = MATLAB.DataTypes.InsertiveTable();
+b(end+1, {'stmt','line'}) = {missing, 1};
+tB = table(b);
+
+% Case C: line 写入 NaN
+b = MATLAB.DataTypes.InsertiveTable();
+b(end+1, {'stmt','line'}) = {"a", NaN};
+tC = table(b);
+
+% Case D: 同列混入 [] / 空字符串
+b = MATLAB.DataTypes.InsertiveTable();
+b(end+1, {'stmt','line'}) = {"a", 1};
+b(end+1, {'stmt','line'}) = {"", []};
+feature('HotLinks',0);addpath(genpath('.'));
+
+% A
+try
+    b = MATLAB.DataTypes.InsertiveTable();
+    b(end+1, {'stmt','line'}) = {"a", 1};
+    tA = table(b);
+    fprintf('A ok: stmtMissing=%d lineNaN=%d\n', any(ismissing(string(tA{:,"stmt"}))), any(isnan(double(tA{:,"line"}))));
+catch ME
+    fprintf('A err: %s\n', ME.message);
+end
+
+% B
+try
+    b = MATLAB.DataTypes.InsertiveTable();
+    b(end+1, {'stmt','line'}) = {missing, 1};
+    tB = table(b);
+    fprintf('B ok: stmtMissing=%d lineNaN=%d\n', any(ismissing(string(tB{:,"stmt"}))), any(isnan(double(tB{:,"line"}))));
+catch ME
+    fprintf('B err: %s\n', ME.message);
+end
+
+% C
+try
+    b = MATLAB.DataTypes.InsertiveTable();
+    b(end+1, {'stmt','line'}) = {"a", NaN};
+    tC = table(b);
+    fprintf('C ok: stmtMissing=%d lineNaN=%d\n', any(ismissing(string(tC{:,"stmt"}))), any(isnan(double(tC{:,"line"}))));
+catch ME
+    fprintf('C err: %s\n', ME.message);
+end
+
+% D
+try
+    b = MATLAB.DataTypes.InsertiveTable();
+    b(end+1, {'stmt','line'}) = {"a", 1};
+    b(end+1, {'stmt','line'}) = {"", []};
+    tD = table(b);
+    fprintf('D ok: stmtMissing=%d lineNaN=%d\n', any(ismissing(string(tD{:,"stmt"}))), any(isnan(double(tD{:,"line"}))));
+catch ME
+    fprintf('D err: %s\n', ME.message);
+end
+feature('HotLinks',0);addpath(genpath('.')); issues = MatlabLint.lint('.'); disp(issues);
+feature('HotLinks',0);addpath(genpath('.'));
+fp = '+MatlabLint/private/mlint_mergePatternCallChain.m';
+lines = splitlines(string(fileread(fp)));
+[stmts, stmtLines] = collectStatements(lines);
+feature('HotLinks',0);fp = '+MatlabLint/private/mlint_mergePatternCallChain.m';
+lines = splitlines(string(fileread(fp)));
+for i = 1:numel(lines)
+    s = char(lines(i));
+    t = strtrim(s);
+    if endsWith(t,'...')
+        core = strtrim(t(1:end-3));
+        if isempty(core)
+            fprintf('line %d is bare continuation after trim: "%s"\n', i, t);
+        end
+    end
+end
+feature('HotLinks',0);addpath(genpath('.'));
+fs = dir(fullfile('.', '**', '*.m'));
+found = false;
+for fi = 1:numel(fs)
+    fp = fullfile(fs(fi).folder, fs(fi).name);
+    txt = fileread(fp);
+    lines = splitlines(string(txt));
+    buf = "";
+    startLine = 0;
+    for i = 1:numel(lines)
+        s = lines(i);
+        if isempty(s)
+            code = '';
+        else
+            code = char(strtrim(string(MatlabLint.stripStringLiterals(string(s)))));
+            p = strfind(code, '%');
+            if ~isempty(p)
+                code = strtrim(code(1:p(1)-1));
+            end
+        end
+        if isempty(code)
+            continue;
+        end
+        if startLine == 0
+            startLine = i;
+        end
+        hasCont = endsWith(code, '...');
+        if hasCont
+            code = strtrim(code(1:end-3));
+        end
+        if strlength(buf) == 0
+            nextBuf = string(code);
+        else
+            nextBuf = buf + " " + string(code);
+        end
+        if ismissing(nextBuf)
+            fprintf('MISSING_BUF file=%s line=%d raw="%s" code="%s" hasCont=%d\n', fp, i, char(lines(i)), code, hasCont);
+            found = true;
+            return;
+        end
+        buf = nextBuf;
+        if hasCont
+            continue;
+        end
+        if ismissing(buf)
+            fprintf('MISSING_STMT file=%s stmtStart=%d endLine=%d\n', fp, startLine, i);
+            found = true;
+            return;
+        end
+        buf = "";
+        startLine = 0;
+    end
+end
+if ~found
+    disp('NO_MISSING_FOUND');
+end
+feature('HotLinks',0);orig = pwd; cd('+MatlabLint');
+try
+    w = which('collectStatements');
+    disp(w);
+catch ME
+    disp(ME.message);
+end
+cd(orig);
+feature('HotLinks',0);orig = pwd; cd('+MatlabLint');
+try
+    lines = splitlines(string(fileread('private/mlint_mergePatternCallChain.m')));
+    [stmts, stmtLines] = collectStatements(lines);
+    fprintf('ok num=%d missing=%d\n', numel(stmts), sum(ismissing(stmts)));
+catch ME
+    fprintf('ERR: %s\n', ME.message);
+end
+cd(orig);
+feature('HotLinks',0);addpath(genpath('.'));
+fs = dir(fullfile('.', '**', '*.m'));
+for fi = 1:numel(fs)
+    fp = fullfile(fs(fi).folder, fs(fi).name);
+    lines = splitlines(string(fileread(fp)));
+    builder = MATLAB.DataTypes.InsertiveTable();
+    buf = "";
+    startLine = 0;
+    for i = 1:numel(lines)
+        s = lines(i);
+        if isempty(s)
+            code = '';
+        else
+            code = char(strtrim(string(MatlabLint.stripStringLiterals(string(s)))));
+            p = strfind(code, '%');
+            if ~isempty(p)
+                code = strtrim(code(1:p(1)-1));
+            end
+        end
+        if isempty(code)
+            continue;
+        end
+        if startLine == 0
+            startLine = i;
+        end
+        hasCont = endsWith(code, '...');
+        if hasCont
+            code = strtrim(code(1:end-3));
+        end
+        if strlength(buf) == 0
+            buf = string(code);
+        else
+            buf = buf + " " + string(code);
+        end
+        if hasCont
+            continue;
+        end
+        builder(end+1, {'stmt','line'}) = {buf, startLine};
+        buf = "";
+        startLine = 0;
+    end
+    t = table(builder);
+    if isempty(t)
+        continue;
+    end
+    stmts = string(t{:, 'stmt'});
+    if any(ismissing(stmts))
+        idx = find(ismissing(stmts), 1, 'first');
+        fprintf('FOUND missing in %s at stmtIdx=%d line=%d\n', fp, idx, t{idx, 'line'});
+        disp(lines(max(1,t{idx,'line'}-2):min(numel(lines),t{idx,'line'}+2)));
+        return;
+    end
+end
+disp('NO_MISSING_IN_ANY_FILE');
+feature('HotLinks',0);addpath(genpath('.'));
+fp = '+MatlabLint/addRule.m';
+lines = splitlines(string(fileread(fp)));
+builder = MATLAB.DataTypes.InsertiveTable();
+buf = "";
+startLine = 0;
+for i = 1:numel(lines)
+    s = lines(i);
+    code = char(strtrim(string(MatlabLint.stripStringLiterals(string(s)))));
+    p = strfind(code, '%');
+    if ~isempty(p), code = strtrim(code(1:p(1)-1)); end
+    if isempty(code), continue; end
+    if startLine == 0, startLine = i; end
+    hasCont = endsWith(code, '...');
+    if hasCont, code = strtrim(code(1:end-3)); end
+    if strlength(buf) == 0
+        buf = string(code);
+    else
+        buf = buf + " " + string(code);
+    end
+    if hasCont, continue; end
+    builder(end+1, {'stmt','line'}) = {buf, startLine};
+    if ismissing(buf) || startLine==0
+        fprintf('APPEND anomaly at i=%d raw="%s" code="%s" hasCont=%d\n', i, char(lines(i)), code, hasCont);
+    end
+    buf = "";
+    startLine = 0;
+end
+t = table(builder);
+stmts = string(t{:, 'stmt'});
+lineCol = t{:, 'line'};
+for k = 1:numel(stmts)
+    if ismissing(stmts(k)) || isnumeric(lineCol(k)) && lineCol(k)==0
+        fprintf('ROW anomaly row=%d stmtMissing=%d lineVal=%g\n', k, ismissing(stmts(k)), double(lineCol(k)));
+    end
+end
+feature('HotLinks',0);m = methods('MATLAB.DataTypes.InsertiveTable');
+disp(m');
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+for k=1:10
+    b(end+1, {'stmt','line'}) = {"x", k};
+end
+t = table(b);
+fprintf('height=%d\n', height(t));
+disp(t(end-3:end,:));
+feature('HotLinks',0);x = string('');
+disp(x);
+fprintf('ismissing=%d strlength=%g\n', ismissing(x), strlength(x));
+feature('HotLinks',0);addpath(genpath('.'));
+fp = '+MatlabLint/addRule.m';
+lines = splitlines(string(fileread(fp)));
+builder = MATLAB.DataTypes.InsertiveTable();
+appendN = 0;
+buf = "";
+startLine = 0;
+for i = 1:numel(lines)
+    code = char(strtrim(string(MatlabLint.stripStringLiterals(string(lines(i))))));
+    p = strfind(code, '%'); if ~isempty(p), code = strtrim(code(1:p(1)-1)); end
+    if isempty(code), continue; end
+    if startLine == 0, startLine = i; end
+    hasCont = endsWith(code, '...');
+    if hasCont, code = strtrim(code(1:end-3)); end
+    if strlength(buf) == 0, buf = string(code); else, buf = buf + " " + string(code); end
+    if hasCont, continue; end
+    appendN = appendN + 1;
+    builder(end+1, {'stmt','line'}) = {buf, startLine};
+    buf = ""; startLine = 0;
+end
+T = table(builder);
+fprintf('appendN=%d height(T)=%d\n', appendN, height(T));
+missingIdx = find(ismissing(string(T{:, 'stmt'})) | double(T{:, 'line'})==0);
+fprintf('anomalyCount=%d\n', numel(missingIdx));
+if ~isempty(missingIdx)
+    disp(missingIdx(1:min(10,end))');
+end
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:130
+    b(end+1, {'stmt','line'}) = {"x", k};
+end
+T = table(b);
+fprintf('N=130, height=%d, zeroLine=%d, missingStmt=%d\n', height(T), sum(double(T{:, 'line'})==0), sum(ismissing(string(T{:, 'stmt'}))));
+feature('HotLinks',0);ver
+feature('HotLinks',0);fprintf('which class: %s\n', which('MATLAB.DataTypes.InsertiveTable'));
+mc = meta.class.fromName('MATLAB.DataTypes.InsertiveTable');
+if isempty(mc)
+    disp('meta.class not found');
+else
+    fprintf('Class name: %s\n', mc.Name);
+    fprintf('Defining package: %s\n', mc.ContainingPackage.Name);
+    fprintf('Method count: %d\n', numel(mc.MethodList));
+    fprintf('Property count: %d\n', numel(mc.PropertyList));
+    fprintf('Superclass count: %d\n', numel(mc.SuperclassList));
+    for i = 1:numel(mc.SuperclassList)
+        fprintf('Superclass %d: %s\n', i, mc.SuperclassList(i).Name);
+    end
+end
+m = methods('MATLAB.DataTypes.InsertiveTable');
+disp('Methods:'); disp(m');
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:20
+    b(end+1, {'stmt','line'}) = {"x", k};
+end
+T = table(b);
+disp(T(:,{'line'}));
+fprintf('height=%d sizeRows=%d\n', height(T), size(T,1));
+feature('HotLinks',0);Ns = [10 20 30 40 50 60 70 80 90 100 110 120 130 140 160 200];
+for i = 1:numel(Ns)
+    N = Ns(i);
+    b = MATLAB.DataTypes.InsertiveTable();
+    for k = 1:N
+        b(end+1, {'stmt','line'}) = {"x", k};
+    end
+    T = table(b);
+    lines = double(T{:, 'line'});
+    bad = sum(lines==0 | isnan(lines));
+    miss = sum(ismissing(string(T{:, 'stmt'})));
+    fprintf('N=%3d -> height=%3d badLine=%3d missingStmt=%3d\n', N, height(T), bad, miss);
+end
+feature('HotLinks',0);N=60;
+b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:N
+    b(end+1, {'stmt','line'}) = {"x", k};
+end
+T = table(b);
+lines = double(T{:, 'line'});
+badIdx = find(lines==0 | isnan(lines) | ismissing(string(T{:,'stmt'})));
+fprintf('height=%d badCount=%d firstBad=%d lastBad=%d\n', height(T), numel(badIdx), badIdx(1), badIdx(end));
+disp([ (1:height(T))' lines ]);
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+try
+    r = b.RawTable;
+    disp('can access RawTable');
+    disp(height(r));
+catch ME
+    fprintf('RawTable access error: %s\n', ME.message);
+end
+try
+    v = b.ValidRows;
+    disp('can access ValidRows');
+    disp(v);
+catch ME
+    fprintf('ValidRows access error: %s\n', ME.message);
+end
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:70
+    b(end+1, {'stmt','line'}) = {"x", k};
+    lastLine = b{end, 'line'};
+    h = height(table(b));
+    if lastLine ~= k || h ~= k
+        fprintf('k=%d lastLine=%g height=%d\n', k, lastLine, h);
+        if k>=55
+            T = table(b);
+            disp(T(max(1,h-5):h, {'line'}));
+        end
+    end
+end
+feature('HotLinks',0);% 单列测试
+b1 = MATLAB.DataTypes.InsertiveTable();
+for k = 1:80
+    b1(end+1, {'line'}) = {k};
+end
+T1 = table(b1);
+fprintf('single-col: height=%d badLine=%d\n', height(T1), sum(double(T1{:,'line'})==0|isnan(double(T1{:,'line'}))));
+
+% 双列测试
+b2 = MATLAB.DataTypes.InsertiveTable();
+for k = 1:80
+    b2(end+1, {'stmt','line'}) = {"x", k};
+end
+T2 = table(b2);
+fprintf('two-col:    height=%d badLine=%d missingStmt=%d\n', height(T2), sum(double(T2{:,'line'})==0|isnan(double(T2{:,'line'}))), sum(ismissing(string(T2{:,'stmt'}))));
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:130
+    b(k, {'stmt','line'}) = {"x", k};
+end
+T = table(b);
+fprintf('direct row idx: height=%d badLine=%d missingStmt=%d\n', height(T), sum(double(T{:,'line'})==0), sum(ismissing(string(T{:,'stmt'}))));
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+for chunk = 1:13
+    base = (chunk-1)*10;
+    rows = (end+1):(end+10); %#ok<NBRAK>
+    vals = num2cell((base+1):(base+10))';
+    b(rows, {'line'}) = vals;
+end
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+feature('HotLinks',0);addpath(genpath('c:/Users/vhtmf/Documents/MATLAB/MATLAB-Lint')); issues = MatlabLint.lint('c:/Users/vhtmf/Documents/MATLAB/MATLAB-Lint'); disp(issues);
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:130
+    b(end+1, {'stmt','line'}) = {"x", k};
+end
+T = table(b);
+fprintf('N=130 height=%d badLine=%d missingStmt=%d tail=[%g,%g]\n', ...
+    height(T), sum(double(T{:,'line'})==0|isnan(double(T{:,'line'}))), sum(ismissing(string(T{:,'stmt'}))), ...
+    double(T{end-1,'line'}), double(T{end,'line'}));
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:60
+    b(end+1, {'stmt','line'}) = {"x", k};
+end
+T = table(b);
+lines = double(T{:,'line'});
+bad = find(lines==0|isnan(lines));
+if isempty(bad)
+    fprintf('N=60 height=%d badCount=0\n', height(T));
+else
+    fprintf('N=60 height=%d badCount=%d firstBad=%d\n', height(T), numel(bad), bad(1));
+end
+feature('HotLinks',0);addpath(genpath('c:/Users/vhtmf/Documents/MATLAB/MATLAB-Lint')); issues = MatlabLint.lint('c:/Users/vhtmf/Documents/MATLAB/MATLAB-Lint'); disp(issues);
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:130
+    b(end+1, {'stmt','line'}) = {"x", k};
+end
+T = table(b);
+fprintf('N=130 height=%d badLine=%d missingStmt=%d tail=[%g,%g]\n', ...
+    height(T), sum(double(T{:,'line'})==0|isnan(double(T{:,'line'}))), sum(ismissing(string(T{:,'stmt'}))), ...
+    double(T{end-1,'line'}), double(T{end,'line'}));
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:60
+    b(end+1, {'stmt','line'}) = {"x", k};
+end
+T = table(b);
+lines = double(T{:,'line'});
+bad = find(lines==0|isnan(lines));
+if isempty(bad)
+    fprintf('N=60 height=%d badCount=0\n', height(T));
+else
+    fprintf('N=60 height=%d badCount=%d firstBad=%d\n', height(T), numel(bad), bad(1));
+end
+feature('HotLinks',0);addpath(genpath('c:/Users/vhtmf/Documents/MATLAB/MATLAB-Lint')); issues = MatlabLint.lint('c:/Users/vhtmf/Documents/MATLAB/MATLAB-Lint'); disp(issues(1:min(height(issues),6),:)); fprintf('Total issues=%d\n', height(issues));
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:130
+    b(k, {'stmt','line'}) = {"x", k};
+end
+T = table(b);
+fprintf('direct k: height=%d tail=[%g,%g]\n', height(T), double(T{end-1,'line'}), double(T{end,'line'}));
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:60
+    b(end+1, {'stmt','line'}) = {"x", k};
+end
+T = table(b);
+lines = double(T{:,'line'});
+bad = find(lines==0|isnan(lines));
+fprintf('N=60 height=%d bad=%d tail=[%g,%g]\n', height(T), numel(bad), double(T{end-1,'line'}), double(T{end,'line'}));
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:130
+    b(end+1, {'stmt','line'}) = {"x", k};
+end
+T = table(b);
+lines = double(T{:,'line'});
+fprintf('N=130 height=%d bad=%d missing=%d tail=[%g,%g]\n', height(T), sum(lines==0|isnan(lines)), sum(ismissing(string(T{:,'stmt'}))), double(T{end-1,'line'}), double(T{end,'line'}));
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:65
+    b(end+1, {'stmt','line'}) = {"x", k};
+end
+T = table(b);
+fprintf('final height=%d\n', height(T));
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:130
+    b(end+1, {'stmt','line'}) = {"x", k};
+end
+T = table(b);
+lines = double(T{:,'line'});
+fprintf('N=130 height=%d bad=%d missing=%d tail=[%g,%g]\n', height(T), sum(lines==0|isnan(lines)), sum(ismissing(string(T{:,'stmt'}))), double(T{end-1,'line'}), double(T{end,'line'}));
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:60
+    b(end+1, {'stmt','line'}) = {"x", k};
+end
+T = table(b);
+lines = double(T{:,'line'});
+fprintf('N=60 height=%d bad=%d tail=[%g,%g]\n', height(T), sum(lines==0|isnan(lines)), double(T{end-1,'line'}), double(T{end,'line'}));
+feature('HotLinks',0);addpath(genpath('c:/Users/vhtmf/Documents/MATLAB/MATLAB-Lint')); issues = MatlabLint.lint('c:/Users/vhtmf/Documents/MATLAB/MATLAB-Lint'); disp(issues(1:min(height(issues),6),:)); fprintf('Total issues=%d\n', height(issues));
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:60
+    b(end+1, {'stmt','line'}) = {"x", k};
+end
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:130
+    b(end+1, {'stmt','line'}) = {"x", k};
+end
+feature('HotLinks',0);addpath(genpath('c:/Users/vhtmf/Documents/MATLAB/MATLAB-Lint')); issues = MatlabLint.lint('c:/Users/vhtmf/Documents/MATLAB/MATLAB-Lint'); fprintf('lint done, total=%d\n', height(issues)); disp(issues(1:min(height(issues),6),:));
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:60
+    b(end+1, {'stmt','line'}) = {"x", k};
+end
+T = table(b);
+lines = double(T{:,'line'});
+fprintf('N=60 height=%d bad=%d tail=[%g,%g]\n', height(T), sum(lines==0|isnan(lines)), double(T{end-1,'line'}), double(T{end,'line'}));
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:130
+    b(end+1, {'stmt','line'}) = {"x", k};
+end
+T = table(b);
+lines = double(T{:,'line'});
+fprintf('N=130 height=%d bad=%d missing=%d tail=[%g,%g]\n', height(T), sum(lines==0|isnan(lines)), sum(ismissing(string(T{:,'stmt'}))), double(T{end-1,'line'}), double(T{end,'line'}));
+feature('HotLinks',0);addpath(genpath('c:/Users/vhtmf/Documents/MATLAB/MATLAB-Lint')); issues = MatlabLint.lint('c:/Users/vhtmf/Documents/MATLAB/MATLAB-Lint'); fprintf('lint done, total=%d\n', height(issues)); disp(issues(1:min(height(issues),6),:));
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:65
+    b(end+1, {'stmt','line'}) = {"x", k};
+end
+T = table(b);
+fprintf('height=%d\n', height(T));
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:65
+    b(end+1, {'stmt','line'}) = {"x", k};
+end
+T = table(b);
+fprintf('height=%d\n', height(T));
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:62
+    b(end+1, {'stmt','line'}) = {"x", k};
+end
+T = table(b);
+fprintf('height=%d\n', height(T));
+feature('HotLinks',0);which('MATLAB.DataTypes.InsertiveTable')
+mc = meta.class.fromName('MATLAB.DataTypes.InsertiveTable');
+if ~isempty(mc)
+    fprintf('Has end method? %d\n', any(strcmp({mc.MethodList.Name}, 'end')));
+end
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:130
+    b(end+1, {'stmt','line'}) = {"x", k};
+end
+T = table(b);
+fprintf('height=%d badLine=%d missingStmt=%d\n', height(T), sum(double(T{:,'line'})==0), sum(ismissing(string(T{:,'stmt'}))));
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:130
+    b(end+1, {'stmt','line'}) = {"x", k};
+end
+T = table(b);
+fprintf('N=130 height=%d badLine=%d missingStmt=%d\n', height(T), sum(double(T{:,'line'})==0|isnan(double(T{:,'line'}))), sum(ismissing(string(T{:,'stmt'}))));
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:60
+    b(end+1, {'stmt','line'}) = {"x", k};
+end
+T = table(b);
+lines = double(T{:,'line'});
+badIdx = find(lines==0 | isnan(lines) | ismissing(string(T{:,'stmt'})));
+fprintf('N=60 height=%d badCount=%d\n', height(T), numel(badIdx));
+if ~isempty(badIdx)
+    fprintf('firstBad=%d lastBad=%d\n', badIdx(1), badIdx(end));
+end
+feature('HotLinks',0);addpath(genpath('.')); issues = MatlabLint.lint('.'); disp(['lint issues: ', num2str(height(issues))]);
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:130
+    b(end+1, {'stmt','line'}) = {"x", k};
+end
+T = table(b);
+fprintf('N=130 height=%d badLine=%d missingStmt=%d\n', height(T), sum(double(T{:,'line'})==0|isnan(double(T{:,'line'}))), sum(ismissing(string(T{:,'stmt'}))));
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:60
+    b(end+1, {'stmt','line'}) = {"x", k};
+end
+T = table(b);
+lines = double(T{:,'line'});
+badIdx = find(lines==0 | isnan(lines) | ismissing(string(T{:,'stmt'})));
+fprintf('N=60 height=%d badCount=%d\n', height(T), numel(badIdx));
+feature('HotLinks',0);addpath(genpath('.')); issues = MatlabLint.lint('.'); disp(['lint issues: ', num2str(height(issues))]);
+feature('HotLinks',0);clear classes;
+which('MATLAB.DataTypes.InsertiveTable')
+b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:130
+    b(end+1, {'stmt','line'}) = {"x", k};
+end
+T = table(b);
+fprintf('N=130 height=%d badLine=%d missingStmt=%d\n', height(T), sum(double(T{:,'line'})==0|isnan(double(T{:,'line'}))), sum(ismissing(string(T{:,'stmt'}))));
+feature('HotLinks',0);mc = meta.class.fromName('MATLAB.DataTypes.InsertiveTable');
+idx = find(strcmp({mc.MethodList.Name}, 'end'));
+fprintf('end method count: %d\n', numel(idx));
+for i = 1:numel(idx)
+    m = mc.MethodList(idx(i));
+    fprintf('end #%d defining class: %s, access=%s, static=%d, sealed=%d\n', i, m.DefiningClass.Name, m.Access, m.Static, m.Sealed);
+end
+
+mcp = meta.class.fromName('matlab.mixin.indexing.RedefinesParen');
+idxp = find(strcmp({mcp.MethodList.Name}, 'end'));
+fprintf('parent end count: %d\n', numel(idxp));
+for i = 1:numel(idxp)
+    m = mcp.MethodList(idxp(i));
+    fprintf('parent end #%d defining class: %s, access=%s, static=%d, sealed=%d\n', i, m.DefiningClass.Name, m.Access, m.Static, m.Sealed);
+end
+feature('HotLinks',0);which('MATLAB.DataTypes.InsertiveTable/end')
+which('matlab.mixin.indexing.RedefinesParen/end')
+feature('HotLinks',0);clear classes;
+addpath(genpath('.'));
+b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:65
+    b(end+1, {'line'}) = {k};
+end
+T = table(b);
+fprintf('done: height=%d badLine=%d\n', height(T), sum(double(T{:,'line'})==0));
+feature('HotLinks',0);clear classes;
+b = MATLAB.DataTypes.InsertiveTable();
+v = b.end(1,2);
+fprintf('manual call end -> %d\n', v);
+feature('HotLinks',0);mc = meta.class.fromName('matlab.mixin.indexing.RedefinesParen');
+fprintf('Class: %s\n', mc.Name);
+fprintf('Superclass count: %d\n', numel(mc.SuperclassList));
+for i = 1:numel(mc.SuperclassList)
+    fprintf('  super %d: %s\n', i, mc.SuperclassList(i).Name);
+end
+
+names = {mc.MethodList.Name};
+names = sort(unique(names));
+for i = 1:numel(names)
+    fprintf('%s\n', names{i});
+end
+feature('HotLinks',0);mc = meta.class.fromName('MATLAB.DataTypes.InsertiveTable');
+fprintf('InsertiveTable methods related to indexing/end/list/size:\n');
+for m = mc.MethodList'
+    n = m.Name;
+    if contains(lower(n),'end') || contains(lower(n),'list') || contains(lower(n),'size') || contains(lower(n),'paren') || contains(lower(n),'brace') || contains(lower(n),'dot')
+        fprintf('  %s  (defined in %s, access=%s)\n', n, m.DefiningClass.Name, m.Access);
+    end
+end
+feature('HotLinks',0);clear classes;
+b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:5
+    b(end+1, {'line'}) = {k};
+end
+feature('HotLinks',0);clear classes;
+b = MATLAB.DataTypes.InsertiveTable();
+b(end+1, {'line'}) = {1};
+feature('HotLinks',0);clear classes;
+b = MATLAB.DataTypes.InsertiveTable();
+b(end+1, {'line'}) = {1};
+feature('HotLinks',0);clear classes;
+b = MATLAB.DataTypes.InsertiveTable();
+b(end+1, {'line'}) = {1};
+feature('HotLinks',0);clear classes;
+b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:130
+    b(end+1, {'line'}) = {k};
+end
+T = table(b);
+fprintf('height=%d badLine=%d\n', height(T), sum(double(T{:,'line'})==0));
+feature('HotLinks',0);clear classes;
+b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:62
+    b(end+1, {'line'}) = {k};
+end
+T = table(b);
+fprintf('height=%d badLine=%d\n', height(T), sum(double(T{:,'line'})==0));
+feature('HotLinks',0);clear classes;
+b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:62
+    b(end+1, {'line'}) = {k};
+end
+T = table(b);
+fprintf('height=%d badLine=%d\n', height(T), sum(double(T{:,'line'})==0));
+feature('HotLinks',0);mc = meta.class.fromName('matlab.mixin.internal.indexing.ModularIndexingBase');
+fprintf('Class: %s\n', mc.Name);
+for i = 1:numel(mc.MethodList)
+    m = mc.MethodList(i);
+    fprintf('%s | Def=%s | Access=%s | Sealed=%d | Hidden=%d | Abstract=%d\n', m.Name, m.DefiningClass.Name, m.Access, m.Sealed, m.Hidden, m.Abstract);
+end
+feature('HotLinks',0);clear classes;
+try
+    b = MATLAB.DataTypes.InsertiveTable();
+    for k = 1:62
+        b(end+1, {'line'}) = {k};
+    end
+    T = table(b);
+    fprintf('ASSIGN_OK height=%d badLine=%d\n', height(T), sum(double(T{:,'line'})==0));
+catch ME
+    fprintf('FAIL id=%s msg=%s\n', ME.identifier, ME.message);
+end
+feature('HotLinks',0);clear classes;
+try
+    b = MATLAB.DataTypes.InsertiveTable();
+    b(end+1, {'line'}) = {1};
+catch ME
+    fprintf('FAIL id=%s\nmsg=%s\n', ME.identifier, ME.message);
+end
+feature('HotLinks',0);clear classes;
+try
+    b = MATLAB.DataTypes.InsertiveTable();
+    b(end+1, {'line'}) = {1};
+    disp('SMOKE_OK');
+catch ME
+    fprintf('SMOKE_FAIL %s %s\n', ME.identifier, ME.message);
+end
+feature('HotLinks',0);clear classes;
+b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:62
+    b(end+1, {'line'}) = {k};
+end
+T = table(b);
+fprintf('SUMMARY height=%d badLine=%d\n', height(T), sum(double(T{:,'line'})==0));
+feature('HotLinks',0);clear classes;
+try
+    b = MATLAB.DataTypes.InsertiveTable();
+    for k = 1:62
+        b(end+1, {'line'}) = {k};
+    end
+    disp('NO_END_TRACE');
+catch ME
+    fprintf('TRACE id=%s msg=%s\n', ME.identifier, ME.message);
+end
+feature('HotLinks',0);clear classes;
+which('MATLAB.DataTypes.InsertiveTable','-all')
+feature('HotLinks',0);mc = meta.class.fromName('MATLAB.DataTypes.InsertiveTable');
+if isempty(mc)
+    disp('meta empty');
+else
+    fprintf('meta name=%s\n', mc.Name);
+    fprintf('method end def=%s\n', mc.MethodList(strcmp({mc.MethodList.Name},'end')).DefiningClass.Name);
+end
+feature('HotLinks',0);clear classes;
+b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:130
+    b(end+1, {'line'}) = {k};
+end
+T = table(b);
+fprintf('height=%d badLine=%d\n', height(T), sum(double(T{:,'line'})==0));
+feature('HotLinks',0);% no-op
+feature('HotLinks',0);clear classes;
+b = MATLAB.DataTypes.InsertiveTable();
+for k=1:62
+    b(end+1, {'line'}) = {k};
+end
+T = table(b);
+fprintf('height=%d badLine=%d\n', height(T), sum(double(T{:,'line'})==0));
+feature('HotLinks',0);clear classes;
+b = MATLAB.DataTypes.InsertiveTable();
+for k=1:62
+    b(end+1, {'line'}) = {k};
+end
+T = table(b);
+fprintf('height=%d badLine=%d\n', height(T), sum(double(T{:,'line'})==0));
+feature('HotLinks',0);clear classes;
+b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:10
+    b(end+1, {'line'}) = {k};
+end
+T = table(b);
+fprintf('SMOKE height=%d badLine=%d\n', height(T), sum(double(T{:,'line'})==0));
+feature('HotLinks',0);clear classes;
+b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:62
+    b(end+1, {'line'}) = {k};
+end
+feature('HotLinks',0);clear classes;
+b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:62
+    b(end+1, {'line'}) = {k};
+end
+feature('HotLinks',0);clear classes;
+b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:60
+    b(end+1, {'line'}) = {k};
+end
+feature('HotLinks',0);clear classes;
+b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:60
+    b(end+1, {'line'}) = {k};
+end
+feature('HotLinks',0);b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:10
+    b(end+1, {'line'}) = {k};
+end
+% Now manually simulate the assignment with logging
+Indices = {11, 'line'};
+fprintf('Before: Indices{1}=%g class=%s isColon=%d\n', Indices{1}, class(Indices{1}), isequal(Indices{1}, ':'));
+b.RawTable(Indices{:}) = {100};
+fprintf('After:  Indices{1}=%g class=%s isColon=%d\n', Indices{1}, class(Indices{1}), isequal(Indices{1}, ':'));
+feature('HotLinks',0);clear classes;
+b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:62
+    b(end+1, {'line'}) = {k};
+end
+feature('HotLinks',0);clear classes;
+b = MATLAB.DataTypes.InsertiveTable();
+try
+    for k = 1:60
+        b(end+1, {'line'}) = {k};
+    end
+catch ME
+    fprintf('TRAP id=%s msg=%s\n', ME.identifier, ME.message);
+    % Print the stack
+    for i = 1:numel(ME.stack)
+        s = ME.stack(i);
+        fprintf('  %s:%d (%s)\n', s.file, s.line, s.name);
+    end
+end
+feature('HotLinks',0);x = double(58);
+fprintf('x=%g class=%s char(x)=''%s''\n', x, class(x), char(x));
+fprintf('isequal(x, '':'') = %d\n', isequal(x, ':'));
+fprintf('x == '':' = %d\n', x == ':');
+feature('HotLinks',0);clear classes;
+b = MATLAB.DataTypes.InsertiveTable();
+feature('HotLinks',0);clear classes;
+b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:130
+    b(end+1, {'line'}) = {k};
+end
+feature('HotLinks',0);clear classes;
+b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:130
+    b(end+1, {'line'}) = {k};
+end
+feature('HotLinks',0);clear classes;
+b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:130
+    b(end+1, {'line'}) = {k};
+end
+feature('HotLinks',0);clear classes;
+b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:130
+    b(end+1, {'line'}) = {k};
+end
+T = table(b);
+fprintf('height=%d badLine=%d\n', height(T), sum(double(T{:,'line'})==0));
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+fprintf('Issues: %d\n', numel(issues.Rule));
+feature('HotLinks',0);clear classes;
+b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:130
+    b(end+1, {'line'}) = {k};
+end
+T = table(b);
+fprintf('N=130: height=%d badLine=%d\n', height(T), sum(double(T{:,'line'})==0));
+
+% Also test N=60 threshold
+b2 = MATLAB.DataTypes.InsertiveTable();
+for k = 1:60
+    b2(end+1, {'line'}) = {k};
+end
+T2 = table(b2);
+fprintf('N=60:  height=%d badLine=%d\n', height(T2), sum(double(T2{:,'line'})==0));
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+for i = 1:height(issues)
+    fprintf('[%s] %s:%d %s\n', issues.rule(i), issues.file(i), issues.line(i), strtrim(issues.message(i)));
+end
+feature('HotLinks',0);clear classes;
+b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:130
+    b(end+1, {'line'}) = {k};
+end
+T = table(b);
+fprintf('N=130: height=%d badLine=%d\n', height(T), sum(double(T{:,'line'})==0));
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+fprintf('Total: %d\n', height(issues));
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+fprintf('Total: %d\n', height(issues));
+feature('HotLinks',0);addpath(genpath('.'));
+out = mlint_noStaticPrivateMethod('C:\Users\vhtmf\Documents\MATLAB\MATLAB-Extension\+MATLAB\+DataTypes\InsertiveTable.m');
+feature('HotLinks',0);addpath(fullfile(pwd, '+MatlabLint', 'private'));
+out = mlint_noStaticPrivateMethod('C:\Users\vhtmf\Documents\MATLAB\MATLAB-Extension\+MATLAB\+DataTypes\InsertiveTable.m');
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+for i = 1:height(issues)
+    fprintf('[%s] %s:%d %s\n', issues.rule(i), issues.file(i), issues.line(i), strtrim(issues.message(i)));
+end
+feature('HotLinks',0);clear classes;
+b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:130
+    b(end+1, {'line'}) = {k};
+end
+T = table(b);
+fprintf('N=130: height=%d badLine=%d\n', height(T), sum(double(T{:,'line'})==0));
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+fprintf('Total: %d\n', height(issues));
+feature('HotLinks',0);addpath(genpath('.'));
+% Quick test: create temp file and lint it
+testFile = fullfile(tempdir, '_test_regexp.m');
+fid = fopen(testFile, 'w');
+fprintf(fid, 'x = regexp(''abc'', ''a'');\ny = regexpi(''abc'', ''a'');\nz = regexprep(''abc'', ''a'', ''b'');\n');
+fclose(fid);
+issues = mlint_usePatternInsteadOfRegexp(testFile);
+feature('HotLinks',0);orig = pwd; cd('+MatlabLint');
+addpath('private');
+testFile = fullfile(tempdir, '_test_regexp.m');
+fid = fopen(testFile, 'w');
+fprintf(fid, 'x = regexp(''abc'', ''a'');\ny = regexpi(''abc'', ''a'');\nz = regexprep(''abc'', ''a'', ''b'');\n');
+fclose(fid);
+issues = mlint_usePatternInsteadOfRegexp(testFile);
+feature('HotLinks',0);addpath(genpath(pwd));
+testFile = fullfile(tempdir, '_test_regexp.m');
+fid = fopen(testFile, 'w');
+fprintf(fid, 'x = regexp(''abc'', ''a'');\ny = regexpi(''abc'', ''a'');\nz = regexprep(''abc'', ''a'', ''b'');\n');
+fclose(fid);
+issues = MatlabLint.lint(testFile);
+fprintf('test file hits: %d\n', height(issues));
+for i = 1:height(issues)
+    fprintf('  line %d: %s\n', issues.line(i), string(issues.message(i)));
+end
+delete(testFile);
+feature('HotLinks',0);addpath(genpath('.')); issues = MatlabLint.lint('C:\Users\vhtmf\Documents\MATLAB\MATLAB-Extension\+MATLAB\+DataTypes\InsertiveTable.m'); for i = 1:height(issues); fprintf('[%s] line %d: %s\n', issues.rule(i), issues.line(i), strtrim(issues.message(i))); end; fprintf('Total: %d\n', height(issues));
+feature('HotLinks',0);addpath(genpath('.'));
+fp = 'C:\Users\vhtmf\Documents\MATLAB\MATLAB-Extension\+MATLAB\+DataTypes\InsertiveTable.m';
+issues = MatlabLint.lint(fp);
+for i = 1:height(issues)
+    fprintf('[%s] line %d: %s\n', issues.rule(i), issues.line(i), strtrim(issues.message(i)));
+end
+feature('HotLinks',0);addpath(genpath('.'));
+fp = 'C:\Users\vhtmf\Documents\MATLAB\MATLAB-Extension\+MATLAB\+DataTypes\InsertiveTable.m';
+issues = MatlabLint.lint(fp);
+feature('HotLinks',0);addpath(genpath('.'));
+fp = 'C:\Users\vhtmf\Documents\MATLAB\MATLAB-Extension\+MATLAB\+DataTypes\InsertiveTable.m';
+issues = MatlabLint.lint(fp);
+feature('HotLinks',0);addpath(genpath('.'));
+fp = 'C:\Users\vhtmf\Documents\MATLAB\MATLAB-Extension\+MATLAB\+DataTypes\InsertiveTable.m';
+issues = MatlabLint.lint(fp);
+feature('HotLinks',0);addpath(genpath('.'));
+fp = 'C:\Users\vhtmf\Documents\MATLAB\MATLAB-Extension\+MATLAB\+DataTypes\InsertiveTable.m';
+issues = MatlabLint.lint(fp);
+feature('HotLinks',0);addpath(genpath('.'));
+fp = 'C:\Users\vhtmf\Documents\MATLAB\MATLAB-Extension\+MATLAB\+DataTypes\InsertiveTable.m';
+issues = MatlabLint.lint(fp);
+for i = 1:height(issues)
+    fprintf('[%s] line %d: %s\n', issues.rule(i), issues.line(i), strtrim(issues.message(i)));
+end
+feature('HotLinks',0);addpath(genpath('.'));
+fp = 'C:\Users\vhtmf\Documents\MATLAB\MATLAB-Extension\+MATLAB\+DataTypes\InsertiveTable.m';
+issues = MatlabLint.lint(fp);
+feature('HotLinks',0);addpath(genpath('.'));
+fp = 'C:\Users\vhtmf\Documents\MATLAB\MATLAB-Extension\+MATLAB\+DataTypes\InsertiveTable.m';
+issues = MatlabLint.lint(fp);
+for i = 1:height(issues)
+    fprintf('[%s] line %d: %s\n', issues.rule(i), issues.line(i), strtrim(issues.message(i)));
+end
+feature('HotLinks',0);addpath(genpath('.'));
+fp = 'C:\Users\vhtmf\Documents\MATLAB\MATLAB-Extension\+MATLAB\+DataTypes\InsertiveTable.m';
+issues = MatlabLint.lint(fp);
+for i = 1:height(issues)
+    fprintf('[%s] line %d: %s\n', issues.rule(i), issues.line(i), strtrim(issues.message(i)));
+end
+feature('HotLinks',0);addpath(genpath('.'));
+fp = 'C:\Users\vhtmf\Documents\MATLAB\MATLAB-Extension\+MATLAB\+DataTypes\InsertiveTable.m';
+issues = MatlabLint.lint(fp);
+for i = 1:height(issues)
+    fprintf('[%s] line %d: %s\n', issues.rule(i), issues.line(i), strtrim(issues.message(i)));
+end
+feature('HotLinks',0);orig = pwd; cd('+MatlabLint'); addpath('private');
+feature('HotLinks',0);fp = 'C:\Users\vhtmf\Documents\MATLAB\MATLAB-Extension\+MATLAB\+DataTypes\InsertiveTable.m';
+lines = splitlines(string(fileread(fp)));
+
+% Manually trace for line 68
+clsDepth = -1;
+depth = 0;
+for k = 1:67
+    cs = codeLine(strtrim(char(lines(k))));
+    if strlength(cs) == 0, continue; end
+    if startsWith(cs, "classdef ")
+        if clsDepth < 0, clsDepth = depth; fprintf('k=%d classDepth=%d\n', k, clsDepth); end
+        depth = depth + 1;
+        continue;
+    end
+    if startsWith(cs, "function ") || startsWith(cs, "if ") || startsWith(cs, "for ") ...
+            || startsWith(cs, "while ") || startsWith(cs, "switch ") ...
+            || startsWith(cs, "try") || startsWith(cs, "spmd") ...
+            || startsWith(cs, "methods") || startsWith(cs, "properties")
+        depth = depth + 1;
+        if startsWith(cs, "methods") || startsWith(cs, "properties")
+            fprintf('k=%d %s depth=%d\n', k, char(cs(1:min(30,end))), depth);
+        end
+        continue;
+    end
+    if strcmp(cs, "end")
+        depth = depth - 1;
+        fprintf('k=%d end depth=%d\n', k, depth);
+        if depth <= clsDepth
+            clsDepth = -1;
+            fprintf('k=%d RESET classDepth\n', k);
+        end
+        continue;
+    end
+end
+feature('HotLinks',0);addpath(genpath('.'));
+fp = 'C:\Users\vhtmf\Documents\MATLAB\MATLAB-Extension\+MATLAB\+DataTypes\InsertiveTable.m';
+lines = splitlines(string(fileread(fp)));
+
+clsDepth = -1;
+depth = 0;
+for k = 1:67
+    cs = codeLine(strtrim(char(lines(k))));
+    if strlength(cs) == 0, continue; end
+    if startsWith(cs, "classdef ")
+        if clsDepth < 0, clsDepth = depth; fprintf('k=%d classdef clsDepth=%d\n', k, clsDepth); end
+        depth = depth + 1;
+        continue;
+    end
+    if startsWith(cs, "function ") || startsWith(cs, "if ") || startsWith(cs, "for ") ...
+            || startsWith(cs, "while ") || startsWith(cs, "switch ") ...
+            || startsWith(cs, "try") || startsWith(cs, "spmd") ...
+            || startsWith(cs, "methods") || startsWith(cs, "properties")
+        depth = depth + 1;
+        if startsWith(cs, "methods") || startsWith(cs, "properties")
+            fprintf('k=%d %s depth=%d clsDepth=%d\n', k, char(cs(1:min(30,end))), depth, clsDepth);
+        end
+        continue;
+    end
+    if strcmp(cs, "end")
+        depth = depth - 1;
+        if k <= 60, fprintf('k=%d end depth=%d clsDepth=%d\n', k, depth, clsDepth); end
+        if depth <= clsDepth
+            clsDepth = -1;
+            fprintf('k=%d RESET clsDepth\n', k);
+        end
+        continue;
+    end
+end
+feature('HotLinks',0);fp = 'C:\Users\vhtmf\Documents\MATLAB\MATLAB-Extension\+MATLAB\+DataTypes\InsertiveTable.m';
+lines = splitlines(string(fileread(fp)));
+
+clsDepth = -1;
+depth = 0;
+for k = 1:67
+    cs = char(strtrim(string(MatlabLint.stripStringLiterals(string(lines(k))))));
+    p = strfind(cs, '%');
+    if ~isempty(p), cs = strtrim(cs(1:p(1)-1)); end
+    if isempty(cs), continue; end
+    if startsWith(cs, "classdef ")
+        if clsDepth < 0, clsDepth = depth; fprintf('k=%d classdef clsDepth=%d\n', k, clsDepth); end
+        depth = depth + 1;
+        continue;
+    end
+    if startsWith(cs, "function ") || startsWith(cs, "if ") || startsWith(cs, "for ") ...
+            || startsWith(cs, "while ") || startsWith(cs, "switch ") ...
+            || startsWith(cs, "try") || startsWith(cs, "spmd") ...
+            || startsWith(cs, "methods") || startsWith(cs, "properties")
+        depth = depth + 1;
+        if startsWith(cs, "methods") || startsWith(cs, "properties")
+            fprintf('k=%d %s depth=%d clsDepth=%d\n', k, char(cs(1:min(30,end))), depth, clsDepth);
+        end
+        continue;
+    end
+    if strcmp(cs, "end")
+        depth = depth - 1;
+        if k <= 60, fprintf('k=%d end depth=%d clsDepth=%d\n', k, depth, clsDepth); end
+        if depth <= clsDepth
+            clsDepth = -1;
+            fprintf('k=%d RESET clsDepth\n', k);
+        end
+        continue;
+    end
+end
+fprintf('FINAL clsDepth=%d tf=%d\n', clsDepth, clsDepth >= 0);
+feature('HotLinks',0);addpath(genpath('.'));
+fp = 'C:\Users\vhtmf\Documents\MATLAB\MATLAB-Extension\+MATLAB\+DataTypes\InsertiveTable.m';
+issues = MatlabLint.lint(fp);
+for i = 1:height(issues)
+    fprintf('[%s] line %d: %s\n', issues.rule(i), issues.line(i), strtrim(issues.message(i)));
+end
+feature('HotLinks',0);addpath(genpath('.'));
+fp = 'C:\Users\vhtmf\Documents\MATLAB\MATLAB-Extension\+MATLAB\+DataTypes\InsertiveTable.m';
+issues = MatlabLint.lint(fp);
+feature('HotLinks',0);addpath(genpath('.'));
+fp = 'C:\Users\vhtmf\Documents\MATLAB\MATLAB-Extension\+MATLAB\+DataTypes\InsertiveTable.m';
+MatlabLint.lint(fp);
+feature('HotLinks',0);addpath(genpath('.'));
+fp = 'C:\Users\vhtmf\Documents\MATLAB\MATLAB-Extension\+MATLAB\+DataTypes\InsertiveTable.m';
+issues = MatlabLint.lint(fp);
+for i = 1:height(issues)
+    fprintf('[%s] line %d: %s\n', issues.rule(i), issues.line(i), strtrim(issues.message(i)));
+end
+feature('HotLinks',0);addpath(genpath('.'));
+fp = 'C:\Users\vhtmf\Documents\MATLAB\MATLAB-Extension\+MATLAB\+DataTypes\InsertiveTable.m';
+MatlabLint.lint(fp);
+feature('HotLinks',0);addpath(genpath('.'));
+fp = 'C:\Users\vhtmf\Documents\MATLAB\MATLAB-Extension\+MATLAB\+DataTypes\InsertiveTable.m';
+lines = splitlines(string(fileread(fp)));
+
+nest = 0;
+for k = 1:numel(lines)
+    cs = char(strtrim(string(MatlabLint.stripStringLiterals(string(lines(k))))));
+    p = strfind(cs, '%');
+    if ~isempty(p), cs = strtrim(cs(1:p(1)-1)); end
+    if isempty(cs), continue; end
+    oldNest = nest;
+    if startsWith(cs, "classdef ") || startsWith(cs, "function ") || startsWith(cs, "if ") ...
+            || startsWith(cs, "for ") || startsWith(cs, "while ") || startsWith(cs, "switch ") ...
+            || startsWith(cs, "parfor ") || startsWith(cs, "try") || startsWith(cs, "spmd") ...
+            || startsWith(cs, "methods") || startsWith(cs, "properties") ...
+            || startsWith(cs, "events") || startsWith(cs, "enumeration")
+        nest = nest + 1;
+        fprintf('k=%d + (%d->%d) %s\n', k, oldNest, nest, char(cs(1:min(40,end))));
+        continue;
+    end
+    if strcmp(cs, "end")
+        nest = nest - 1;
+        fprintf('k=%d END (%d->%d)\n', k, oldNest, nest);
+        continue;
+    end
+end
+fprintf('FINAL nest=%d\n', nest);
+feature('HotLinks',0);addpath(genpath('.'));
+fp = 'C:\Users\vhtmf\Documents\MATLAB\MATLAB-Extension\+MATLAB\+DataTypes\InsertiveTable.m';
+issues = MatlabLint.lint(fp);
+for i = 1:height(issues)
+    fprintf('[%s] line %d: %s\n', issues.rule(i), issues.line(i), strtrim(issues.message(i)));
+end
+feature('HotLinks',0);addpath(genpath('.'));
+% Create test file: classdef without end
+testFile = fullfile(tempdir, '_test_noend.m');
+fid = fopen(testFile, 'w');
+fprintf(fid, 'classdef Foo\n');
+fprintf(fid, 'methods\n');
+fprintf(fid, 'function r = bar(obj)\n');
+fprintf(fid, 'r = obj.x;\n');
+fprintf(fid, 'end\n');
+fprintf(fid, 'end\n');
+fclose(fid);
+
+issues = MatlabLint.lint(testFile);
+fprintf('No-end classdef file: %d issues\n', height(issues));
+for i = 1:height(issues)
+    fprintf('  [%s] line %d\n', issues.rule(i), issues.line(i));
+end
+delete(testFile);
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+feature('HotLinks',0);addpath(genpath('.'));
+rules = MatlabLint.listRules();
+for r = 1:numel(rules)
+    fn = rules(r).fn;
+    id = rules(r).id;
+    fp = 'C:\Users\vhtmf\Documents\MATLAB\MATLAB-Extension\+MATLAB\+DataTypes\InsertiveTable.m';
+    try
+        out = fn(fp);
+        if ~isempty(out) && height(out) > 0
+            fi = out.file(1);
+            if isstring(fi) && ~iscell(fi)
+                fprintf('STRING: %s  file=%s\n', id, fi);
+            end
+        end
+    catch
+    end
+end
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+fprintf('Total: %d\n', height(issues));
+feature('HotLinks',0);addpath(genpath('.'));
+fp = 'C:\Users\vhtmf\Documents\MATLAB\MATLAB-Extension\+MATLAB\+DataTypes\InsertiveTable.m';
+issues = MatlabLint.lint(fp);
+for i = 1:height(issues)
+    fprintf('[%s] line %d: %s\n', issues.rule(i), issues.line(i), strtrim(issues.message(i)));
+end
+feature('HotLinks',0);clear classes;
+b = MATLAB.DataTypes.InsertiveTable();
+feature('HotLinks',0);clear classes;
+b = MATLAB.DataTypes.InsertiveTable();
+for k = 1:130
+    b(end+1, {'line'}) = {k};
+end
+T = table(b);
+fprintf('N=130: height=%d badLine=%d\n', height(T), sum(double(T{:,'line'})==0));
+feature('HotLinks',0);addpath(genpath('.'));
+fp = 'C:\Users\vhtmf\Documents\MATLAB\MATLAB-Extension\+MATLAB\+DataTypes\InsertiveTable.m';
+issues = MatlabLint.lint(fp);
+fprintf('InsertiveTable: %d issues\n', height(issues));
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+for i = 1:height(issues)
+    fprintf('[%s] %s:%d %s\n', issues.rule(i), issues.file(i), issues.line(i), strtrim(issues.message(i)));
+end
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+for i = 1:height(issues)
+    fprintf('[%s] %s:%d %s\n', issues.rule(i), issues.file(i), issues.line(i), strtrim(issues.message(i)));
+end
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+fprintf('Total: %d\n', height(issues));
+for i = 1:height(issues)
+    fprintf('[%s] %s:%d\n', issues.rule(i), issues.file(i), issues.line(i));
+end
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+fprintf('Total: %d\n', height(issues));
+for i = 1:height(issues)
+    fprintf('%s|%s|%d|%s\n', string(issues.rule(i)), string(issues.file(i)), issues.line(i), string(issues.message(i)));
+end
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+fprintf('Total: %d\n', height(issues));
+for i = 1:height(issues)
+    fprintf('%s|%s|%d|%s\n', string(issues.rule(i)), string(issues.file(i)), issues.line(i), string(issues.message(i)));
+end
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+fprintf('Total: %d\n', height(issues));
+for i = 1:height(issues)
+    fprintf('%s|%s|%d|%s\n', string(issues.rule(i)), string(issues.file(i)), issues.line(i), string(issues.message(i)));
+end
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+fprintf('Total: %d\n', height(issues));
+for i = 1:height(issues)
+    fprintf('%s|%s|%d|%s\n', string(issues.rule(i)), string(issues.file(i)), issues.line(i), string(issues.message(i)));
+end
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+fprintf('Total: %d\n', height(issues));
+for i = 1:height(issues)
+    fprintf('%s|%s|%d|%s\n', string(issues.rule(i)), string(issues.file(i)), issues.line(i), string(issues.message(i)));
+end
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+fprintf('Total: %d\n', height(issues));
+for i = 1:height(issues)
+    fprintf('%s|%s|%d|%s\n', string(issues.rule(i)), string(issues.file(i)), issues.line(i), string(issues.message(i)));
+end
+feature('HotLinks',0);addpath(genpath('.'));
+issues = mlint_singleUseVariable('+MatlabLint/private/mlint_mergeSyncAccumulatorPairs.m');
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('+MatlabLint/private/mlint_mergeSyncAccumulatorPairs.m');
+feature('HotLinks',0);addpath(genpath('.'));
+target = fullfile(pwd, '+MatlabLint','private','mlint_mergeSyncAccumulatorPairs.m');
+issues = MatlabLint.lint(target);
+feature('HotLinks',0);fp = fullfile(pwd,'+MatlabLint','private','mlint_mergeSyncAccumulatorPairs.m');
+if ~isfile(fp)
+    fp = fullfile(pwd,'private','mlint_mergeSyncAccumulatorPairs.m');
+end
+L = splitlines(string(fileread(fp)));
+idx = find(contains(L,'issueLine'));
+fprintf('file=%s\n', fp);
+fprintf('issueLine occurrences: %s\n', mat2str(idx'));
+for k = idx'
+    fprintf('%d: %s\n', k, strtrim(L(k)));
+end
+assignLn = idx(find(contains(L(idx),'issueLine = '),1,'first'));
+if ~isempty(assignLn)
+    refCnt = 0;
+    refLines = [];
+    for i = assignLn+1:numel(L)
+        s = char(L(i));
+        if contains(s,'issueLine')
+            refCnt = refCnt + 1;
+            refLines(end+1) = i; %#ok<AGROW>
+        end
+    end
+    fprintf('after assignment: refCnt=%d, refLines=%s\n', refCnt, mat2str(refLines));
+    ctxLo = max(1,assignLn-6); ctxHi = min(numel(L),assignLn+10);
+    fprintf('--- context ---\n');
+    for i = ctxLo:ctxHi
+        fprintf('%4d | %s\n', i, L(i));
+    end
+end
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+mask = string(issues.rule) == "mlint_singleUseVariable" & contains(string(issues.file), "mlint_mergeSyncAccumulatorPairs.m");
+if any(mask)
+    disp(issues(mask,:));
+else
+    disp('no mlint_singleUseVariable hit on mlint_mergeSyncAccumulatorPairs.m');
+end
+fprintf('hits=%d total=%d\n', sum(mask), height(issues));
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+maskIssueLine = string(issues.rule) == "mlint_singleUseVariable" & contains(string(issues.file), "mlint_mergeSyncAccumulatorPairs.m") & issues.line == 39;
+maskSingleUse = string(issues.rule) == "mlint_singleUseVariable";
+fprintf('issueLine_hit=%d\n', any(maskIssueLine));
+fprintf('singleUse_total=%d\n', sum(maskSingleUse));
+if any(maskIssueLine)
+    disp(issues(maskIssueLine,:));
+end
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint(fullfile(pwd,'+MatlabLint','addRule.m'));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint(fullfile(pwd,'+MatlabLint','addRule.m'));
+mask = string(issues.rule)=="mlint_singleUseVariable";
+disp(issues(mask,:));
+fprintf('singleUse=%d total=%d\n', sum(mask), height(issues));
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint(fullfile(pwd,'+MatlabLint','private','mlint_mergeSyncAccumulatorPairs.m'));
+mask = string(issues.rule)=="mlint_singleUseVariable";
+disp(issues(mask,:));
+fprintf('singleUse=%d total=%d\n', sum(mask), height(issues));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+fprintf('Total: %d\n', height(issues));
+for i = 1:height(issues)
+    fprintf('%s|%s|%d|%s\n', string(issues.rule(i)), string(issues.file(i)), issues.line(i), string(issues.message(i)));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint(fullfile(pwd,'+MatlabLint','private','mlint_noAccumulatorPlaceholder.m'));
+mask = string(issues.rule)=="mlint_singleUseVariable";
+disp(issues(mask,:));
+fprintf('singleUse=%d total=%d\n', sum(mask), height(issues));
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+mask = string(issues.rule)=="mlint_singleUseVariable";
+fprintf('singleUse=%d total=%d\n', sum(mask), height(issues));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint(fullfile(pwd,'+MatlabLint','addRule.m'));
+mask = string(issues.rule)=="mlint_singleUseVariable";
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+mask = string(issues.rule)=="mlint_singleUseVariable";
+fprintf('singleUse=%d total=%d\n', sum(mask), height(issues));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint(fullfile(pwd,'+MatlabLint','addRule.m'));
+if isempty(issues)
+    fprintf('addRule: total=0\n');
+else
+    hasRuleCol = any(strcmp(string(issues.Properties.VariableNames), "rule"));
+    if hasRuleCol
+        mask = string(issues.rule)=="mlint_singleUseVariable";
+        disp(issues(mask,:));
+        fprintf('addRule: singleUse=%d total=%d\n', sum(mask), height(issues));
+    else
+        fprintf('addRule: total=%d (no rule column)\n', height(issues));
+    end
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint(fullfile(pwd,'+MatlabLint','private','mlint_mergePatternCallChain.m'));
+mask = string(issues.rule)=="mlint_singleUseVariable";
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+mask = string(issues.rule)=="mlint_singleUseVariable";
+fprintf('singleUse=%d total=%d\n', sum(mask), height(issues));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint(fullfile(pwd,'+MatlabLint','private','mlint_mergePatternCallChain.m'));
+if isempty(issues)
+    fprintf('target_total=0\n');
+else
+    if any(strcmp('rule', issues.Properties.VariableNames))
+        mask = string(issues.rule)=="mlint_singleUseVariable";
+        disp(issues(mask,:));
+        fprintf('singleUse=%d total=%d\n', sum(mask), height(issues));
+    else
+        fprintf('target_total=%d (no columns when empty-like table)\n', height(issues));
+    end
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+fprintf('Total: %d\n', height(issues));
+for i = 1:height(issues)
+    fprintf('%s|%s|%d|%s\n', string(issues.rule(i)), string(issues.file(i)), issues.line(i), string(issues.message(i)));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+fprintf('Total: %d\n', height(issues));
+for i = 1:height(issues)
+    fprintf('%s|%s|%d|%s\n', string(issues.rule(i)), string(issues.file(i)), issues.line(i), string(issues.message(i)));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+fprintf('Total: %d\n', height(issues));
+if height(issues) > 0
+  for i = 1:height(issues)
+    fprintf('%s|%s|%d|%s\n', string(issues.rule(i)), string(issues.file(i)), issues.line(i), string(issues.message(i)));
+  end
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint(fullfile(pwd,'+MatlabLint','private','mlint_singleUseVariable.m'));
+if isempty(issues)
+  fprintf('total=0\n');
+else
+  m = string(issues.rule)=="mlint_noRedundantNestedIf";
+  disp(issues(m,:));
+  fprintf('nestedIf=%d total=%d\n', sum(m), height(issues));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);addpath(genpath('.'));
+fp = fullfile(pwd,'+MatlabLint','private','mlint_singleUseVariable.m');
+cfg = struct;
+cfg.Rules = struct('Id', "mlint_noRedundantNestedIf", 'Enabled', true);
+issues = MatlabLint.lint(fp, cfg);
+if isempty(issues)
+    fprintf('forced_rule_total=0\n');
+else
+    disp(issues);
+    fprintf('forced_rule_total=%d\n', height(issues));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint(fullfile(pwd,'_tmp_nested_if_repro.m'));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint(fullfile(pwd,'+MatlabLint','private','mlint_singleUseVariable.m'));
+if isempty(issues)
+    fprintf('total=0\n');
+else
+    disp(issues(strcmp(string(issues.rule),"mlint_noRedundantNestedIf"),:));
+    fprintf('nestedIf=%d total=%d\n', sum(strcmp(string(issues.rule),"mlint_noRedundantNestedIf")), height(issues));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+fprintf('Total: %d\n', height(issues));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+fprintf('Total: %d\n', height(issues));
+if height(issues)>0
+ for i=1:height(issues)
+  fprintf('%s|%s|%d|%s\n', string(issues.rule(i)), string(issues.file(i)), issues.line(i), string(issues.message(i)));
+ end
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+fprintf('Total: %d\n', height(issues));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+fprintf('Total: %d\n', height(issues));
+if height(issues) > 0
+    for i = 1:height(issues)
+        fprintf('%s|%s|%d|%s\n', string(issues.rule(i)), string(issues.file(i)), issues.line(i), string(issues.message(i)));
+    end
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+fprintf('Total: %d\n', height(issues));
+if height(issues) > 0
+    for i = 1:height(issues)
+        fprintf('%s|%s|%d|%s\n', string(issues.rule(i)), string(issues.file(i)), issues.line(i), string(issues.message(i)));
+    end
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);addpath(genpath('.'));
+fp = fullfile(pwd,'+MatlabLint','private','mlint_noAccumulatorPlaceholder.m');
+issues = MatlabLint.lint(fp);
+if isempty(issues)
+    fprintf('total=0\n');
+else
+    m = string(issues.rule)=="mlint_noLogicalScalarReturnAssign";
+    disp(issues(m,:));
+    fprintf('targetRule=%d total=%d\n', sum(m), height(issues));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);addpath(genpath('.'));
+fp = fullfile(pwd,'+MatlabLint','private','mlint_noAccumulatorPlaceholder.m');
+lines = splitlines(string(fileread(fp)));
+funcs = splitFunctions(lines, numel(lines));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);addpath(genpath('.'));
+cfg = struct;
+cfg.OutputToConsole = false;
+cfg.Rules = struct('Id', "mlint_noLogicalScalarReturnAssign", 'Enabled', true);
+issues = MatlabLint.lint(fullfile(pwd,'tmp_logical_return_demo.m'), cfg);
+if isempty(issues)
+  fprintf('demo_hits=0\n');
+else
+  disp(issues);
+  fprintf('demo_hits=%d\n', height(issues));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);addpath(genpath('.'));
+fp = fullfile(pwd,'+MatlabLint','private','mlint_noAccumulatorPlaceholder.m');
+cfg = struct;
+cfg.OutputToConsole = false;
+cfg.Rules = struct('Id', "mlint_noLogicalScalarReturnAssign", 'Enabled', true);
+issues = MatlabLint.lint(fp, cfg);
+if isempty(issues)
+  fprintf('hits=0\n');
+else
+  disp(issues);
+  fprintf('hits=%d\n', height(issues));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);addpath(genpath('.'));
+issues = MatlabLint.lint('.');
+mask = string(issues.rule)=="mlint_noLogicalScalarReturnAssign";
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);addpath(genpath('.'));
+try
+  t = MatlabLint.listRules();
+  if any(strcmp(string(t.Id),"mlint_noLogicalScalarReturnAssign"))
+    disp(t(strcmp(string(t.Id),"mlint_noLogicalScalarReturnAssign"),:));
+  else
+    disp('rule_not_listed');
+  end
+catch ME
+  disp(getReport(ME,'extended'));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feat

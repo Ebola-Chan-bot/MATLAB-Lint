@@ -6,10 +6,9 @@ if nargin == 0
     return;
 end
 lines = splitlines(string(fileread(filePath)));
-nLines = numel(lines);
 
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
-funcs = iSplitFunctions(lines, nLines);
+funcs = splitFunctions(lines, numel(lines));
 
 for f = 1:numel(funcs)
     fnStart = funcs(f).start;
@@ -19,56 +18,33 @@ for f = 1:numel(funcs)
         continue;
     end
 
-    % 计算每个变量在该函数内的 Append/PushBack 次数和 Harvest/Data 行
-    counts = zeros(numel(vars), 2);  % [appendCount, harvestLine]
+    % 计算每个变量在该函数内的追加/收割特征
+    appendCounts = zeros(numel(vars), 1);
+    harvestLines = zeros(numel(vars), 1);
+    firstAppendLines = zeros(numel(vars), 1);
+    appendLines = cell(numel(vars), 1);
+    appendKinds = strings(numel(vars), 1);
+    harvestKinds = strings(numel(vars), 1);
     for vi = 1:numel(vars)
-        [appendCount, harvestLine] = iCountAccumulatorOps(lines, fnStart, fnEnd, vars(vi));
-        counts(vi, 1) = appendCount;
-        counts(vi, 2) = harvestLine;
+        [appendCounts(vi), harvestLines(vi), firstAppendLines(vi), appendLines{vi}, appendKinds(vi), harvestKinds(vi)] = ...
+            iCollectAccumulatorOps(lines, fnStart, fnEnd, vars(vi));
     end
 
-    % 查找 appendCount 相同且 harvest 行相邻的配对
+    % 查找“真正同步”的配对：同构造器、同追加方式、追加次数>=2、逐次追加邻近、同收割方式且收割邻近
     for vi = 1:numel(vars)-1
         for vj = vi+1:numel(vars)
-            if counts(vi,1) > 0 && counts(vi,1) == counts(vj,1) && ...
-                    counts(vi,2) > 0 && counts(vj,2) > 0 && ...
-                    abs(counts(vi,2) - counts(vj,2)) <= 3
-                issuesBuilder = appendIssue(issuesBuilder, makeIssue(filePath, fnStart, ...
+            if iIsSynchronousPair(appendCounts(vi), harvestLines(vi), appendLines{vi}, appendKinds(vi), harvestKinds(vi), ...
+                    appendCounts(vj), harvestLines(vj), appendLines{vj}, appendKinds(vj), harvestKinds(vj))
+                issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, min(firstAppendLines(vi), firstAppendLines(vj)), ...
                     "mlint_mergeSyncAccumulatorPairs", ...
                     sprintf('变量 "%s" 和 "%s" 始终同步累积和收割（各 %d 次追加），应合并为单个 MATLAB.DataTypes.InsertiveTable', ...
-                    vars(vi), vars(vj), counts(vi,1)))); %#ok<AGROW>
+                    vars(vi), vars(vj), appendCounts(vi))}; %#ok<AGROW>
             end
         end
     end
 end
 
 issues = table(issuesBuilder);
-end
-
-% -------------------------------------------------------------------------
-function funcs = iSplitFunctions(lines, nLines)
-funcsBuilder = MATLAB.DataTypes.ArrayBuilder();
-depth = 0;
-fnStart = 0;
-for i = 1:nLines
-    kw = iLeadingKeyword(char(lines(i)));
-    if kw == "function" && depth == 0
-        fnStart = i;
-    end
-    if ismember(kw, ["if","for","parfor","while","switch","try","function"])
-        depth = depth + 1;
-    elseif kw == "end"
-        depth = depth - 1;
-        if depth == 0 && fnStart > 0
-            funcsBuilder.Append(struct('start', fnStart, 'end', i));
-            fnStart = 0;
-        end
-    end
-end
-funcs = funcsBuilder.Harvest();
-if isempty(funcs)
-    funcs = struct('start', {}, 'end', {});
-end
 end
 
 % -------------------------------------------------------------------------
@@ -79,13 +55,7 @@ for i = fnStart:fnEnd
     if isempty(raw) || raw(1) == '%'
         continue;
     end
-    code = char(MatlabLint.stripStringLiterals(raw));
-    cp = strfind(code, '%');
-    if ~isempty(cp)
-        code = strtrim(code(1:cp(1)-1));
-    else
-        code = strtrim(code);
-    end
+    code = codeLine(raw);
     if isempty(code)
         continue;
     end
@@ -99,7 +69,7 @@ for i = fnStart:fnEnd
     if isempty(lhs) || ~isstrprop(lhs(1), 'alpha')
         continue;
     end
-    if startsWith(rhs, "MATLAB.DataTypes.ArrayBuilder(" | "MATLAB.DataTypes.Vector(")
+    if startsWith(rhs, "MATLAB.DataTypes.ArrayBuilder(" | "MATLAB.Containers.Vector(")
         varBuilder.Append(string(lhs));
     end
 end
@@ -108,50 +78,80 @@ vars = unique(vars);
 end
 
 % -------------------------------------------------------------------------
-function [appendCount, harvestLine] = iCountAccumulatorOps(lines, fnStart, fnEnd, varName)
+function [appendCount, harvestLine, firstAppendLine, appendRows, appendKind, harvestKind] = iCollectAccumulatorOps(lines, fnStart, fnEnd, varName)
 appendCount = 0;
 harvestLine = 0;
+firstAppendLine = 0;
+appendRowsBuilder = MATLAB.Containers.Vector();
+appendKind = "";
+harvestKind = "";
 
 for i = fnStart:fnEnd
     raw = strtrim(char(lines(i)));
     if isempty(raw) || raw(1) == '%'
         continue;
     end
-    code = char(MatlabLint.stripStringLiterals(raw));
-    cp = strfind(code, '%');
-    if ~isempty(cp)
-        code = strtrim(code(1:cp(1)-1));
-    else
-        code = strtrim(code);
+    code = string(codeLine(raw));
+    if strlength(code) == 0
+        continue;
     end
-    % 统计 .Append( 或 .PushBack( 调用次数
-    appendCount = appendCount + numel(strfind(code, [char(varName) '.Append(']));
-    appendCount = appendCount + numel(strfind(code, [char(varName) '.PushBack(']));
-    % 收割行
-    if contains(code, varName + ".Harvest()" | varName + ".Data")
+
+    hasAppend = contains(code, varName + ".Append(");
+    hasPushBack = contains(code, varName + ".PushBack(");
+    if hasAppend || hasPushBack
+        appendCount = appendCount + 1;
+        appendRowsBuilder.PushBack(i);
+        if firstAppendLine == 0
+            firstAppendLine = i;
+        end
+        if hasAppend && ~hasPushBack
+            appendKind = iPickKind(appendKind, "Append");
+        elseif hasPushBack && ~hasAppend
+            appendKind = iPickKind(appendKind, "PushBack");
+        else
+            appendKind = iPickKind(appendKind, "Mixed");
+        end
+    end
+
+    hasHarvest = contains(code, varName + ".Harvest()");
+    hasData = contains(code, varName + ".Data");
+    if hasHarvest || hasData
         harvestLine = i;
+        if hasHarvest && ~hasData
+            harvestKind = iPickKind(harvestKind, "Harvest");
+        elseif hasData && ~hasHarvest
+            harvestKind = iPickKind(harvestKind, "Data");
+        else
+            harvestKind = iPickKind(harvestKind, "Mixed");
+        end
     end
+end
+appendRows = double(appendRowsBuilder.Data(:));
+end
+
+function tf = iIsSynchronousPair(aCount, aHarvestLine, aAppendRows, aAppendKind, aHarvestKind, ...
+        bCount, bHarvestLine, bAppendRows, bAppendKind, bHarvestKind)
+tf = false;
+
+if aCount >= 2 && aCount == bCount && ...
+        aHarvestLine > 0 && bHarvestLine > 0 && abs(aHarvestLine - bHarvestLine) <= 3 && ...
+        strlength(aAppendKind) > 0 && strlength(bAppendKind) > 0 && aAppendKind == bAppendKind && ...
+        strlength(aHarvestKind) > 0 && strlength(bHarvestKind) > 0 && aHarvestKind == bHarvestKind && ...
+        numel(aAppendRows) == numel(bAppendRows) && ...
+        ~any(abs(aAppendRows - bAppendRows) > 3)
+    tf = true;
+    return;
 end
 end
 
-% -------------------------------------------------------------------------
-function kw = iLeadingKeyword(line)
-s = strtrim(char(line));
-if isempty(s) || s(1) == '%'
-    kw = "";
-    return;
+function out = iPickKind(curr, next)
+if strlength(curr) == 0
+    out = next;
+elseif curr == next
+    out = curr;
+else
+    out = "Mixed";
 end
-kwds = ["function","if","for","parfor","while","switch","try","end"];
-for ki = 1:numel(kwds)
-    k = kwds(ki);
-    L = strlength(k);
-    if strlength(s) >= L && strcmp(s(1:L), k) && ...
-            (strlength(s) == L || ~isstrprop(s(L+1), 'alphanum') && s(L+1) ~= '_')
-        kw = k;
-        return;
-    end
-end
-kw = "";
 end
 
 

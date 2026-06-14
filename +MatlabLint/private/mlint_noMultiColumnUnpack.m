@@ -2,13 +2,21 @@ function issues = mlint_noMultiColumnUnpack(filePath)
 %mlint_noMultiColumnUnpack 不应把表的多个列拆为多个返回值，应直接返回 table。
 
 if nargin == 0
-    issues = "不应将表的多个列拆分为多个返回值（如 values=tbl.value; bodies=tbl.body;），应直接返回 table";
+    issues = "不应将表的多个列拆分为多个返回值（如 values=tbl.value; bodies=tbl.body;），应直接返回 table，并要求上游调用方改为按 table 使用";
     return;
 end
 lines = splitlines(string(fileread(filePath)));
 nLines = numel(lines);
 
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
+
+% 先拦截 table2array 拆表（无论出现次数，均视为违规）
+t2aLines = iFindTable2ArrayUnpacks(lines, nLines);
+for ti = 1:numel(t2aLines)
+    issuesBuilder(end+1, {'file','line','rule','message'}) = ...
+        {filePath, t2aLines(ti), "mlint_noMultiColumnUnpack", ...
+        "禁止通过 table2array 拆表；必须直接返回 table，并要求上游调用方调整为按 table 使用"}; %#ok<AGROW>
+end
 
 % 先收集所有 table() / InsertiveTable 变量
 tblVars = iCollectTableVars(lines, nLines);
@@ -22,15 +30,32 @@ for tv = 1:numel(tblVars)
     vn = tblVars(tv);
     unpackLines = iFindColumnUnpacks(lines, nLines, vn);
     if numel(unpackLines) >= 2
-        isRow = makeIssue(filePath, unpackLines(1), ...
-            "mlint_noMultiColumnUnpack", ...
-            sprintf('不应将表 "%s" 的多个列拆分为独立变量，建议直接返回 table', vn));
         issuesBuilder(end+1, {'file','line','rule','message'}) = ...
-            {isRow.file, isRow.line, isRow.rule, isRow.message};
+            {filePath, unpackLines(1), "mlint_noMultiColumnUnpack", ...
+            sprintf('不应将表 "%s" 的多个列拆分为独立变量；必须直接返回 table，并要求上游调用方调整为按 table 使用', vn)};
     end
 end
 
 issues = table(issuesBuilder);
+end
+
+% -------------------------------------------------------------------------
+function t2aLines = iFindTable2ArrayUnpacks(lines, nLines)
+lineBuilder = MATLAB.Containers.Vector();
+for i = 1:nLines
+    raw = strtrim(char(lines(i)));
+    if isempty(raw) || raw(1) == '%'
+        continue;
+    end
+    code = codeLine(raw);
+    if isempty(code)
+        continue;
+    end
+    if contains(strrep(code, ' ', ''), "table2array(")
+        lineBuilder.PushBack(i);
+    end
+end
+t2aLines = unique(double(lineBuilder.Data(:)));
 end
 
 % -------------------------------------------------------------------------
@@ -42,13 +67,7 @@ for i = 1:nLines
     if isempty(raw) || raw(1) == '%'
         continue;
     end
-    code = char(MatlabLint.stripStringLiterals(raw));
-    cp = strfind(code, '%');
-    if ~isempty(cp)
-        code = strtrim(code(1:cp(1)-1));
-    else
-        code = strtrim(code);
-    end
+    code = codeLine(raw);
     if isempty(code)
         continue;
     end
@@ -64,7 +83,7 @@ for i = 1:nLines
         continue;
     end
     s = strrep(rhs, ' ', '');
-    if startsWith(s, "table(") || startsWith(s, "MATLAB.DataTypes.InsertiveTable(")
+    if startsWith(s, "table(" | "MATLAB.DataTypes.InsertiveTable(")
         varBuilder.Append(string(lhs));
     end
 end
@@ -83,13 +102,7 @@ for i = 1:nLines
     if isempty(raw) || raw(1) == '%'
         continue;
     end
-    code = char(MatlabLint.stripStringLiterals(raw));
-    cp = strfind(code, '%');
-    if ~isempty(cp)
-        code = strtrim(code(1:cp(1)-1));
-    else
-        code = strtrim(code);
-    end
+    code = codeLine(raw);
     if isempty(code)
         continue;
     end
@@ -99,11 +112,9 @@ for i = 1:nLines
     if isempty(eqPos)
         continue;
     end
-    rhs = strtrim(code(eqPos(1)+1:end));
-    rhsNoSp = strrep(rhs, ' ', '');
 
     % 允许 rhs 为 string(tableVar.xxx) 或 tableVar.xxx
-    if contains(rhsNoSp, vn + '.')
+    if contains(strrep(strtrim(code(eqPos(1)+1:end)), ' ', ''), vn + '.')
         lineBuilder.PushBack(i);
     end
 end

@@ -13,8 +13,9 @@ issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
 for i = 1:nLines
     decl = strtrim(char(lines(i)));
-    if (isempty(decl) || startsWith(decl, '%')) || ...
-            ~startsWith(strtrim(char(MatlabLint.stripStringLiterals(decl))), "function ")
+    % 仅报告 classdef 外的局部函数
+    if isempty(decl) || startsWith(decl, '%') || ...
+            ~startsWith(codeLine(decl), "function ") || iIsClassMethod(i, lines)
         continue;
     end
 
@@ -25,12 +26,52 @@ for i = 1:nLines
 
     if iCountEffectiveLines(lines(i+1:endLine-1)) == 1
         fnName = iExtractFunctionName(decl);
-        issuesBuilder = appendIssue(issuesBuilder, makeIssue(filePath, i, "mlint_noSingleLineFunction", ...
-            sprintf('函数"%s"只有一行有效代码，建议内联', fnName))); %#ok<AGROW>
+        issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, i, "mlint_noSingleLineFunction", ...
+            sprintf('函数"%s"只有一行有效代码，建议内联', fnName)}; %#ok<AGROW>
     end
 end
 
 issues = table(issuesBuilder);
+end
+
+function tf = iIsClassMethod(lineNo, lines)
+% 找到 classdef 的闭合 end，若函数在该区间内则为类方法。
+tf = false;
+classOpen = 0;
+for k = 1:numel(lines)
+    cs = codeLine(strtrim(char(lines(k))));
+    if strlength(cs) == 0
+        continue;
+    end
+    if startsWith(cs, "classdef ")
+        classOpen = k;
+    end
+end
+if classOpen == 0
+    return;
+end
+% 从 classOpen+1 开始找匹配的 end
+nest = 1;
+for k = classOpen+1:numel(lines)
+    cs = codeLine(strtrim(char(lines(k))));
+    if strlength(cs) == 0
+        continue;
+    end
+    if any(startsWith(cs, ["function " "classdef " "if " "for " "while " "switch " ...
+            "parfor " "try" "spmd" "methods" "properties" "events" "enumeration"]))
+        nest = nest + 1;
+        continue;
+    end
+    if strcmp(cs, "end")
+        nest = nest - 1;
+        if nest < 0
+            tf = (lineNo > classOpen);
+            return;
+        end
+        continue;
+    end
+end
+tf = (lineNo > classOpen);
 end
 
 function endLine = iFindFunctionEnd(startLine, lines, nLines)
@@ -42,7 +83,7 @@ for k = startLine:nLines
     if isempty(s) || startsWith(s, '%')
         continue;
     end
-    s = strtrim(char(MatlabLint.stripStringLiterals(s)));
+    s = codeLine(s);
     if iIsBlockStartLine(s)
         depth = depth + 1;
         continue;
@@ -86,12 +127,7 @@ for i = 1:numel(segment)
         continue;
     end
 
-    s = char(MatlabLint.stripStringLiterals(s));
-    commentPos = strfind(s, '%');
-    if ~isempty(commentPos)
-        s = s(1:commentPos(1)-1);
-    end
-    s = strtrim(s);
+    s = codeLine(s);
     if isempty(s) || strcmp(s, "end") || strcmp(s, "else") || ...
             startsWith(s, "elseif " | "case " | "catch") || strcmp(s, "otherwise")
         continue;

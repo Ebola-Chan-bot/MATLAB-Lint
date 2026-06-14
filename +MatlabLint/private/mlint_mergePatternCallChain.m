@@ -1,20 +1,20 @@
 function issues = mlint_mergePatternCallChain(filePath)
-%mlint_mergePatternCallChain 连续 startsWith/contains 调用应合并。
+%mlint_mergePatternCallChain 连续 startsWith/contains/endsWith 调用应合并。
 
 if nargin == 0
-    issues = "连续的 startsWith/contains（同函数同首参数）使用 || 时，必须合并为一次调用并用 | 连接 pattern";
+    issues = "连续的 startsWith/contains/endsWith（同函数同首参数）使用 || 时，必须合并为一次调用并用 | 连接 pattern";
     return;
 end
 
 lines = splitlines(string(fileread(filePath)));
-[stmts, stmtLines] = iCollectStatements(lines);
+[stmts, stmtLines] = collectStatements(lines);
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
 for i = 1:numel(stmts)
     stmt = char(stmts(i));
     if iHasMergeablePatternCallChain(stmt)
-        issuesBuilder = appendIssue(issuesBuilder, makeIssue(filePath, stmtLines(i), "mlint_mergePatternCallChain", ...
-            sprintf("检测到连续 startsWith/contains 的 || 链。请合并为一次调用并使用 | 连接 pattern：%s", strtrim(stmt)))); %#ok<AGROW>
+        issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, stmtLines(i), "mlint_mergePatternCallChain", ...
+            sprintf("检测到连续 startsWith/contains/endsWith 的 || 链。请合并为一次调用并使用 | 连接 pattern：%s", strtrim(stmt))}; %#ok<AGROW>
     end
 end
 
@@ -149,6 +149,9 @@ if startsWith(ls, "startswith(")
 elseif startsWith(ls, "contains(")
     fn = "contains";
     openPos = strlength("contains") + 1;
+elseif startsWith(ls, "endswith(")
+    fn = "endsWith";
+    openPos = strlength("endsWith") + 1;
 else
     return;
 end
@@ -332,109 +335,6 @@ function out = iCompactArg(s)
 out = lower(strtrim(string(s)));
 out = replace(out, " ", "");
 out = replace(out, sprintf('\t'), "");
-end
-
-function [stmts, stmtLines] = iCollectStatements(lines)
-stmtsBuilder = MATLAB.DataTypes.ArrayBuilder();
-stmtLinesVector = MATLAB.Containers.Vector();
-
-buf = "";
-startLine = 0;
-
-for i = 1:numel(lines)
-    code = iStripLineCommentPreserveStrings(char(lines(i)));
-    code = strtrim(code);
-    if isempty(code)
-        continue;
-    end
-
-    if startLine == 0
-        startLine = i;
-    end
-
-    hasCont = endsWith(code, "...");
-    if hasCont
-        code = strtrim(code(1:end-3));
-    end
-
-    if strlength(buf) == 0
-        buf = string(code);
-    else
-        buf = buf + " " + string(code);
-    end
-
-    if hasCont
-        continue;
-    end
-
-    stmtsBuilder.Append(buf);
-    stmtLinesVector.PushBack(startLine);
-    buf = "";
-    startLine = 0;
-end
-
-stmts = string(stmtsBuilder.Harvest());
-stmtLines = double(stmtLinesVector.Data(:));
-end
-
-function out = iStripLineCommentPreserveStrings(s)
-out = '';
-inSingle = false;
-inDouble = false;
-i = 1;
-n = numel(s);
-while i <= n
-    ch = s(i);
-    if ch == '"'
-        if ~inSingle
-            if inDouble
-                if i < n && s(i + 1) == '"'
-                    out(end + 1:end + 2) = '""';
-                    i = i + 2;
-                    continue;
-                end
-                inDouble = false;
-            else
-                inDouble = true;
-            end
-        end
-
-        out(end + 1) = ch; %#ok<AGROW>
-        i = i + 1;
-        continue;
-    end
-
-    if ch == ''''
-        if inDouble
-            out(end + 1) = ch; %#ok<AGROW>
-            i = i + 1;
-            continue;
-        end
-        if inSingle
-            if i < n && s(i + 1) == ''''
-                out(end + 1:end + 2) = '''''';
-                i = i + 2;
-                continue;
-            end
-            inSingle = false;
-            out(end + 1) = ch; %#ok<AGROW>
-            i = i + 1;
-            continue;
-        end
-
-        inSingle = true;
-        out(end + 1) = ch; %#ok<AGROW>
-        i = i + 1;
-        continue;
-    end
-
-    if ch == '%' && ~inSingle && ~inDouble
-        return;
-    end
-
-    out(end + 1) = ch; %#ok<AGROW>
-    i = i + 1;
-end
 end
 
 

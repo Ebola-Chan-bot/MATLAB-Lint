@@ -17,12 +17,7 @@ for i = 1:numel(lines)
         continue;
     end
 
-    code = char(MatlabLint.stripStringLiterals(strtrim(s)));
-    commentPos = strfind(code, '%');
-    if ~isempty(commentPos)
-        code = code(1:commentPos(1)-1);
-    end
-    code = strtrim(code);
+    code = codeLine(strtrim(s));
     if isempty(code)
         continue;
     end
@@ -38,8 +33,8 @@ for i = 1:numel(lines)
     end
 
     if iHasTableAppendPattern(code, string(tableVars.Data(:)), string(insertiveVars.Data(:)))
-        issuesBuilder = appendIssue(issuesBuilder, makeIssue(filePath, i, "mlint_noCatTableAppend", ...
-            sprintf('检测到非 InsertiveTable end+1 的表累积写法：%s。仅允许 MATLAB.DataTypes.InsertiveTable 的 end+1 插入。', s))); %#ok<AGROW>
+        issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, i, "mlint_noCatTableAppend", ...
+            sprintf('检测到非 InsertiveTable end+1 的表累积写法：%s。仅允许 MATLAB.DataTypes.InsertiveTable 的 end+1 插入。', s)}; %#ok<AGROW>
     end
 end
 
@@ -51,8 +46,10 @@ tf = false;
 s = lower(string(code));
 
 % 显式 cat/vertcat/horzcat 或典型拼接追加：x = [x; table(...)]（含跨行写法）
+% 排除 cat(..., varargin{:}) 这类 cell 展开，以及 = [] 删除/清空操作
 if contains(s, "table(") && ((contains(s, "cat(") || contains(s, "vertcat(") || contains(s, "horzcat(")) || ...
-        ((contains(s, "=[") || contains(s, "= [")) && contains(s, ";")))
+        ((contains(s, "=[") || contains(s, "= [")) && contains(s, ";"))) && ...
+        ~contains(s, "varargin{:" | "varargin {:" | " = [" | " =  [" | "= []" | "=  []")
     tf = true;
     return;
 end
@@ -67,9 +64,11 @@ for i = 1:numel(varsToCheck)
     if strlength(v) == 0
         continue;
     end
-    if (contains(s, v + "(end+1") || contains(s, v + "(end + 1") || ...
-            contains(s, v + " (end+1") || contains(s, v + " (end + 1")) && ...
-            (contains(s, ")=") || contains(s, ") ="))
+    % 排除 {:} 语法（cell 展开/删除等）
+    codeStripped = regexprep(s, '\{\s*:\s*\}', '');
+    if (contains(codeStripped, v + "(end+1") || contains(codeStripped, v + "(end + 1") || ...
+            contains(codeStripped, v + " (end+1") || contains(codeStripped, v + " (end + 1")) ...
+            && (contains(codeStripped, ")=") || contains(codeStripped, ") ="))
         if any(insertiveVars == v)
             return;
         end

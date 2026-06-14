@@ -15,15 +15,14 @@ for i = 1:numel(lines)
         continue;
     end
 
-    code = char(MatlabLint.stripStringLiterals(strtrim(s)));
-    commentPos = strfind(code, '%');
-    if ~isempty(commentPos)
-        code = code(1:commentPos(1)-1);
+    code = codeLine(strtrim(s));
+    if isempty(code)
+        continue;
     end
 
     if iHasContainersMapCtor(code)
-        issuesBuilder = appendIssue(issuesBuilder, makeIssue(filePath, i, "mlint_noContainersMap", ...
-            sprintf('建议使用 dictionary 替代 containers.Map：%s', s))); %#ok<AGROW>
+        issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, i, "mlint_noContainersMap", ...
+            sprintf('建议使用 dictionary 替代 containers.Map：%s', s)}; %#ok<AGROW>
     end
 end
 

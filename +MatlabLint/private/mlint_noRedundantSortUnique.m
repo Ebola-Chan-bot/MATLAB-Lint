@@ -14,10 +14,9 @@ for i = 1:numel(lines)
     if isempty(s) || startsWith(s, '%')
         continue;
     end
-    cs = char(MatlabLint.stripStringLiterals(s));
-    if contains(cs, "sort(unique(" | "sort (unique(" | "sort( unique(" | "sort ( unique(")
-        issuesBuilder = appendIssue(issuesBuilder, makeIssue(filePath, i, "mlint_noRedundantSortUnique", ...
-            sprintf('冗余写法 sort(unique(...))："%s"，unique 默认已排序', s))); %#ok<AGROW>
+    if contains(codeLine(s), "sort(unique(" | "sort (unique(" | "sort( unique(" | "sort ( unique(")
+        issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, i, "mlint_noRedundantSortUnique", ...
+            sprintf('冗余写法 sort(unique(...))："%s"，unique 默认已排序', s)}; %#ok<AGROW>
     end
 end
 

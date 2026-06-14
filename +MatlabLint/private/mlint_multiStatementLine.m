@@ -14,10 +14,9 @@ for i = 1:numel(lines)
     if isempty(s) || startsWith(s, '%')
         continue;
     end
-    clean = char(MatlabLint.stripStringLiterals(s));
-    commentPos = strfind(clean, '%');
-    if ~isempty(commentPos)
-        clean = clean(1:commentPos(1)-1);
+    clean = codeLine(s);
+    if isempty(clean)
+        continue;
     end
     depth = 0;
     semiCount = 0;
@@ -35,8 +34,8 @@ for i = 1:numel(lines)
         minSemi = 1;
     end
     if semiCount >= minSemi
-        issuesBuilder = appendIssue(issuesBuilder, makeIssue(filePath, i, "mlint_multiStatementLine", ...
-            sprintf('一行包含多条语句："%s"', s))); %#ok<AGROW>
+        issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, i, "mlint_multiStatementLine", ...
+            sprintf('一行包含多条语句："%s"', s)}; %#ok<AGROW>
     end
 end
 

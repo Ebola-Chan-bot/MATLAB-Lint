@@ -15,8 +15,8 @@ for i = 1:numel(lines)
         continue;
     end
     if contains(s, "builtin(")
-        issuesBuilder = appendIssue(issuesBuilder, makeIssue(filePath, i, "mlint_noBuiltin", ...
-            sprintf('避免使用 builtin(...)，请直接调用目标函数：%s', s))); %#ok<AGROW>
+        issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, i, "mlint_noBuiltin", ...
+            sprintf('避免使用 builtin(...)，请直接调用目标函数：%s', s)}; %#ok<AGROW>
     end
 end
 

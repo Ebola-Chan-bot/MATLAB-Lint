@@ -43,9 +43,9 @@ while i <= nLines
     end
 
     if mergeCount >= 2
-        issuesBuilder = appendIssue(issuesBuilder, makeIssue(filePath, i, "mlint_mergeSameRowAssignments", ...
+        issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, i, "mlint_mergeSameRowAssignments", ...
             sprintf('检测到同一行多列分散赋值（第 %d-%d 行），建议合并为单行：%s(end+1, ["col1", "col2", ...]) = {v1, v2, ...};', ...
-            i, j - 1, char(varName)))); %#ok<AGROW>
+            i, j - 1, char(varName))}; %#ok<AGROW>
         i = j;
         continue;
     end

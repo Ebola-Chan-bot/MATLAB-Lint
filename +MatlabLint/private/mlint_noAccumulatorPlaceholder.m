@@ -12,20 +12,20 @@ end
 lines = splitlines(string(fileread(filePath)));
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
-[stmts, stmtLines] = iCollectStatements(lines);
+[stmts, stmtLines] = collectStatements(lines);
 isemptyVars = iCollectIsEmptyVars(stmts);
 
 for k = 1:numel(stmts)
     stmt = strtrim(char(stmts(k)));
     [ok, varName, expr] = iParseAssignment(stmt);
     isDecisionVar = ~isempty(isemptyVars) && any(isemptyVars == lower(string(varName)));
-    hasAccumulatorUse = iHasAccumulatorUse(stmts, stmtLines, varName, stmtLines(k));
     % struct 占位由 mlint_noStructAccumulator 专门负责
-    if ~isempty(stmt) && ok && iIsAccumulatorPlaceholder(expr) && ~isDecisionVar && hasAccumulatorUse
-        issuesBuilder = appendIssue(issuesBuilder, makeIssue(filePath, stmtLines(k), "mlint_noAccumulatorPlaceholder", ...
+    if ~isempty(stmt) && ok && iIsAccumulatorPlaceholder(expr) && ~isDecisionVar && ...
+            iHasAccumulatorUse(stmts, stmtLines, varName, stmtLines(k))
+        issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, stmtLines(k), "mlint_noAccumulatorPlaceholder", ...
             sprintf(['避免使用累积器占位空初始化：%s。' ...
             '建议改用 MATLAB.DataTypes.InsertiveTable、MATLAB.DataTypes.ArrayBuilder 或 MATLAB.Containers.Vector。'], ...
-            strtrim(stmt)))); %#ok<AGROW>
+            strtrim(stmt))}; %#ok<AGROW>
     end
 end
 
@@ -106,49 +106,6 @@ for i = 1:numel(emptyIndexTokens)
         return;
     end
 end
-end
-
-function [stmts, stmtLines] = iCollectStatements(lines)
-stmtsBuilder = MATLAB.DataTypes.ArrayBuilder();
-stmtLinesVector = MATLAB.Containers.Vector();
-
-buf = "";
-startLine = 0;
-
-for i = 1:numel(lines)
-    code = iStripLineCommentPreserveStrings(char(lines(i)));
-    code = strtrim(code);
-    if isempty(code)
-        continue;
-    end
-
-    if startLine == 0
-        startLine = i;
-    end
-
-    hasCont = endsWith(code, "...");
-    if hasCont
-        code = strtrim(code(1:end-3));
-    end
-
-    if strlength(buf) == 0
-        buf = string(code);
-    else
-        buf = buf + " " + string(code);
-    end
-
-    if hasCont
-        continue;
-    end
-
-    stmtsBuilder.Append(buf);
-    stmtLinesVector.PushBack(startLine);
-    buf = "";
-    startLine = 0;
-end
-
-stmts = string(stmtsBuilder.Harvest());
-stmtLines = double(stmtLinesVector.Data(:));
 end
 
 function vars = iCollectIsEmptyVars(stmts)
@@ -293,41 +250,6 @@ for k = 1:numel(hits)
 end
 
 vars = string(varsVector.Data(:));
-end
-
-function out = iStripLineCommentPreserveStrings(s)
-out = '';
-inSingle = false;
-i = 1;
-n = numel(s);
-while i <= n
-    ch = s(i);
-    if ch == ''''
-        if inSingle
-            if i < n && s(i + 1) == ''''
-                out(end + 1:end + 2) = '''''';
-                i = i + 2;
-                continue;
-            end
-            inSingle = false;
-            out(end + 1) = ch; %#ok<AGROW>
-            i = i + 1;
-            continue;
-        end
-
-        inSingle = true;
-        out(end + 1) = ch; %#ok<AGROW>
-        i = i + 1;
-        continue;
-    end
-
-    if ch == '%' && ~inSingle
-        return;
-    end
-
-    out(end + 1) = ch; %#ok<AGROW>
-    i = i + 1;
-end
 end
 
 

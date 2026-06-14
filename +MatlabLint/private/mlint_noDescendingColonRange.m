@@ -11,24 +11,22 @@ issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
 for i = 1:numel(lines)
     lineText = char(lines(i));
-    [starts, ends] = iFindDescendingRanges(lineText);
-    for k = 1:numel(starts)
-        issuesBuilder = appendIssue(issuesBuilder, makeIssue(filePath, i, "mlint_noDescendingColonRange", ...
+    ranges = iFindDescendingRanges(lineText);
+    for k = 1:height(ranges)
+        issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, i, "mlint_noDescendingColonRange", ...
             sprintf("检测到起点大于终点的冒号范围：%s。请彻查并重构相关逻辑，直接移除对此模式的需求。", ...
-            strtrim(lineText(starts(k):ends(k)))))); %#ok<AGROW>
+            strtrim(lineText(ranges{k, 'rangeStart'}:ranges{k, 'rangeEnd'})))}; %#ok<AGROW>
     end
 end
 
 issues = table(issuesBuilder);
 end
 
-function [starts, ends] = iFindDescendingRanges(lineText)
-lineText = iCodeOnlyLine(lineText);
-startsVector = MATLAB.Containers.Vector();
-endsVector = MATLAB.Containers.Vector();
+function ranges = iFindDescendingRanges(lineText)
+lineText = codeLine(lineText);
+tblBuilder = MATLAB.DataTypes.InsertiveTable();
 if isempty(lineText)
-    starts = double(startsVector.Data(:));
-    ends = double(endsVector.Data(:));
+    ranges = table(tblBuilder);
     return;
 end
 
@@ -59,13 +57,11 @@ for p = 1:n
     end
 
     if leftVal > rightVal
-        startsVector.PushBack(leftStart);
-        endsVector.PushBack(rightEnd);
+        tblBuilder(end+1, {'rangeStart','rangeEnd'}) = {leftStart, rightEnd};
     end
 end
 
-starts = double(startsVector.Data(:));
-ends = double(endsVector.Data(:));
+ranges = table(tblBuilder);
 end
 
 function [ok, value, tokenStart] = iReadLeftInteger(s, pos)
@@ -153,21 +149,6 @@ function pos = iSkipSpacesForward(s, pos)
 n = numel(s);
 while pos <= n && isspace(s(pos))
     pos = pos + 1;
-end
-end
-
-function s = iCodeOnlyLine(lineText)
-if isempty(lineText)
-    s = '';
-    return;
-end
-
-codeOnly = char(MatlabLint.stripStringLiterals(string(lineText)));
-percentPos = strfind(codeOnly, '%');
-if isempty(percentPos)
-    s = codeOnly;
-else
-    s = codeOnly(1:percentPos(1)-1);
 end
 end
 

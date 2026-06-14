@@ -14,7 +14,7 @@ for i = 1:numel(lines)
     if isempty(s) || startsWith(s, '%')
         continue;
     end
-    cs = char(MatlabLint.stripStringLiterals(s));
+    cs = codeLine(s);
 
     hasCast = false;
     for fn = ["uint64", "uint32", "int64", "int32"]
@@ -38,8 +38,8 @@ for i = 1:numel(lines)
         continue;
     end
 
-    issuesBuilder = appendIssue(issuesBuilder, makeIssue(filePath, i, "mlint_noNonarithCast", ...
-        sprintf('存在无算术运算的整数类型转换："%s"，建议保留原类型或仅在算术前转换', s))); %#ok<AGROW>
+    issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, i, "mlint_noNonarithCast", ...
+        sprintf('存在无算术运算的整数类型转换："%s"，建议保留原类型或仅在算术前转换', s)}; %#ok<AGROW>
 end
 
 issues = table(issuesBuilder);

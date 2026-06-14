@@ -47,9 +47,9 @@ while i <= nLines
     end
 
     if chainCount >= 2
-        issuesBuilder = appendIssue(issuesBuilder, makeIssue(filePath, chainStart, "mlint_mergeSkipIfChain", ...
+        issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, chainStart, "mlint_mergeSkipIfChain", ...
             sprintf('检测到 %d 个连续 if 块内容相同且最后一步均为 %s（第 %d-%d 行），建议用短路逻辑合并条件', ...
-            chainCount, char(skipAction), chainStart, chainEnd))); %#ok<AGROW>
+            chainCount, char(skipAction), chainStart, chainEnd)}; %#ok<AGROW>
     end
 
     i = chainEnd + 1;
@@ -60,7 +60,7 @@ end
 
 % -------------------------------------------------------------------------
 function tf = iIsBlockStartLine(s)
-cs = strtrim(char(MatlabLint.stripStringLiterals(s)));
+cs = codeLine(s);
 tf = startsWith(cs, "if " | "for " | "parfor " | "while " | "switch " | "classdef " | ...
        "spmd" | "try " | "methods " | "properties " | "events " | "enumeration ") || ...
     any(strcmp(cs, ["try", "methods", "properties", "events", "enumeration"]));
@@ -74,7 +74,7 @@ skipAction = "";
 bodyPrefixKey = "";
 
 if startLine < 1 || startLine > nLines || ...
-   ~startsWith(strtrim(char(MatlabLint.stripStringLiterals(lines(startLine)))), "if ")
+   ~startsWith(codeLine(lines(startLine)), "if ")
     return;
 end
 
@@ -88,7 +88,7 @@ for k = startLine:nLines
         depth = depth + 1;
         continue;
     end
-    if strcmp(strtrim(char(MatlabLint.stripStringLiterals(sk))), "end")
+    if strcmp(codeLine(sk), "end")
         depth = depth - 1;
         if depth == 0
             endLine = k;
@@ -108,7 +108,7 @@ for k = headerEnd + 1:endLine - 1
     if isempty(sk) || startsWith(sk, '%')
         continue;
     end
-    sk = strtrim(char(MatlabLint.stripStringLiterals(sk)));
+    sk = codeLine(sk);
     if startsWith(sk, "elseif ") || strcmp(sk, "else")
         return;
     end
@@ -142,11 +142,7 @@ function headerEnd = iFindIfHeaderEnd(startLine, endLine, lines)
 headerEnd = startLine;
 
 for k = startLine:endLine - 1
-    code = strtrim(char(MatlabLint.stripStringLiterals(lines(k))));
-    pct = strfind(code, '%');
-    if ~isempty(pct)
-        code = strtrim(code(1:pct(1)-1));
-    end
+    code = codeLine(lines(k));
     if endsWith(code, "...")
         headerEnd = k;
         continue;

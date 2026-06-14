@@ -7,7 +7,7 @@ if nargin == 0
 end
 
 lines = splitlines(string(fileread(filePath)));
-[stmts, stmtLines] = iCollectStatements(lines);
+[stmts, stmtLines] = collectStatements(lines);
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
 for i = 1:numel(stmts)
@@ -17,54 +17,11 @@ for i = 1:numel(stmts)
         continue;
     end
 
-    issuesBuilder = appendIssue(issuesBuilder, makeIssue(filePath, stmtLines(i), "mlint_noZeroRepeatCount", ...
-        sprintf("检测到包含 0 重复数的调用：%s。请彻查并重构相关逻辑，移除对此需求。", frag))); %#ok<AGROW>
+    issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, stmtLines(i), "mlint_noZeroRepeatCount", ...
+        sprintf("检测到包含 0 重复数的调用：%s。请彻查并重构相关逻辑，移除对此需求。", frag)}; %#ok<AGROW>
 end
 
 issues = table(issuesBuilder);
-end
-
-function [stmts, stmtLines] = iCollectStatements(lines)
-stmtsBuilder = MATLAB.DataTypes.ArrayBuilder();
-stmtLinesVector = MATLAB.Containers.Vector();
-
-buf = "";
-startLine = 0;
-
-for i = 1:numel(lines)
-    code = iCodeOnlyLine(char(lines(i)));
-    code = strtrim(code);
-    if isempty(code)
-        continue;
-    end
-
-    if startLine == 0
-        startLine = i;
-    end
-
-    hasCont = endsWith(code, "...");
-    if hasCont
-        code = strtrim(code(1:end-3));
-    end
-
-    if strlength(buf) == 0
-        buf = string(code);
-    else
-        buf = buf + " " + string(code);
-    end
-
-    if hasCont
-        continue;
-    end
-
-    stmtsBuilder.Append(buf);
-    stmtLinesVector.PushBack(startLine);
-    buf = "";
-    startLine = 0;
-end
-
-stmts = string(stmtsBuilder.Harvest());
-stmtLines = double(stmtLinesVector.Data(:));
 end
 
 function [hasViolation, frag] = iFindZeroRepeatCall(stmt)
@@ -253,21 +210,6 @@ for i = openPos-1:-1:1
     else
         break;
     end
-end
-end
-
-function out = iCodeOnlyLine(lineText)
-if isempty(lineText)
-    out = '';
-    return;
-end
-
-codeOnly = char(MatlabLint.stripStringLiterals(string(lineText)));
-percentPos = strfind(codeOnly, '%');
-if isempty(percentPos)
-    out = codeOnly;
-else
-    out = codeOnly(1:percentPos(1)-1);
 end
 end
 

@@ -15,8 +15,8 @@ for i = 1:nLines
     if isempty(s) || startsWith(s, '%')
         continue;
     end
-    cs = char(MatlabLint.stripStringLiterals(s));
-    if ~(contains(cs, "tiledlayout") && contains(cs, ", 1, 1)"))
+    cs = codeLine(s);
+    if isempty(cs) || ~(contains(cs, "tiledlayout") && contains(cs, ", 1, 1)"))
         continue;
     end
     tileCount = 0;
@@ -33,8 +33,8 @@ for i = 1:nLines
         end
     end
     if tileCount <= 1
-        issuesBuilder = appendIssue(issuesBuilder, makeIssue(filePath, i, "mlint_singleTileLayout", ...
-            sprintf('tiledlayout 仅有 1 个 tile（%s），建议移除 layout 直接绘图', s))); %#ok<AGROW>
+        issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, i, "mlint_singleTileLayout", ...
+            sprintf('tiledlayout 仅有 1 个 tile（%s），建议移除 layout 直接绘图', s)}; %#ok<AGROW>
     end
 end
 

@@ -25,11 +25,12 @@ while i <= nLines
     end
 
     if iIsRedundantNestedIf(i, endLine, lines)
-        issuesBuilder = appendIssue(issuesBuilder, makeIssue(filePath, i, "mlint_noRedundantNestedIf", ...
-            sprintf('检测到仅包裹单个 if 的外层 if（第 %d-%d 行）。建议合并为单层 if 条件。', i, endLine))); %#ok<AGROW>
+        issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, i, "mlint_noRedundantNestedIf", ...
+            sprintf('检测到仅包裹单个 if 的外层 if（第 %d-%d 行）。建议合并为单层 if 条件。', i, endLine)}; %#ok<AGROW>
     end
 
-    i = endLine + 1;
+    % 不跳过整个 if 块，避免漏检块内的嵌套冗余 if。
+    i = i + 1;
 end
 
 issues = table(issuesBuilder);
