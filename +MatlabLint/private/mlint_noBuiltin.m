@@ -1,0 +1,27 @@
+function issues = mlint_noBuiltin(filePath)
+%mlint_noBuiltin 禁止 builtin(...) 调用。
+
+if nargin == 0
+    issues = "禁止 builtin(...) 调用";
+    return;
+end
+lines = splitlines(string(fileread(filePath)));
+
+issuesBuilder = MATLAB.DataTypes.InsertiveTable();
+
+for i = 1:numel(lines)
+    s = strtrim(char(lines(i)));
+    if isempty(s) || startsWith(s, '%')
+        continue;
+    end
+    if contains(s, "builtin(")
+        issuesBuilder = appendIssue(issuesBuilder, makeIssue(filePath, i, "mlint_noBuiltin", ...
+            sprintf('避免使用 builtin(...)，请直接调用目标函数：%s', s))); %#ok<AGROW>
+    end
+end
+
+issues = table(issuesBuilder);
+end
+
+
+

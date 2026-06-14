@@ -1,0 +1,11 @@
+clear functions;
+issues = MatlabLint.lint('test_dead.m');
+mask = strcmp(string(issues.rule), "mlint_singleUseVariable");
+sub = issues(mask, :);
+fprintf('singleUse=%d\n', height(sub));
+if height(sub) > 0
+    for k = 1:height(sub)
+        fprintf('L%d: %s\n', sub.line(k), sub.message(k));
+    end
+end
+diary off;

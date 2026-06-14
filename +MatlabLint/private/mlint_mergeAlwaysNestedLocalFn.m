@@ -1,0 +1,122 @@
+function issues = mlint_mergeAlwaysNestedLocalFn(filePath)
+%mlint_mergeAlwaysNestedLocalFn 文件内函数若总是嵌套调用，建议合并。
+
+if nargin == 0
+    issues = "总是嵌套调用的局部函数建议合并";
+    return;
+end
+lines = splitlines(string(fileread(filePath)));
+
+issuesBuilder = MATLAB.DataTypes.InsertiveTable();
+
+nLines = numel(lines);
+
+% 收集所有局部函数名
+localFnNamesBuilder = MATLAB.DataTypes.ArrayBuilder();
+hasLocalFn = false;
+for i = 1:nLines
+    cs = strtrim(char(lines(i)));
+    if ~startsWith(cs, "function ") || ~contains(cs, "(")
+        continue;
+    end
+    fnName = "";
+    if contains(cs, "=")
+        leftPart = strtrim(extractBetween(string(cs), "=", "("));
+        if ~isempty(leftPart)
+            fnName = strtrim(leftPart(1));
+        end
+    else
+        leftPart = strtrim(extractBetween(string(cs), "function ", "("));
+        if ~isempty(leftPart)
+            fnName = strtrim(leftPart(1));
+        end
+    end
+    if fnName ~= ""
+        localFnNamesBuilder.Append(string(fnName));
+        hasLocalFn = true;
+    end
+end
+
+if hasLocalFn
+    localFnNames = string(localFnNamesBuilder.Harvest());
+else
+    localFnNames = string(MATLAB.Containers.Vector().Data(:));
+end
+
+for k = 1:numel(localFnNames)
+    fn = localFnNames(k);
+    totalCalls = 0;
+    nestedCalls = 0;
+    outerCallers = MATLAB.Containers.Vector();
+    for i = 1:nLines
+        cs = strtrim(char(lines(i)));
+        if isempty(cs) || startsWith(cs, '%')
+            continue;
+        end
+        cs = char(MatlabLint.stripStringLiterals(cs));
+        if startsWith(cs, "function ")
+            continue;
+        end
+
+        callPos = strfind(cs, char(fn + "("));
+        if isempty(callPos)
+            continue;
+        end
+
+        for p = callPos
+            totalCalls = totalCalls + 1;
+
+            bestOuter = "";
+            bestPos = 0;
+            for c = 1:numel(localFnNames)
+                outerName = localFnNames(c);
+                if outerName == fn
+                    continue;
+                end
+                posOuter = strfind(cs, char(outerName + "("));
+                if isempty(posOuter)
+                    continue;
+                end
+                posOuter = posOuter(posOuter < p);
+                if isempty(posOuter)
+                    continue;
+                end
+                lastPos = max(posOuter);
+                if lastPos > bestPos
+                    bestPos = lastPos;
+                    bestOuter = outerName;
+                end
+            end
+
+            if bestPos > 0
+                nestedCalls = nestedCalls + 1;
+                outerCallers.PushBack(bestOuter);
+            end
+        end
+    end
+
+    uniqueOuterCallers = unique(string(outerCallers.Data(:)));
+    if totalCalls >= 2 && nestedCalls == totalCalls && isscalar(uniqueOuterCallers)
+        issuesBuilder = addIssue(issuesBuilder, filePath, iFindDeclLine(lines, nLines, fn), "mlint_mergeAlwaysNestedLocalFn", ...
+            sprintf('局部函数"%s"被调用 %d 次，且始终嵌套在"%s"中，建议合并这两个函数', ...
+            char(fn), totalCalls, char(uniqueOuterCallers))); %#ok<AGROW>
+    end
+end
+
+issues = table(issuesBuilder);
+end
+
+function declLine = iFindDeclLine(lines, nLines, fn)
+declLine = 1;
+for i = 1:nLines
+    sDecl = strtrim(char(lines(i)));
+    if startsWith(sDecl, "function ") && contains(sDecl, fn + "(")
+        declLine = i;
+        return;
+    end
+end
+end
+
+
+
+

@@ -1,0 +1,854 @@
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);lns = splitlines(string(fileread('+MatlabLint/private/mlint_singleUseVariable.m')));
+fprintf('Total lines: %d\n', numel(lns));
+for k = max(1,numel(lns)-5):numel(lns)
+    fprintf('%d: %s\n', k, lns(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), "mlint_singleUseVariable");
+sub = issues(mask, :);
+fprintf('自命中=%d\n', height(sub));
+for k = 1:height(sub)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+fprintf('自命中=%d\n', height(sub));
+for k = 1:height(sub)
+    fprintf('L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+% filter for trace output
+mask = strcmp(string(issues.rule), "mlint_singleUseVariable");
+sub = issues(mask,:);
+fprintf('singleUse=%d\n', height(sub));
+disp(sub(:, {'line','message'}));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+fprintf('自命中=%d\n', height(sub));
+for k = 1:height(sub)
+    fprintf('L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+fprintf('自命中=%d\n', height(sub));
+for k = 1:height(sub)
+    fprintf('L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+fprintf('自命中=%d 条\n', height(sub));
+for k = 1:height(sub)
+    fprintf('  L%d: [%s]\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+fprintf('自命中=%d 条\n', height(sub));
+for k = 1:height(sub)
+    fprintf('  L%d: [%s]\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+fprintf('自命中=%d 条\n', height(sub));
+for k = 1:height(sub)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+fprintf('自命中=%d\n', height(sub));
+for k = 1:height(sub)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+fprintf('自命中=%d\n', height(sub));
+for k = 1:height(sub)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('test_kill.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+fprintf('test_kill singleUse=%d\n', height(sub));
+for k = 1:height(sub)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+fprintf('自命中=%d\n', height(sub));
+for k = 1:height(sub)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+fprintf('自命中=%d\n', height(sub));
+for k = 1:height(sub)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('test_kill.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+fprintf('test_kill singleUse=%d\n', height(sub));
+sub = issues(mask,:);
+for k = 1:height(sub)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+fprintf('DONE\n');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);lns = splitlines(string(fileread('+MatlabLint/private/mlint_singleUseVariable.m')));
+for k = 670:732
+    code = char(MatlabLint.stripStringLiterals(strtrim(char(lns(k)))));
+    if strlength(code) > 0 && (startsWith(code,'if ') || startsWith(code,'for ') || startsWith(code,'end') || contains(code,'continue'))
+        fprintf('%d: %s\n', k, code);
+    end
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+fprintf('自命中=%d\n', height(sub));
+for k = 1:height(sub)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);lns = splitlines(string(fileread('+MatlabLint/private/mlint_singleUseVariable.m')));
+for k = 700:744
+    fprintf('%d: %s\n', k, lns(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);lns = splitlines(string(fileread('+MatlabLint/private/mlint_singleUseVariable.m')));
+for k = 744:770
+    fprintf('%d: %s\n', k, lns(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+fprintf('自命中=%d\n', height(sub));
+for k = 1:height(sub)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);lns = splitlines(string(fileread('+MatlabLint/private/mlint_singleUseVariable.m')));
+nLines = numel(lns);
+[~,~,functionEnds] = iParseControlFlow(lns, nLines);
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);% Direct test without clear functions
+f = '+MatlabLint/private/mlint_singleUseVariable.m';
+lns = splitlines(string(fileread(f)));
+nLines = numel(lns);
+
+% Manually replicate iParseControlFlow
+fnStack = [];
+fnEnds = [];
+for i = 1:nLines
+    code = strtrim(string(MatlabLint.stripStringLiterals(char(lns(i)))));
+    if strlength(code) == 0, continue; end
+    if startsWith(code, 'function ')
+        fnStack(end+1) = i;
+    elseif code == "end"
+        if ~isempty(fnStack)
+            fnEnds(end+1) = i;
+            fnStack(end) = [];
+        end
+    end
+end
+fprintf('functionEnds: %s\n', mat2str(fnEnds));
+fprintf('L752 in fnEnds: %d\n', ismember(752, fnEnds));
+fprintf('L745 in fnEnds: %d\n', ismember(745, fnEnds));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);f = '+MatlabLint/private/mlint_singleUseVariable.m';
+lns = splitlines(string(fileread(f)));
+for i = 700:760
+    code = strtrim(string(MatlabLint.stripStringLiterals(char(lns(i)))));
+    if strlength(code) > 0
+        fprintf('%d: [%s]\n', i, code);
+    end
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);% Re-load the file without clearing to access private functions
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+fprintf('Class2=%d Class1=%d\n', ...
+    sum(contains(sub.message, '已赋值但未使用')), ...
+    sum(contains(sub.message, '仅使用一次')));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);tmp_fe
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+fprintf('DONE\n');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+fprintf('自命中=%d  Class2=%d  Class1=%d\n', height(sub), ...
+    sum(contains(sub.message, '已赋值但未使用')), ...
+    sum(contains(sub.message, '仅使用一次')));
+for k = 1:min(height(sub),8)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+if height(sub) > 8
+    fprintf('  ... 还有 %d 条\n', height(sub)-8);
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+fprintf('DONE\n');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+c2 = sum(contains(sub.message, '已赋值但未使用'));
+c1 = sum(contains(sub.message, '仅使用一次'));
+fprintf('自命中=%d  Class2=%d  Class1=%d\n', height(sub), c2, c1);
+for k = 1:min(height(sub), 10)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);lns = splitlines(string(fileread('+MatlabLint/private/mlint_singleUseVariable.m')));
+nLines = numel(lns);
+[~,~,fe] = iParseControlFlow(lns, nLines);
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+fprintf('DONE\n');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+c2 = sum(contains(sub.message, '已赋值但未使用'));
+c1 = sum(contains(sub.message, '仅使用一次'));
+fprintf('自命中=%d  Class2=%d  Class1=%d\n', height(sub), c2, c1);
+for k = 1:min(height(sub), 8)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+fprintf('DONE\n');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+c2 = sum(contains(sub.message, '已赋值但未使用'));
+c1 = sum(contains(sub.message, '仅使用一次'));
+fprintf('自命中=%d  Class2=%d  Class1=%d\n', height(sub), c2, c1);
+for k = 1:min(height(sub), 6)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+c2 = sum(contains(sub.message, '已赋值但未使用'));
+c1 = sum(contains(sub.message, '仅使用一次'));
+fprintf('自命中=%d  Class2=%d  Class1=%d\n', height(sub), c2, c1);
+for k = 1:min(height(sub), 8)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+fprintf('DONE\n');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+c2 = sum(contains(sub.message, '已赋值但未使用'));
+c1 = sum(contains(sub.message, '仅使用一次'));
+fprintf('自命中=%d  Class2=%d  Class1=%d\n', height(sub), c2, c1);
+for k = 1:min(height(sub), 6)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+c2 = sum(contains(sub.message, '已赋值但未使用'));
+c1 = sum(contains(sub.message, '仅使用一次'));
+fprintf('自命中=%d  Class2=%d  Class1=%d\n', height(sub), c2, c1);
+for k = 1:min(height(sub), 8)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+c2 = sum(contains(sub.message, '已赋值但未使用'));
+c1 = sum(contains(sub.message, '仅使用一次'));
+fprintf('自命中=%d  Class2=%d  Class1=%d\n', height(sub), c2, c1);
+for k = 1:min(height(sub), 8)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable') & contains(issues.message, '已赋值但未使用');
+sub = issues(mask,:);
+fprintf('Class2=%d 条\n', height(sub));
+for k = 1:min(height(sub), 20)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+c2 = sum(contains(sub.message, '已赋值但未使用'));
+c1 = sum(contains(sub.message, '仅使用一次'));
+fprintf('自命中=%d  Class2=%d  Class1=%d\n', height(sub), c2, c1);
+for k = 1:min(height(sub), 8)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable') & contains(issues.message, '已赋值但未使用');
+sub = issues(mask,:);
+fprintf('Class2=%d\n', height(sub));
+for k = 1:height(sub)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);lns = splitlines(string(fileread('+MatlabLint/private/mlint_singleUseVariable.m')));
+for k = 410:425
+    fprintf('%d: %s\n', k, strtrim(lns(k)));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('test_bfs.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+fprintf('test_bfs singleUse=%d\n', height(sub));
+for k = 1:height(sub)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+fprintf('DONE\n');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+fprintf('DONE\n');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);lns = splitlines(string(fileread('+MatlabLint/private/mlint_singleUseVariable.m')));
+for k = 410:430
+    c = strtrim(char(MatlabLint.stripStringLiterals(lns(k))));
+    if strlength(c) > 0
+        if startsWith(c, 'if ') || startsWith(c, 'for ') || startsWith(c, 'while ') || strcmp(c, 'end')
+            fprintf('%d: [%s] %s\n', k, c, lns(k));
+        end
+    end
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+c2 = sum(contains(sub.message, '已赋值但未使用'));
+c1 = sum(contains(sub.message, '仅使用一次'));
+fprintf('自命中=%d  Class2=%d  Class1=%d\n', height(sub), c2, c1);
+for k = 1:min(height(sub), 8)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable') & contains(issues.message, '已赋值但未使用');
+sub = issues(mask,:);
+fprintf('Class2=%d\n', height(sub));
+for k = 1:height(sub)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);lns = splitlines(string(fileread('+MatlabLint/private/mlint_singleUseVariable.m')));
+% 查看 L444 rhsj 周围代码
+for k = 440:452
+    fprintf('%d: %s\n', k, lns(k));
+end
+fprintf('\n=== L308 hdr ===\n');
+for k = 304:316
+    fprintf('%d: %s\n', k, lns(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);lns = splitlines(string(fileread('+MatlabLint/private/mlint_singleUseVariable.m')));
+% L444 rhsj — 在 if isKillLine 分支内
+fprintf('=== L444 rhsj ===\n');
+for k = 438:451
+    fprintf('%d: %s\n', k, strtrim(lns(k)));
+end
+% L460 tf
+fprintf('\n=== L460 tf ===\n');
+for k = 455:470
+    fprintf('%d: %s\n', k, strtrim(lns(k)));
+end
+% L725 inStr
+fprintf('\n=== L725 inStr ===\n');
+for k = 720:735
+    fprintf('%d: %s\n', k, strtrim(lns(k)));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+c2 = sum(contains(sub.message, '已赋值但未使用'));
+c1 = sum(contains(sub.message, '仅使用一次'));
+fprintf('自命中=%d  Class2=%d  Class1=%d\n', height(sub), c2, c1);
+for k = 1:min(height(sub), 8)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable') & contains(issues.message, '已赋值但未使用');
+sub = issues(mask,:);
+fprintf('Class2=%d\n', height(sub));
+for k = 1:height(sub)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+c2 = sum(contains(sub.message, '已赋值但未使用'));
+c1 = sum(contains(sub.message, '仅使用一次'));
+fprintf('自命中=%d  Class2=%d  Class1=%d\n', height(sub), c2, c1);
+for k = 1:min(height(sub), 10)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+c2 = sum(contains(sub.message, '已赋值但未使用'));
+c1 = sum(contains(sub.message, '仅使用一次'));
+fprintf('自命中=%d  Class2=%d  Class1=%d\n', height(sub), c2, c1);
+for k = 1:min(height(sub), 10)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable') & contains(issues.message, '已赋值但未使用');
+sub = issues(mask,:);
+fprintf('Class2=%d\n', height(sub));
+for k = 1:height(sub)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+fprintf('DONE\n');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+c2 = sum(contains(sub.message, '已赋值但未使用'));
+c1 = sum(contains(sub.message, '仅使用一次'));
+fprintf('自命中=%d  Class2=%d  Class1=%d\n', height(sub), c2, c1);
+for k = 1:min(height(sub), 12)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable') & contains(issues.message, '已赋值但未使用');
+sub = issues(mask,:);
+fprintf('Class2=%d\n', height(sub));
+for k = 1:height(sub)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+fprintf('DONE\n');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable');
+sub = issues(mask,:);
+c2 = sum(contains(sub.message, '已赋值但未使用'));
+c1 = sum(contains(sub.message, '仅使用一次'));
+fprintf('自命中=%d  Class2=%d  Class1=%d\n', height(sub), c2, c1);
+for k = 1:min(height(sub), 12)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+mask = strcmp(string(issues.rule), 'mlint_singleUseVariable') & contains(issues.message, '已赋值但未使用');
+sub = issues(mask,:);
+fprintf('Class2=%d\n', height(sub));
+for k = 1:height(sub)
+    fprintf('  L%d: %s\n', sub.line(k), sub.message(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions;
+issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+fprintf('DONE\n');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);lns = splitlines(string(fileread('+MatlabLint/private/mlint_singleUseVariable.m')));
+for k = 1:numel(lns)
+    code = char(MatlabLint.stripStringLiterals(strtrim(char(lns(k)))));
+    if strlength(code) > 0 && contains(code, 'effectiveEnd =')
+        fprintf('%d: [%s] %s\n', k, code, strtrim(lns(k)));
+    end
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);lns = splitlines(string(fileread('+MatlabLint/private/mlint_singleUseVariable.m')));
+for k = 355:380
+    code = char(MatlabLint.stripStringLiterals(strtrim(char(lns(k)))));
+    fprintf('%d: %s\n', k, strtrim(lns(k)));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);lns = splitlines(string(fileread('+MatlabLint/private/mlint_singleUseVariable.m')));
+for k = 360:380
+    fprintf('%d: %s\n', k, lns(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+fprintf('done\n');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);lns = splitlines(string(fileread('+MatlabLint/private/mlint_singleUseVariable.m')));
+for k = 420:445
+    fprintf('%d: %s\n', k, lns(k));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+fprintf('done\n');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);lns = splitlines(string(fileread('+MatlabLint/private/mlint_singleUseVariable.m')));
+for k = 1:numel(lns)
+    c = strtrim(lns(k));
+    if startsWith(c, "function ")
+        fprintf('FUNC_HEAD %d: %s\n', k, c);
+    end
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+fprintf('lint done\n');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);lns = splitlines(string(fileread('+MatlabLint/private/mlint_singleUseVariable.m')));
+for k = 396:442
+    c = strtrim(char(MatlabLint.stripStringLiterals(lns(k))));
+    if strlength(c)>0
+        fprintf('%d: %s\n', k, c);
+    end
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+fprintf('done\n');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+fprintf('done\n');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m');
+fprintf('done\n');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); disp(height(issues));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);p = '+MatlabLint/private/mlint_singleUseVariable.m';
+lines = splitlines(string(fileread(p)));
+startLn = 353; endLn = 464;
+stack = [];
+for i = startLn:endLn
+    s = char(lines(i));
+    toks = localExtractCtrlTokens(s);
+    if ~isempty(toks)
+        fprintf('L%d toks=%s\n', i, strjoin(string(toks), ','));
+    end
+    for t = 1:numel(toks)
+        tok = string(toks{t});
+        if any(tok == ["function","if","for","parfor","while","switch","try"])
+            stack(end+1) = i; %#ok<AGROW>
+            fprintf('  + %s @%d depth=%d\n', tok, i, numel(stack));
+        elseif tok == "end"
+            if ~isempty(stack)
+                cs = stack(end); stack(end) = [];
+                fprintf('  - end @%d pop=%d depth=%d\n', i, cs, numel(stack));
+            else
+                fprintf('  - end @%d pop=<empty> depth=%d\n', i, numel(stack));
+            end
+        end
+    end
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);p = '+MatlabLint/private/mlint_singleUseVariable.m';
+lines = splitlines(string(fileread(p)));
+startLn = 353; endLn = 464;
+stack = [];
+kwds = ["function","if","elseif","else","for","parfor","while","switch","case","otherwise","try","catch","end","break","continue","return","spmd"];
+for i = startLn:endLn
+    s = char(lines(i));
+    n = numel(s);
+    inStr = false; strCh = '';
+    toks = strings(0,1);
+    j = 1;
+    while j <= n
+        if inStr
+            if s(j) == strCh
+                if j < n && s(j+1) == strCh
+                    j = j + 2;
+                    continue;
+                end
+                inStr = false;
+            end
+            j = j + 1;
+        elseif s(j) == '''' || s(j) == '"'
+            inStr = true;
+            strCh = s(j);
+            j = j + 1;
+        elseif s(j) == '%'
+            break;
+        else
+            matched = false;
+            for kk = 1:numel(kwds)
+                kw = char(kwds(kk));
+                L = strlength(kwds(kk));
+                if j + L - 1 <= n && strcmp(s(j:j+L-1), kw)
+                    prevOK = (j == 1) || (~isstrprop(s(j-1), 'alphanum') && s(j-1) ~= '_');
+                    nextOK = (j+L > n) || (~isstrprop(s(j+L), 'alphanum') && s(j+L) ~= '_');
+                    if prevOK && nextOK
+                        toks(end+1,1) = string(kw); %#ok<AGROW>
+                        j = j + L;
+                        matched = true;
+                        break;
+                    end
+                end
+            end
+            if ~matched
+                j = j + 1;
+            end
+        end
+    end
+
+    if ~isempty(toks)
+        fprintf('L%d toks=%s\n', i, strjoin(toks, ','));
+    end
+    for t = 1:numel(toks)
+        tok = toks(t);
+        if any(tok == ["function","if","for","parfor","while","switch","try"])
+            stack(end+1) = i; %#ok<AGROW>
+            fprintf('  + %s @%d depth=%d\n', tok, i, numel(stack));
+        elseif tok == "end"
+            if ~isempty(stack)
+                cs = stack(end); stack(end) = [];
+                fprintf('  - end @%d pop=%d depth=%d\n', i, cs, numel(stack));
+            else
+                fprintf('  - end @%d pop=<empty> depth=0\n', i);
+            end
+        end
+    end
+end
+fprintf('finalDepth=%d\n', numel(stack));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); disp(height(issues));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); sel = issues(issues.rule=="mlint_singleUseVariable",:); fprintf('file_count=%d\n',height(sel)); if ~isempty(sel), disp(sel(:,{'line','message'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint'); sel = issues(issues.rule=="mlint_singleUseVariable",:); fprintf('repo_count=%d\n',height(sel)); if ~isempty(sel), disp(sel(:,{'file','line','message'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); sel = issues(issues.rule=="mlint_singleUseVariable",:); disp(sel(:,{'line','message'}));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); sel = issues(issues.rule=="mlint_singleUseVariable",:); disp(sel(:,{'line','message'}));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); sel = issues(issues.rule=="mlint_singleUseVariable",:); fprintf('singleUse_count=%d\n',height(sel)); if ~isempty(sel), disp(sel(:,{'line','message'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; lines = splitlines(string(fileread('+MatlabLint/private/mlint_singleUseVariable.m'))); nLines = numel(lines); [~,~,functionEnds] = feval(@() localParse(lines,nLines)); disp(functionEnds(functionEnds>300)'); function [ctrlBlocks,loopBlocks,functionEnds]=localParse(lines,nLines), [ctrlBlocks,loopBlocks,functionEnds]=iParseControlFlow(lines,nLines); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); sel = issues(issues.rule=="mlint_singleUseVariable",:); fprintf('singleUse_count=%d\n', height(sel)); if ~isempty(sel), disp(sel(:,{'line','message'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); sel = issues(issues.rule=="mlint_singleUseVariable",:); fprintf('singleUse_count=%d\n', height(sel)); if ~isempty(sel), disp(sel(:,{'line','message'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); sel = issues(issues.rule=="mlint_singleUseVariable",:); fprintf('singleUse_count=%d\n', height(sel)); if ~isempty(sel), disp(sel(:,{'line','message'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); sel = issues(issues.rule=="mlint_singleUseVariable",:); fprintf('singleUse_count=%d\n', height(sel)); if ~isempty(sel), disp(sel(:,{'line','message'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); sel = issues(issues.rule=="mlint_singleUseVariable",:); fprintf('singleUse_count=%d\n', height(sel)); if ~isempty(sel), disp(sel(:,{'line','message'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); sel = issues(issues.rule=="mlint_singleUseVariable",:); fprintf('singleUse_count=%d\n', height(sel)); if ~isempty(sel), disp(sel(:,{'line','message'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); sel = issues(issues.rule=="mlint_singleUseVariable",:); fprintf('singleUse_count=%d\n', height(sel)); if ~isempty(sel), disp(sel(:,{'line','message'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); sel = issues(issues.rule=="mlint_singleUseVariable",:); fprintf('singleUse_count=%d\n', height(sel)); if ~isempty(sel), disp(sel(:,{'line','message'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); disp(groupcounts(issues,'rule'));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); disp(groupcounts(issues,'rule')); sel = issues(issues.rule=="mlint_singleUseVariable",:); fprintf('singleUse_count=%d\n',height(sel)); if ~isempty(sel), disp(sel(:,{'line','message'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); disp(groupcounts(issues,'rule'));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); disp(groupcounts(issues,'rule'));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); disp(groupcounts(issues,'rule'));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); disp(groupcounts(issues,'rule'));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); disp(issues(:,{'line','rule','message'}));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); disp(groupcounts(issues,'rule'));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); disp(height(issues));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); disp(['TOTAL=', num2str(height(issues))]); if ~isempty(issues), disp(groupcounts(issues,'rule')); disp(issues(:,{'file','line','rule','message'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); disp(['TOTAL=', num2str(height(issues))]); if ~isempty(issues), disp(groupcounts(issues,'rule')); disp(issues(:,{'file','line','rule','message'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; tic; issues = MatlabLint.lint('.'); toc; fprintf('Total: %d\n', height(issues)); disp(groupcounts(issues,'rule'));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/addRule.m'); if ~isempty(issues), disp(issues(:,{'line','rule','message'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/addRule.m'); if isempty(issues), disp('No issues'); else disp(issues(:,{'line','rule','message'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); disp(height(issues)); if height(issues) > 0, disp(issues(:,{'line','rule'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(groupcounts(issues,'rule')); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_mergePatternCallChain.m'); if ~isempty(issues), disp(issues(:,{'line','rule','message'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_mergePatternCallChain.m'); if ~isempty(issues), disp(issues(:,{'line','rule','message'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_mergePatternCallChain.m');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_mergePatternCallChain.m');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_mergePatternCallChain.m'); if isempty(issues), disp('No issues'); else disp(issues(:,{'line','rule'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(groupcounts(issues,'rule')); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_noZeroRepeatCount.m'); if isempty(issues), disp('No issues'); else disp(issues(:,{'line','rule'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(groupcounts(issues,'rule')); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(issues(:,{'file','line','rule'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rules = MatlabLint.listRules(); disp(rules(:,{'rule'}));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); idx = issues.rule == "mlint_mergeIdenticalCaseBranches"; disp(issues(idx,{'line','message'}));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); disp(height(issues));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); disp(height(issues));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); idx = issues.rule == "mlint_mergeIdenticalCaseBranches"; if any(idx), disp(issues(idx,{'line','message'})); else disp('No hits'); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_singleUseVariable.m'); idx = issues.rule == "mlint_mergeIdenticalCaseBranches"; if any(idx), disp(issues(idx,{'line','message'})); else disp('No hits'); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(issues(:,{'file','line','rule'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('+MatlabLint/private/mlint_mergeIdenticalCaseBranches.m'); idx = issues.rule == "mlint_mergeSyncAccumulatorPairs"; if any(idx), disp(issues(idx,{'line','message'})); else disp('No hits'); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); idx = issues.rule == "mlint_mergeSyncAccumulatorPairs"; fprintf('%d hits\n', sum(idx)); if any(idx), disp(issues(idx,{'file','line','message'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(groupcounts(issues,'rule')); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(issues(:,{'file','line','rule'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(issues(:,{'file','line','rule'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); idx = issues.rule == "mlint_noStructAccumulator"; if any(idx), fprintf('%d hits:\n', sum(idx)); disp(issues(idx,{'file','line','message'})); else disp('No hits'); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); idx = issues.rule == "mlint_noStructAccumulator"; if any(idx), fprintf('%d hits:\n', sum(idx)); disp(issues(idx,{'file','line','message'})); else disp('No hits'); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); idx = issues.rule == "mlint_noStructAccumulator"; if any(idx), fprintf('%d hits:\n', sum(idx)); disp(issues(idx,{'file','line','message'})); else disp('No hits'); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(issues(:,{'file','line','rule'})); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); disp(groupcounts(issues,'rule'));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; issues = MatlabLint.lint('.'); fprintf('Total: %d\n', height(issues)); if height(issues) > 0, disp(groupcounts(issues,'rule')); end
+T=MATLAB.DataTypes.InsertiveTable
+
+T = 
+
+  0×0 <a href="matlab:helpPopup('MATLAB.DataTypes.InsertiveTable')" style="font-weight:bold">InsertiveTable</a> 数组(不具有属性)。
+
+[T;T]
+
+ans = 
+
+  0×0 <a href="matlab:helpPopup('MATLAB.DataTypes.InsertiveTable')" style="font-weight:bold">InsertiveTable</a> 数组(不具有属性)。
+
+[T;T]
+<a href="matlab: opentoline('C:\Users\vhtmf\Documents\MATLAB\MATLAB-Extension\+MATLAB\+DataTypes\InsertiveTable.m',32,1)">32  </a>			if dim==1&&isscalar(varargin)
+[T;T]
+{错误使用 <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('MATLAB.DataTypes.InsertiveTable/cat', 'C:\Users\vhtmf\Documents\MATLAB\MATLAB-Extension\+MATLAB\+DataTypes\InsertiveTable.m', 33)" style="font-weight:bold">MATLAB.DataTypes.InsertiveTable/cat</a> (<a href="matlab: opentoline('C:\Users\vhtmf\Documents\MATLAB\MATLAB-Extension\+MATLAB\+DataTypes\InsertiveTable.m',33,0)">第 33 行</a>)
+MATLAB:Exception:Deliberately_not_supporting：InsertiveTable不支持vertcat方法拼入新行。请改用end+1:end+N索引方式。
+
+出错 <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('matlab.mixin.indexing.RedefinesParen/vertcat', 'C:\Program Files\MATLAB\R2026a\toolbox\matlab\indexing\+matlab\+mixin\+indexing\@RedefinesParen\vertcat.m', 9)" style="font-weight:bold">matlab.mixin.indexing.RedefinesParen/vertcat</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2026a\toolbox\matlab\indexing\+matlab\+mixin\+indexing\@RedefinesParen\vertcat.m',9,0)">第 9 行</a>)
+    C = cat(1, varargin{:});
+        ^^^^^^^^^^^^^^^^^^^
+} 
