@@ -14,7 +14,7 @@ idsVector = MATLAB.Containers.Vector();
 names = sort({dir(fullfile(fileparts(mfilename('fullpath')), 'mlint_*.m')).name});
 for i = 1:numel(names)
     rid = erase(string(names{i}), ".m");
-    if ~iIsValidIdentifier(rid)
+    if ~isValidIdentifier(rid)
         continue;
     end
     idsVector.PushBack(rid);
@@ -31,26 +31,4 @@ else
 end
 
 cachedBuiltinFns = builtinFns;
-end
-
-function tf = iIsValidIdentifier(name)
-if strlength(name) == 0
-    tf = false;
-    return;
-end
-
-s = char(name);
-if ~(isstrprop(s(1), 'alpha') || s(1) == '_')
-    tf = false;
-    return;
-end
-
-tf = true;
-for i = 2:numel(s)
-    ch = s(i);
-    if ~(isstrprop(ch, 'alphanum') || ch == '_')
-        tf = false;
-        return;
-    end
-end
 end

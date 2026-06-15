@@ -97,24 +97,21 @@ for k = 1:numel(localFnNames)
 
     uniqueOuterCallers = unique(string(outerCallers.Data(:)));
     if totalCalls >= 2 && nestedCalls == totalCalls && isscalar(uniqueOuterCallers)
-        issuesBuilder = addIssue(issuesBuilder, filePath, iFindDeclLine(lines, nLines, fn), "mlint_mergeAlwaysNestedLocalFn", ...
+        declLine = 1;
+        for ii = 1:nLines
+            sDecl = strtrim(char(lines(ii)));
+            if startsWith(sDecl, "function ") && contains(sDecl, fn + "(")
+                declLine = ii;
+                break;
+            end
+        end
+        issuesBuilder = addIssue(issuesBuilder, filePath, declLine, "mlint_mergeAlwaysNestedLocalFn", ...
             sprintf('局部函数"%s"被调用 %d 次，且始终嵌套在"%s"中，建议合并这两个函数', ...
             char(fn), totalCalls, char(uniqueOuterCallers))); %#ok<AGROW>
     end
 end
 
 issues = table(issuesBuilder);
-end
-
-function declLine = iFindDeclLine(lines, nLines, fn)
-declLine = 1;
-for i = 1:nLines
-    sDecl = strtrim(char(lines(i)));
-    if startsWith(sDecl, "function ") && contains(sDecl, fn + "(")
-        declLine = i;
-        return;
-    end
-end
 end
 
 

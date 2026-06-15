@@ -59,14 +59,6 @@ issues = table(issuesBuilder);
 end
 
 % -------------------------------------------------------------------------
-function tf = iIsBlockStartLine(s)
-cs = codeLine(s);
-tf = startsWith(cs, "if " | "for " | "parfor " | "while " | "switch " | "classdef " | ...
-       "spmd" | "try " | "methods " | "properties " | "events " | "enumeration ") || ...
-    any(strcmp(cs, ["try", "methods", "properties", "events", "enumeration"]));
-end
-
-% -------------------------------------------------------------------------
 function [ok, endLine, skipAction, bodyPrefixKey] = iParseSimpleSkipIfBlock(startLine, lines, nLines)
 ok = false;
 endLine = 0;
@@ -84,7 +76,7 @@ for k = startLine:nLines
     if isempty(sk) || startsWith(sk, '%')
         continue;
     end
-    if iIsBlockStartLine(sk)
+    if isBlockStartLine(sk)
         depth = depth + 1;
         continue;
     end
@@ -102,7 +94,7 @@ if endLine == 0
 end
 
 bodyVector = MATLAB.Containers.Vector();
-headerEnd = iFindIfHeaderEnd(startLine, endLine, lines);
+headerEnd = findIfHeaderEnd(startLine, endLine, lines);
 for k = headerEnd + 1:endLine - 1
     sk = strtrim(char(lines(k)));
     if isempty(sk) || startsWith(sk, '%')
@@ -136,20 +128,6 @@ else
 end
 
 bodyPrefixKey = iBuildBodyPrefixKey(body(1:end-1));
-end
-
-function headerEnd = iFindIfHeaderEnd(startLine, endLine, lines)
-headerEnd = startLine;
-
-for k = startLine:endLine - 1
-    code = codeLine(lines(k));
-    if endsWith(code, "...")
-        headerEnd = k;
-        continue;
-    end
-    headerEnd = k;
-    break;
-end
 end
 
 function key = iBuildBodyPrefixKey(prefix)

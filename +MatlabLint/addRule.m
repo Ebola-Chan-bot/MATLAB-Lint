@@ -1,19 +1,30 @@
+%[text] 将规则开关写入用户级或指定路径配置文件。
+%[text] ## 语法
+%[text] ```matlabCodeExample
+%[text] configPath = MatlabLint.addRule(ruleId);
+%[text] configPath = MatlabLint.addRule(ruleId, configPathOrDir);
+%[text] configPath = MatlabLint.addRule(___, enabled);
+%[text] ```
+%[text] ## 输入参数
+%[text] ruleId(1,1)string，作为规则标识值写入 JSON 条目值。
+%[text] configPathOrDir(1,1)string，可传目录或 .json 文件路径：
+%[text] - 目录: 自动写入目录\\.matlablint.json
+%[text] - 文件: 直接写入该文件 \
+%[text] enabled(1,1)logical
+%[text] ## 返回值
+%[text] configPath(1,1)string
 function configPath = addRule(ruleId, varargin)
-%ADDRULE 将规则开关写入用户级或指定路径配置文件。
-% configPath = MatlabLint.addRule(ruleId)
-% configPath = MatlabLint.addRule(ruleId, configPathOrDir)
-% configPath = MatlabLint.addRule(ruleId, configPathOrDir, enabled)
-% configPath = MatlabLint.addRule(ruleId, enabled)
-% 可选参数支持无序传入，按类型推断：
-% - string/char -> configPathOrDir
-% - logical     -> enabled
-%
-% ruleId 作为规则标识值写入 JSON 条目值。
-% configPathOrDir 可传目录或 .json 文件路径：
-% - 目录: 自动写入 <目录>/.matlablint.json
-% - 文件: 直接写入该文件
 
-[configPathOrDir, enabled] = iParseOptionalArgs(varargin{:});
+configPathOrDir = "";
+enabled = true;
+for i = 1:numel(varargin)
+    v = varargin{i};
+    if islogical(v)
+        enabled = logical(v);
+    else
+        configPathOrDir = string(v);
+    end
+end
 
 spec = strtrim(ruleId);
 if strlength(spec) == 0
@@ -21,9 +32,22 @@ if strlength(spec) == 0
 end
 
 if strlength(configPathOrDir) == 0
-    p = iGetUserConfigPath();
+    p = getUserConfigPath();
 else
-    p = iNormalizeConfigPath(configPathOrDir);
+    t = string(configPathOrDir);
+    if isfolder(t)
+        p = fullfile(char(t), '.matlablint.json');
+    else
+        [folderPart, namePart, extPart] = fileparts(char(t));
+        if strcmpi(extPart, '.json') || strcmpi(namePart, '.matlablint')
+            p = char(t);
+        else
+            p = fullfile(char(t), '.matlablint.json');
+        end
+        if isempty(folderPart)
+            p = fullfile(pwd, p);
+        end
+    end
 end
 
 if isfile(p)
@@ -35,14 +59,22 @@ else
     cfg = struct;
 end
 
-entry = iBuildRuleEntry(spec, enabled);
+if strlength(spec) == 0
+    error('MatlabLint:EmptyRuleId', 'ruleId 不能为空。');
+end
+entry = struct('Id', string(spec), 'Enabled', logical(enabled));
+
 if ~isfield(cfg, 'Rules') || ~isstruct(cfg.Rules) || isempty(cfg.Rules)
     cfg.Rules = entry;
 else
     cfg.Rules = mergeRuleEntries(cfg.Rules, entry);
 end
 
-iEnsureParentDir(p);
+d = fileparts(p);
+if ~isempty(d) && ~isfolder(d)
+    mkdir(d);
+end
+
 try
     raw = jsonencode(cfg, PrettyPrint=true);
 catch
@@ -59,102 +91,5 @@ fclose(fid);
 configPath = string(p);
 end
 
-function [configPathOrDir, enabled] = iParseOptionalArgs(varargin)
-configPathOrDir = "";
-enabled = true;
-seenPath = false;
-seenEnabled = false;
-
-for i = 1:numel(varargin)
-    v = varargin{i};
-    if islogical(v)
-        if isscalar(v)
-            if seenEnabled
-                error('MatlabLint:DuplicateOptionalArg', 'enabled 只允许传入一次。');
-            end
-            enabled = logical(v);
-            seenEnabled = true;
-        else
-            error('MatlabLint:InvalidOptionalArg', 'enabled 必须是 logical 标量。');
-        end
-        continue;
-    end
-
-    if isstring(v) || ischar(v)
-        s = string(v);
-        if ~isscalar(s)
-            error('MatlabLint:InvalidOptionalArg', 'configPathOrDir 必须是 string/char 标量。');
-        end
-        if seenPath
-            error('MatlabLint:DuplicateOptionalArg', 'configPathOrDir 只允许传入一次。');
-        end
-        configPathOrDir = s;
-        seenPath = true;
-        continue;
-    end
-
-    error('MatlabLint:InvalidOptionalArgType', ...
-        '可选参数仅支持 string/char（配置路径）或 logical（启用开关）。');
-end
-end
-
-function entry = iBuildRuleEntry(spec, enabled)
-if strlength(spec) == 0
-    error('MatlabLint:EmptyRuleId', 'ruleId 不能为空。');
-end
-entry = struct('Id', string(spec), ...
-    'Enabled', logical(enabled));
-end
-
-function p = iNormalizeConfigPath(target)
-t = string(target);
-if isfolder(t)
-    p = fullfile(char(t), '.matlablint.json');
-    return;
-end
-
-[folderPart, namePart, extPart] = fileparts(char(t));
-if strcmpi(extPart, '.json') || strcmpi(namePart, '.matlablint')
-    p = char(t);
-else
-    % 若不是已存在目录且看起来像普通路径，则按目录处理。
-    p = fullfile(char(t), '.matlablint.json');
-end
-
-if isempty(folderPart)
-    p = fullfile(pwd, p);
-end
-end
-
-function iEnsureParentDir(configPath)
-d = fileparts(configPath);
-if isempty(d)
-    return;
-end
-if ~isfolder(d)
-    mkdir(d);
-end
-end
-
-function p = iGetUserConfigPath()
-if ispc
-    appdataPath = getenv('APPDATA');
-    if isempty(appdataPath)
-        appdataPath = iUserHome();
-    end
-    p = fullfile(appdataPath, 'MATLAB-Lint', '.matlablint.json');
-else
-    p = fullfile(iUserHome(), '.config', 'matlab-lint', '.matlablint.json');
-end
-end
-
-function p = iUserHome()
-if ispc
-    p = getenv('USERPROFILE');
-else
-    p = getenv('HOME');
-end
-if isempty(p)
-    p = char(java.lang.System.getProperty('user.home'));
-end
-end
+%[appendix]{"version":"1.0"}
+%---

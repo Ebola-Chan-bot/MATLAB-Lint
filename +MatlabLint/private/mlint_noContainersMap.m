@@ -20,45 +20,39 @@ for i = 1:numel(lines)
         continue;
     end
 
-    if iHasContainersMapCtor(code)
+    hasCtor = false;
+    lowerCode = lower(strtrim(string(code)));
+    idx = strfind(char(lowerCode), 'containers.map');
+    if ~isempty(idx)
+        txt = char(lowerCode);
+        n = numel(txt);
+        for k = 1:numel(idx)
+            p = idx(k);
+            prev = ' ';
+            if p > 1
+                prev = txt(p-1);
+            end
+            if isstrprop(prev, 'alphanum') || prev == '_'
+                continue;
+            end
+            j = p + strlength("containers.map");
+            while j <= n && isspace(txt(j))
+                j = j + 1;
+            end
+            if j <= n && txt(j) == '('
+                hasCtor = true;
+                break;
+            end
+        end
+    end
+
+    if hasCtor
         issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, i, "mlint_noContainersMap", ...
             sprintf('建议使用 dictionary 替代 containers.Map：%s', s)}; %#ok<AGROW>
     end
 end
 
 issues = table(issuesBuilder);
-end
-
-function tf = iHasContainersMapCtor(code)
-tf = false;
-s = lower(strtrim(string(code)));
-idx = strfind(char(s), 'containers.map');
-if isempty(idx)
-    return;
-end
-
-txt = char(s);
-n = numel(txt);
-for k = 1:numel(idx)
-    p = idx(k);
-
-    prev = ' ';
-    if p > 1
-        prev = txt(p-1);
-    end
-    if isstrprop(prev, 'alphanum') || prev == '_'
-        continue;
-    end
-
-    j = p + strlength("containers.map");
-    while j <= n && isspace(txt(j))
-        j = j + 1;
-    end
-    if j <= n && txt(j) == '('
-        tf = true;
-        return;
-    end
-end
 end
 
 

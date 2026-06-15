@@ -162,7 +162,7 @@ if closePos == 0 || strlength(strtrim(string(txt(closePos+1:end)))) > 0
     return;
 end
 
-args = iSplitTopLevelArgs(txt(openPos+1:closePos-1));
+args = splitTopLevelArgs(txt(openPos+1:closePos-1));
 if numel(args) < 2
     return;
 end
@@ -194,79 +194,6 @@ while changed
 end
 end
 
-function args = iSplitTopLevelArgs(text)
-parts = MATLAB.DataTypes.ArrayBuilder();
-startPos = 1;
-
-dParen = 0;
-dBracket = 0;
-dBrace = 0;
-inSingle = false;
-inDouble = false;
-
-i = 1;
-n = numel(text);
-while i <= n
-    ch = text(i);
-    if ch == '"'
-        if ~inSingle
-            if inDouble
-                if i < n && text(i + 1) == '"'
-                    i = i + 2;
-                    continue;
-                end
-                inDouble = false;
-            else
-                inDouble = true;
-            end
-        end
-        i = i + 1;
-        continue;
-    end
-
-    if ch == ''''
-        if inDouble
-            i = i + 1;
-            continue;
-        end
-        if inSingle
-            if i < n && text(i + 1) == ''''
-                i = i + 2;
-                continue;
-            end
-            inSingle = false;
-        else
-            inSingle = true;
-        end
-        i = i + 1;
-        continue;
-    end
-
-    if ~inSingle && ~inDouble
-        if ch == '('
-            dParen = dParen + 1;
-        elseif ch == ')'
-            dParen = dParen - 1;
-        elseif ch == '['
-            dBracket = dBracket + 1;
-        elseif ch == ']'
-            dBracket = dBracket - 1;
-        elseif ch == '{'
-            dBrace = dBrace + 1;
-        elseif ch == '}'
-            dBrace = dBrace - 1;
-        elseif ch == ',' && dParen == 0 && dBracket == 0 && dBrace == 0
-            parts.Append(string(strtrim(text(startPos:i-1))));
-            startPos = i + 1;
-        end
-    end
-
-    i = i + 1;
-end
-
-parts.Append(string(strtrim(text(startPos:end))));
-args = string(parts.Harvest());
-end
 
 function pos = iFindMatchingParen(txt, openPos)
 pos = 0;
@@ -336,6 +263,3 @@ out = lower(strtrim(string(s)));
 out = replace(out, " ", "");
 out = replace(out, sprintf('\t'), "");
 end
-
-
-

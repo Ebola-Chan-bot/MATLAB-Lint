@@ -1,18 +1,28 @@
-function issues = lint(targetPath, cfgOverride)
-%MATLABLINT 入口函数：扫描文件或目录并执行规则。
-% issues = MatlabLint.lint(targetPath)
-% issues = MatlabLint.lint(targetPath, cfg)
+%[text] 扫描文件或目录并执行规则。
+%[text] ## 语法
+%[text] ```matlabCodeExample
+%[text] issues = MatlabLint.lint();
+%[text] issues = MatlabLint.lint(targetPath);
+%[text] issues = MatlabLint.lint(cfg);
+%[text] issues = MatlabLint.lint(targetPath, cfg);
+%[text] issues = MatlabLint.lint(cfg, targetPath);
+%[text] ```
+%[text] ## 输入参数
+%[text] targetPath(1,1)string
+%[text] cfg
+%[text] ## 返回值
+%[text] issues
+function issues = lint(varargin)
 
-if nargin < 2
-    cfgOverride = [];
-end
-
-targetPath = string(targetPath);
-if ~isscalar(targetPath)
-    error('MatlabLint:InvalidTargetPath', 'targetPath 必须是 string 标量。');
-end
-if ~isempty(cfgOverride) && ~isstruct(cfgOverride)
-    error('MatlabLint:InvalidConfigOverride', 'cfg 必须是 struct。');
+targetPath = ".";
+cfgOverride = [];
+for i = 1:nargin
+    v = varargin{i};
+    if isstruct(v)
+        cfgOverride = v;
+    else
+        targetPath = v;
+    end
 end
 
 cfg = loadConfigLayers(targetPath);
@@ -34,3 +44,6 @@ if cfg.OutputToConsole
     reportIssues(issues);
 end
 end
+
+%[appendix]{"version":"1.0"}
+%---

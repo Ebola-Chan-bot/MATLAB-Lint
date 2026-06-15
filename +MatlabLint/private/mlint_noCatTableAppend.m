@@ -95,7 +95,7 @@ if strlength(lhs) == 0
     return;
 end
 
-if iIsIdentifier(lhs)
+if isValidIdentifier(lhs)
     ok = true;
     varName = string(lhs);
 end
@@ -118,25 +118,9 @@ if strlength(lhs) == 0
     return;
 end
 
-if iIsIdentifier(lhs)
+if isValidIdentifier(lhs)
     ok = true;
     varName = string(lhs);
-end
-end
-
-function tf = iIsIdentifier(name)
-txt = char(string(name));
-if isempty(txt) || ~(isstrprop(txt(1), 'alpha') || txt(1) == '_')
-    tf = false;
-    return;
-end
-tf = true;
-for i = 2:numel(txt)
-    ch = txt(i);
-    if ~(isstrprop(ch, 'alphanum') || ch == '_')
-        tf = false;
-        return;
-    end
 end
 end
 

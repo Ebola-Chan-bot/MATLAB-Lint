@@ -24,7 +24,19 @@ while i <= nLines
         continue;
     end
 
-    if iIsRedundantNestedIf(i, endLine, lines)
+    tf = false;
+    [innerIfStart, topPlainCount, hasTopElse] = iTopLevelBodySummary(i, endLine, lines);
+    if ~hasTopElse && topPlainCount == 0 && innerIfStart > 0
+        [okInner, innerEnd] = iParseIfBlock(innerIfStart, lines, endLine - 1);
+        if okInner
+            [innerNestedIfStart, innerTopPlainCount, innerHasTopElse] = iTopLevelBodySummary(innerIfStart, innerEnd, lines);
+            if ~innerHasTopElse && innerNestedIfStart == 0 && innerTopPlainCount > 0
+                tf = true;
+            end
+        end
+    end
+
+    if tf
         issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, i, "mlint_noRedundantNestedIf", ...
             sprintf('检测到仅包裹单个 if 的外层 if（第 %d-%d 行）。建议合并为单层 if 条件。', i, endLine)}; %#ok<AGROW>
     end
@@ -36,41 +48,20 @@ end
 issues = table(issuesBuilder);
 end
 
-function tf = iIsRedundantNestedIf(startLine, endLine, lines)
-tf = false;
-
-[innerIfStart, topPlainCount, hasTopElse] = iTopLevelBodySummary(startLine, endLine, lines);
-if hasTopElse || topPlainCount > 0 || innerIfStart == 0
-    return;
-end
-
-[okInner, innerEnd] = iParseIfBlock(innerIfStart, lines, endLine - 1);
-if ~okInner
-    return;
-end
-
-[innerNestedIfStart, innerTopPlainCount, innerHasTopElse] = iTopLevelBodySummary(innerIfStart, innerEnd, lines);
-if innerHasTopElse || innerNestedIfStart > 0 || innerTopPlainCount == 0
-    return;
-end
-
-tf = true;
-end
-
 function [firstIfStart, topPlainCount, hasTopElse] = iTopLevelBodySummary(startLine, endLine, lines)
 firstIfStart = 0;
 topPlainCount = 0;
 hasTopElse = false;
 
 depth = 0;
-headerEnd = iFindIfHeaderEnd(startLine, endLine, lines);
+headerEnd = findIfHeaderEnd(startLine, endLine, lines);
 for k = headerEnd + 1:endLine - 1
     sk = strtrim(char(lines(k)));
     if isempty(sk) || startsWith(sk, '%')
         continue;
     end
 
-    sk = iStripCommentAndStrings(sk);
+    sk = string(codeLine(sk));
     if strlength(sk) == 0
         continue;
     end
@@ -87,7 +78,7 @@ for k = headerEnd + 1:endLine - 1
         return;
     end
 
-    if iIsBlockStartLine(sk)
+    if isBlockStartLine(sk)
         if depth == 0
             if startsWith(sk, "if ")
                 if firstIfStart == 0
@@ -113,7 +104,7 @@ function [ok, endLine] = iParseIfBlock(startLine, lines, nLines)
 ok = false;
 endLine = 0;
 
-if startLine < 1 || startLine > nLines || ~startsWith(iStripCommentAndStrings(strtrim(char(lines(startLine)))), "if ")
+if startLine < 1 || startLine > nLines || ~startsWith(string(codeLine(strtrim(char(lines(startLine))))), "if ")
     return;
 end
 
@@ -124,12 +115,12 @@ for k = startLine:nLines
         continue;
     end
 
-    sk = iStripCommentAndStrings(sk);
+    sk = string(codeLine(sk));
     if strlength(sk) == 0
         continue;
     end
 
-    if iIsBlockStartLine(sk)
+    if isBlockStartLine(sk)
         depth = depth + 1;
         continue;
     end
@@ -143,34 +134,6 @@ for k = startLine:nLines
         end
     end
 end
-end
-
-function headerEnd = iFindIfHeaderEnd(startLine, endLine, lines)
-headerEnd = startLine;
-for k = startLine:endLine - 1
-    if endsWith(iStripCommentAndStrings(strtrim(char(lines(k)))), "...")
-        headerEnd = k;
-        continue;
-    end
-    headerEnd = k;
-    break;
-end
-end
-
-function out = iStripCommentAndStrings(s)
-out = string(MatlabLint.stripStringLiterals(string(s)));
-out = strtrim(out);
-p = strfind(char(out), '%');
-if ~isempty(p)
-    out = strtrim(extractBefore(out, p(1)));
-end
-end
-
-function tf = iIsBlockStartLine(s)
-cs = strtrim(char(s));
-tf = startsWith(cs, "if " | "for " | "parfor " | "while " | "switch " | "classdef " | ...
-       "spmd" | "try " | "methods " | "properties " | "events " | "enumeration ") || ...
-    any(strcmp(cs, ["try", "methods", "properties", "events", "enumeration"]));
 end
 
 

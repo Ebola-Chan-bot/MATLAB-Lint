@@ -158,7 +158,7 @@ if rhs(end) == ';'
     rhs = strtrim(rhs(1:end-1));
 end
 
-if ~iIsIdentifier(lhs)
+if ~isValidIdentifier(lhs)
     return;
 end
 
@@ -173,29 +173,6 @@ out = replace(out, " ", "");
 out = replace(out, sprintf('\t'), "");
 end
 
-function tf = iIsIdentifier(s)
-if strlength(string(s)) == 0
-    tf = false;
-    return;
-end
-
-txt = char(s);
-first = txt(1);
-if ~(isstrprop(first, 'alpha') || first == '_')
-    tf = false;
-    return;
-end
-
-for i = 2:numel(txt)
-    ch = txt(i);
-    if ~(isstrprop(ch, 'alphanum') || ch == '_')
-        tf = false;
-        return;
-    end
-end
-
-tf = true;
-end
 
 function vars = iExtractIsEmptyVars(stmt)
 varsVector = MATLAB.Containers.Vector();
@@ -251,6 +228,3 @@ end
 
 vars = string(varsVector.Data(:));
 end
-
-
-

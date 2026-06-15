@@ -68,7 +68,7 @@ if isempty(bracePos) || bracePos(1) < 2
 end
 
 lhsVar = string(s(1:bracePos(1)-1));
-if ~iIsIdentifier(lhsVar)
+if ~isValidIdentifier(lhsVar)
     return;
 end
 
@@ -99,22 +99,6 @@ end
 
 ok = true;
 varName = lhsVar;
-end
-
-function tf = iIsIdentifier(name)
-txt = char(string(name));
-if isempty(txt) || ~(isstrprop(txt(1), 'alpha') || txt(1) == '_')
-    tf = false;
-    return;
-end
-tf = true;
-for i = 2:numel(txt)
-    ch = txt(i);
-    if ~(isstrprop(ch, 'alphanum') || ch == '_')
-        tf = false;
-        return;
-    end
-end
 end
 
 

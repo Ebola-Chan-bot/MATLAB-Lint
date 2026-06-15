@@ -41,7 +41,7 @@ while scanPos <= strlength(string(stmt))
         continue;
     end
 
-    args = iSplitTopLevelArgs(stmt(openPos+1:closePos-1));
+    args = splitTopLevelArgs(stmt(openPos+1:closePos-1));
     if numel(args) >= 2
         repeats = args(2:end);
         for k = 1:numel(repeats)
@@ -125,37 +125,6 @@ for i = openPos:numel(s)
 end
 end
 
-function args = iSplitTopLevelArgs(text)
-parts = MATLAB.DataTypes.ArrayBuilder();
-startPos = 1;
-
-dParen = 0;
-dBracket = 0;
-dBrace = 0;
-
-for i = 1:numel(text)
-    ch = text(i);
-    if ch == '('
-        dParen = dParen + 1;
-    elseif ch == ')'
-        dParen = dParen - 1;
-    elseif ch == '['
-        dBracket = dBracket + 1;
-    elseif ch == ']'
-        dBracket = dBracket - 1;
-    elseif ch == '{'
-        dBrace = dBrace + 1;
-    elseif ch == '}'
-        dBrace = dBrace - 1;
-    elseif ch == ',' && dParen == 0 && dBracket == 0 && dBrace == 0
-        parts.Append(string(strtrim(text(startPos:i-1))));
-        startPos = i + 1;
-    end
-end
-
-parts.Append(string(strtrim(text(startPos:end))));
-args = string(parts.Harvest());
-end
 
 function tf = iHasZeroNumericLiteral(expr)
 tf = false;
@@ -212,6 +181,3 @@ for i = openPos-1:-1:1
     end
 end
 end
-
-
-

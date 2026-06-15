@@ -25,7 +25,7 @@ for i = 1:nLines
     end
 
     if iCountEffectiveLines(lines(i+1:endLine-1)) == 1
-        fnName = iExtractFunctionName(decl);
+        fnName = extractFunctionName(decl);
         issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, i, "mlint_noSingleLineFunction", ...
             sprintf('函数"%s"只有一行有效代码，建议内联', fnName)}; %#ok<AGROW>
     end
@@ -84,7 +84,7 @@ for k = startLine:nLines
         continue;
     end
     s = codeLine(s);
-    if iIsBlockStartLine(s)
+    if isBlockStartLine(s)
         depth = depth + 1;
         continue;
     end
@@ -98,24 +98,6 @@ for k = startLine:nLines
 end
 end
 
-function tf = iIsBlockStartLine(s)
-tf = false;
-blockTokens = ["function ", "if ", "for ", "parfor ", "while ", "switch ", ...
-    "classdef ", "spmd", "try", "try ", "methods", "methods ", ...
-    "properties", "properties ", "events", "events ", "enumeration", "enumeration "];
-for k = 1:numel(blockTokens)
-    token = blockTokens(k);
-    if token == "try" || token == "methods" || token == "properties" || token == "events" || token == "enumeration"
-        if strcmp(s, token)
-            tf = true;
-            return;
-        end
-    elseif startsWith(s, token)
-        tf = true;
-        return;
-    end
-end
-end
 
 function n = iCountEffectiveLines(segment)
 n = 0;
@@ -160,40 +142,3 @@ if strlength(strtrim(buf)) > 0
     n = n + 1;
 end
 end
-
-function fnName = iExtractFunctionName(decl)
-fnName = "<unnamed>";
-s = strtrim(string(decl));
-if ~startsWith(s, "function ")
-    return;
-end
-
-s = strtrim(extractAfter(s, "function "));
-if contains(s, "=")
-    s = strtrim(extractAfter(s, "="));
-end
-if contains(s, "(")
-    s = strtrim(extractBefore(s, "("));
-end
-if iIsValidIdentifier(s)
-    fnName = s;
-end
-end
-
-function tf = iIsValidIdentifier(name)
-if strlength(name) == 0
-    tf = false;
-    return;
-end
-
-c = char(name);
-if ~(isletter(c(1)) || c(1) == '_')
-    tf = false;
-    return;
-end
-
-tf = all(isstrprop(c(2:end), 'alphanum') | c(2:end) == '_');
-end
-
-
-

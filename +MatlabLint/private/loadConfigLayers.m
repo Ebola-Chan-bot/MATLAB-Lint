@@ -8,7 +8,7 @@ function cfg = loadConfigLayers(targetPath)
 
 cfg = struct;
 
-userConfig = iGetUserConfigPath();
+userConfig = getUserConfigPath();
 if isfile(userConfig)
     cfg = mergeStruct(cfg, readJsonConfig(userConfig));
 end
@@ -27,31 +27,5 @@ end
 targetConfig = fullfile(targetDir, '.matlablint.json');
 if isfile(targetConfig)
     cfg = mergeStruct(cfg, readJsonConfig(targetConfig));
-end
-end
-
-function p = iGetUserConfigPath()
-% Windows: %APPDATA%/MATLAB-Lint/.matlablint.json
-% macOS/Linux: ~/.config/matlab-lint/.matlablint.json
-
-if ispc
-    appdataPath = getenv('APPDATA');
-    if isempty(appdataPath)
-        appdataPath = iUserHome();
-    end
-    p = fullfile(appdataPath, 'MATLAB-Lint', '.matlablint.json');
-else
-    p = fullfile(iUserHome(), '.config', 'matlab-lint', '.matlablint.json');
-end
-end
-
-function p = iUserHome()
-if ispc
-    p = getenv('USERPROFILE');
-else
-    p = getenv('HOME');
-end
-if isempty(p)
-    p = char(java.lang.System.getProperty('user.home'));
 end
 end

@@ -1,6 +1,6 @@
 当前市面上缺少一款纯 MATLAB 编写的高级代码风格审查器，本库填补此空缺。
 
-当前内置规则（共 19 条，规则 ID 即函数名）：
+当前内置规则（共 20 条，规则 ID 即函数名）：
 | 规则 ID                        | 说明                             |
 |-------------------------------|----------------------------------|
 | `mlint_noAccumulatorPlaceholder`    | 禁止累积器类占位空初始化（豁免 `table()` 与 `isempty` 决策变量） |
@@ -20,6 +20,7 @@
 | `mlint_mergeAlwaysNestedLocalFn`    | 总是嵌套调用的局部函数建议合并       |
 | `mlint_noContainersMap`             | 建议用 dictionary 替代 containers.Map |
 | `mlint_noSingleLineFunction`        | 禁止只有一行有效代码的函数，建议内联 |
+| `mlint_singleCallFunction`         | 只有一处调用的非公开函数应当内联 |
 | `mlint_noCatTableAppend`            | 仅允许 `MATLAB.DataTypes.InsertiveTable` 的 `end+1` 插入；普通 table 的 `end+1` 与 cat/拼接均禁止 |
 | `mlint_mergeSameRowAssignments`     | 同一行多列分散赋值应合并为单行 |
 
@@ -136,6 +137,7 @@ configPath = MatlabLint.addRule("C:/myProject/rules/checkNaming.m", ".");
     { "Id": "mlint_mergeAlwaysNestedLocalFn", "Enabled": true },
     { "Id": "mlint_noContainersMap", "Enabled": true },
     { "Id": "mlint_noSingleLineFunction", "Enabled": true },
+    { "Id": "mlint_singleCallFunction", "Enabled": true },
     { "Id": "mlint_noCatTableAppend", "Enabled": true },
     { "Id": "mlint_mergeSameRowAssignments", "Enabled": true }
   ]
