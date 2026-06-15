@@ -1,15 +1,21 @@
+%[text] 列出所有已知规则及其启用状态和生效层级。
+%[text] ## 语法
+%[text] ```matlabCodeExample
+%[text] out = MatlabLint.listRules();
+%[text] out = MatlabLint.listRules(targetPath);
+%[text] out = MatlabLint.listRules(cfg);
+%[text] out = MatlabLint.listRules(targetPath, cfg);
+%[text] ```
+%[text] ## 输入参数
+%[text] targetPath(1,1)string
+%[text] cfg
+%[text] ## 返回值
+%[text] out table，包含以下列：
+%[text] - rule，规则 ID
+%[text] - description，中文描述
+%[text] - enabled，是否启用
+%[text] - source，最终生效来源（"默认", "用户级", "当前目录", "目标目录", "参数"） \
 function out = listRules(varargin)
-%LISTRULES 列出所有已知规则及其启用状态和生效层级。
-% out = MatlabLint.listRules()
-% out = MatlabLint.listRules(targetPath)
-% out = MatlabLint.listRules(cfg)
-% out = MatlabLint.listRules(targetPath, cfg)  % 两个可选参数顺序不限
-%
-% 返回 table，字段：
-%   rule        — 规则 ID
-%   description — 中文描述
-%   enabled     — 是否启用
-%   source      — 最终生效来源（"默认", "用户级", "当前目录", "目标目录", "参数"）
 
 targetPath = ".";
 cfgOverride = struct;
@@ -164,3 +170,6 @@ for i = 1:numel(entries)
     end
 end
 end
+
+%[appendix]{"version":"1.0"}
+%---

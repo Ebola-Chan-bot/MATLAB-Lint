@@ -15,16 +15,7 @@
 %[text] configPath(1,1)string
 function configPath = addRule(ruleId, varargin)
 
-configPathOrDir = "";
-enabled = true;
-for i = 1:numel(varargin)
-    v = varargin{i};
-    if islogical(v)
-        enabled = logical(v);
-    else
-        configPathOrDir = string(v);
-    end
-end
+[configPathOrDir, enabled] = iParseOptionalArgs(varargin{:});
 
 spec = strtrim(ruleId);
 if strlength(spec) == 0
@@ -32,22 +23,9 @@ if strlength(spec) == 0
 end
 
 if strlength(configPathOrDir) == 0
-    p = getUserConfigPath();
+    p = iGetUserConfigPath();
 else
-    t = string(configPathOrDir);
-    if isfolder(t)
-        p = fullfile(char(t), '.matlablint.json');
-    else
-        [folderPart, namePart, extPart] = fileparts(char(t));
-        if strcmpi(extPart, '.json') || strcmpi(namePart, '.matlablint')
-            p = char(t);
-        else
-            p = fullfile(char(t), '.matlablint.json');
-        end
-        if isempty(folderPart)
-            p = fullfile(pwd, p);
-        end
-    end
+    p = iNormalizeConfigPath(configPathOrDir);
 end
 
 if isfile(p)
@@ -59,22 +37,14 @@ else
     cfg = struct;
 end
 
-if strlength(spec) == 0
-    error('MatlabLint:EmptyRuleId', 'ruleId 不能为空。');
-end
-entry = struct('Id', string(spec), 'Enabled', logical(enabled));
-
+entry = iBuildRuleEntry(spec, enabled);
 if ~isfield(cfg, 'Rules') || ~isstruct(cfg.Rules) || isempty(cfg.Rules)
     cfg.Rules = entry;
 else
     cfg.Rules = mergeRuleEntries(cfg.Rules, entry);
 end
 
-d = fileparts(p);
-if ~isempty(d) && ~isfolder(d)
-    mkdir(d);
-end
-
+iEnsureParentDir(p);
 try
     raw = jsonencode(cfg, PrettyPrint=true);
 catch
@@ -89,6 +59,81 @@ fwrite(fid, raw, 'char');
 fclose(fid);
 
 configPath = string(p);
+end
+
+function [configPathOrDir, enabled] = iParseOptionalArgs(varargin)
+configPathOrDir = "";
+enabled = true;
+
+for i = 1:numel(varargin)
+    v = varargin{i};
+    if islogical(v)
+        enabled = logical(v);
+    else
+        configPathOrDir = string(v);
+    end
+end
+end
+
+function entry = iBuildRuleEntry(spec, enabled)
+if strlength(spec) == 0
+    error('MatlabLint:EmptyRuleId', 'ruleId 不能为空。');
+end
+entry = struct('Id', string(spec), ...
+    'Enabled', logical(enabled));
+end
+
+function p = iNormalizeConfigPath(target)
+t = string(target);
+if isfolder(t)
+    p = fullfile(char(t), '.matlablint.json');
+    return;
+end
+
+[folderPart, namePart, extPart] = fileparts(char(t));
+if strcmpi(extPart, '.json') || strcmpi(namePart, '.matlablint')
+    p = char(t);
+else
+    % 若不是已存在目录且看起来像普通路径，则按目录处理。
+    p = fullfile(char(t), '.matlablint.json');
+end
+
+if isempty(folderPart)
+    p = fullfile(pwd, p);
+end
+end
+
+function iEnsureParentDir(configPath)
+d = fileparts(configPath);
+if isempty(d)
+    return;
+end
+if ~isfolder(d)
+    mkdir(d);
+end
+end
+
+function p = iGetUserConfigPath()
+if ispc
+    appdataPath = getenv('APPDATA');
+    if isempty(appdataPath)
+        appdataPath = iUserHome();
+    end
+    p = fullfile(appdataPath, 'MATLAB-Lint', '.matlablint.json');
+else
+    p = fullfile(iUserHome(), '.config', 'matlab-lint', '.matlablint.json');
+end
+end
+
+function p = iUserHome()
+if ispc
+    p = getenv('USERPROFILE');
+else
+    p = getenv('HOME');
+end
+if isempty(p)
+    p = char(java.lang.System.getProperty('user.home'));
+end
 end
 
 %[appendix]{"version":"1.0"}
