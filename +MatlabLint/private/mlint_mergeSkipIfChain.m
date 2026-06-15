@@ -138,17 +138,14 @@ end
 
 parts = strings(numel(prefix), 1);
 for i = 1:numel(prefix)
-    parts(i) = iNormalizeStmt(prefix(i));
+    part = lower(strtrim(string(prefix(i))));
+    part = replace(part, sprintf('\t'), " ");
+    while contains(part, "  ")
+        part = replace(part, "  ", " ");
+    end
+    parts(i) = part;
 end
 key = strjoin(parts, "||");
-end
-
-function out = iNormalizeStmt(s)
-out = lower(strtrim(string(s)));
-out = replace(out, sprintf('\t'), " ");
-while contains(out, "  ")
-    out = replace(out, "  ", " ");
-end
 end
 
 

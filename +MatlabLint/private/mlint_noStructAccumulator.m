@@ -18,11 +18,17 @@ for f = 1:numel(funcs)
     varBuilder = MATLAB.DataTypes.ArrayBuilder();
     for ii = fnStart:fnEnd
         raw = strtrim(char(lines(ii)));
-        if isempty(raw) || raw(1) == '%'; continue; end
+        if isempty(raw) || raw(1) == '%'
+            continue;
+        end
         code = codeLine(raw);
-        if isempty(code); continue; end
+        if isempty(code)
+            continue;
+        end
         vn = iExtractStructAppendVar(code);
-        if strlength(vn) > 0; varBuilder.Append(vn); end
+        if strlength(vn) > 0
+            varBuilder.Append(vn);
+        end
     end
     accVars = string(varBuilder.Harvest());
     accVars = unique(accVars);
@@ -33,7 +39,9 @@ for f = 1:numel(funcs)
         firstAppend = 0;
         for jj = fnStart:fnEnd
             raw = strtrim(char(lines(jj)));
-            if isempty(raw) || raw(1) == '%'; continue; end
+            if isempty(raw) || raw(1) == '%'
+                continue;
+            end
             code = codeLine(raw);
             vn2 = iExtractStructAppendVar(code);
             if strlength(vn2) > 0 && string(vn2) == string(vn)
@@ -59,14 +67,20 @@ vn = "";
 s = strrep(code, ' ', '');
 
 eqPos = strfind(s, '=');
-if isempty(eqPos); return; end
+if isempty(eqPos)
+    return;
+end
 lhs = s(1:eqPos(1)-1);
 rhs = s(eqPos(1)+1:end);
-if ~startsWith(rhs, 'struct('); return; end
+if ~startsWith(rhs, 'struct(')
+    return;
+end
 
 idx = extract(lhs, lettersPattern(1) + asManyOfPattern(characterListPattern('A':'Z') | ...
     characterListPattern('a':'z') | characterListPattern('0':'9') | "_", 0));
-if strlength(idx) == 0; return; end
+if strlength(idx) == 0
+    return;
+end
 
 rhsStr = string(rhs);
 if contains(lhs, ["(end+1)","{end+1}"]) || ...
@@ -77,6 +91,10 @@ if contains(lhs, ["(end+1)","{end+1}"]) || ...
 end
 
 apPos = strfind(s, '.Append(struct(');
-if isempty(apPos); apPos = strfind(s, '.PushBack(struct('); end
-if ~isempty(apPos); vn = string(extractBefore(s, apPos(1))); end
+if isempty(apPos)
+    apPos = strfind(s, '.PushBack(struct(');
+end
+if ~isempty(apPos)
+    vn = string(extractBefore(s, apPos(1)));
+end
 end

@@ -22,7 +22,48 @@ while i <= nLines
         continue;
     end
 
-    caseTable = iCollectCaseBranches(i, swEnd, lines);
+    tblBuilder = MATLAB.DataTypes.InsertiveTable();
+    curStart = 0;
+    curVal = "";
+    inBranch = false;
+    depth = 0;
+    for k = i + 1:swEnd - 1
+        raw = strtrim(char(lines(k)));
+        if isempty(raw) || raw(1) == '%'
+            continue;
+        end
+        kw = leadingKeyword(raw);
+        if ismember(kw, ["if","for","parfor","while","switch","try","function"])
+            depth = depth + 1;
+            continue;
+        end
+        if kw == "end"
+            depth = depth - 1;
+            continue;
+        end
+        if depth > 0
+            continue;
+        end
+        if kw == "case" || kw == "otherwise"
+            if inBranch
+                tblBuilder(end+1, {'value','body'}) = {string(curVal), iBodySig(curStart, k - 1, lines)};
+            end
+            inBranch = true;
+            curStart = k;
+            if strcmp(leadingKeyword(raw), "otherwise")
+                val = "otherwise";
+            else
+                p = strfind(raw, "case");
+                val = strtrim(string(raw(p(1)+4:end)));
+            end
+            curVal = val;
+        end
+    end
+    if inBranch
+        tblBuilder(end+1, {'value','body'}) = {string(curVal), iBodySig(curStart, swEnd - 1, lines)};
+    end
+    tbl = table(tblBuilder);
+    caseTable = tbl;
     caseValues = string(caseTable.value);
     caseBodies = string(caseTable.body);
 
@@ -68,53 +109,8 @@ endLine = nLines;
 end
 
 % -------------------------------------------------------------------------
-function tbl = iCollectCaseBranches(swLine, swEnd, lines)
-tblBuilder = MATLAB.DataTypes.InsertiveTable();
-curStart = 0;
-curVal = "";
-inBranch = false;
-depth = 0;
-for k = swLine + 1:swEnd - 1
-    raw = strtrim(char(lines(k)));
-    if isempty(raw) || raw(1) == '%'
-        continue;
-    end
-    kw = leadingKeyword(raw);
-    if ismember(kw, ["if","for","parfor","while","switch","try","function"])
-        depth = depth + 1;
-        continue;
-    end
-    if kw == "end"
-        depth = depth - 1;
-        continue;
-    end
-    if depth > 0
-        continue;
-    end
-    if kw == "case" || kw == "otherwise"
-        if inBranch
-            tblBuilder(end+1, {'value','body'}) = {string(curVal), iBodySig(curStart, k - 1, lines)};
-        end
-        inBranch = true;
-        curStart = k;
-        curVal = iCaseValue(raw);
-    end
-end
-if inBranch
-    tblBuilder(end+1, {'value','body'}) = {string(curVal), iBodySig(curStart, swEnd - 1, lines)};
-end
-tbl = table(tblBuilder);
-end
 
 % -------------------------------------------------------------------------
-function val = iCaseValue(raw)
-if strcmp(leadingKeyword(raw), "otherwise")
-    val = "otherwise";
-else
-    p = strfind(raw, "case");
-    val = strtrim(string(raw(p(1)+4:end)));
-end
-end
 
 % -------------------------------------------------------------------------
 function sig = iBodySig(fromLine, toLine, lines)
@@ -138,19 +134,17 @@ for k = fromLine + 1:toLine
         end
         depth = depth - 1;
     end
-    bodyBuf.Append(iNormalize(raw));
+    normLine = lower(strtrim(string(raw)));
+    normLine = replace(normLine, sprintf('\t'), " ");
+    while contains(normLine, "  ")
+        normLine = replace(normLine, "  ", " ");
+    end
+    bodyBuf.Append(normLine);
 end
 sig = strjoin(string(bodyBuf.Harvest()), "||");
 end
 
-% -------------------------------------------------------------------------
-function out = iNormalize(s)
-out = lower(strtrim(string(s)));
-out = replace(out, sprintf('\t'), " ");
-while contains(out, "  ")
-    out = replace(out, "  ", " ");
-end
-end
+
 
 
 

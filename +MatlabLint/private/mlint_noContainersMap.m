@@ -20,7 +20,6 @@ for i = 1:numel(lines)
         continue;
     end
 
-    hasCtor = false;
     lowerCode = lower(strtrim(string(code)));
     idx = strfind(char(lowerCode), 'containers.map');
     if ~isempty(idx)
@@ -40,15 +39,11 @@ for i = 1:numel(lines)
                 j = j + 1;
             end
             if j <= n && txt(j) == '('
-                hasCtor = true;
+                issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, i, "mlint_noContainersMap", ...
+                    sprintf('建议使用 dictionary 替代 containers.Map：%s', s)}; %#ok<AGROW>
                 break;
             end
         end
-    end
-
-    if hasCtor
-        issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, i, "mlint_noContainersMap", ...
-            sprintf('建议使用 dictionary 替代 containers.Map：%s', s)}; %#ok<AGROW>
     end
 end
 

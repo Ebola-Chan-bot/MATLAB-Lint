@@ -14,21 +14,297 @@ nLines = numel(lines);
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
 % ── 全局结构解析 ──
-ctrlFlow = iParseControlFlow(lines, nLines);
+    tblBuilder = MATLAB.DataTypes.InsertiveTable();
+    ctrlStack  = MATLAB.Containers.Vector();
+    loopStack  = MATLAB.Containers.Vector();
+    fnStack    = MATLAB.Containers.Vector();
+    
+    for i = 1:nLines
+        tokens = iExtractCtrlTokens(char(lines(i)));
+        for t = 1:numel(tokens)
+            tok = tokens{t};
+            if ismember(tok, ["function","if","for","parfor","while","switch","try"])
+                ctrlStack.PushBack(i);
+                if ismember(tok, ["for","parfor","while"])
+                    loopStack.PushBack(i);
+                end
+                if tok == "function"
+                    fnStack.PushBack(i);
+                end
+            elseif tok == "end"
+                if ~isempty(ctrlStack.Data)
+                    cs = ctrlStack.Back();
+                    ctrlStack.PopBack();
+                    isLoop = ~isempty(loopStack.Data) && loopStack.Back() == cs;
+                    isFn   = ~isempty(fnStack.Data) && fnStack.Back() == cs;
+                    tblBuilder(end+1, {'ctrlStart','ctrlEnd','loopStart','loopEnd','fnEnd'}) = ...
+                        {cs, i, ternary(isLoop, cs, 0), ternary(isLoop, i, 0), ternary(isFn, i, 0)};
+                    if isLoop
+                        loopStack.PopBack();
+                    end
+                    if isFn
+                        fnStack.PopBack();
+                    end
+                end
+            end
+        end
+    end
+    
+    ctrlFlow = table(tblBuilder);
 ctrlBlocks = iCtrlBlocksFromTable(ctrlFlow);
 loopBlocks = iLoopBlocksFromTable(ctrlFlow);
 functionEnds = iFunctionEndsFromTable(ctrlFlow);
-persistentVars = iCollectPersistent(lines, nLines);
-forLoopVars     = iCollectForLoopVars(lines, nLines);
-outputVars      = iCollectOutputVars(lines, nLines);
-propertyVars    = iCollectProperties(lines, nLines);
-assignments     = iCollectAssignments(lines, nLines);
+    v = MATLAB.Containers.Vector();
+    for i = 1:nLines
+        code = iCodeOnlyLine(char(lines(i)));
+        if startsWith(code, "persistent ")
+            rest = strtrim(extractAfter(string(code), "persistent "));
+            for token = split(rest, " ")'
+                tk = strtrim(token);
+                if tk ~= "" && tk ~= "..."
+                    v.PushBack(tk);
+                end
+            end
+        end
+    end
+    persistentVars = string(v.Data(:));
+    v = MATLAB.Containers.Vector();
+    for i = 1:nLines
+        code = iCodeOnlyLine(char(lines(i)));
+        if startsWith(code, "for ")
+            tok = extractBetween(string(code), "for ", " =");
+            if ~isempty(tok) && tok ~= ""
+                v.PushBack(strtrim(tok));
+            end
+        end
+    end
+    forLoopVars = string(v.Data(:));
+    v = MATLAB.Containers.Vector();
+    for i = 1:nLines
+        code = iCodeOnlyLine(strtrim(char(lines(i))));
+        if ~startsWith(code, "function ")
+            continue;
+        end
+        rest = strtrim(extractAfter(string(code), "function "));
+        if contains(rest, "=")
+            lhs = strtrim(extractBefore(rest, "="));
+            if lhs ~= ""
+                if startsWith(lhs, "[")
+                    lhs = extractBetween(lhs, "[", "]");
+                end
+                for p = split(lhs, ",")'
+                    pv = strtrim(p);
+                    if pv ~= "" && ~startsWith(pv, "~")
+                        v.PushBack(pv);
+                    end
+                end
+            end
+        end
+    end
+    outputVars = string(v.Data(:));
+    % 收集 properties 块中定义的变量名，这些是类属性，不应被检查。
+    v = MATLAB.Containers.Vector();
+    inProps = false;
+    for i = 1:nLines
+        code = codeLine(strtrim(char(lines(i))));
+        if strlength(code) == 0
+            continue;
+        end
+        if startsWith(lower(code), "properties")
+            inProps = true;
+            continue;
+        end
+        if inProps
+            cs2 = strtrim(char(lines(i)));
+            if isempty(cs2) || startsWith(cs2, '%')
+                continue;
+            end
+            if strcmp(code, "end")
+                inProps = false;
+                continue;
+            end
+            % 简单属性名（可选默认值）：name 或 name = ...
+            eqPos = strfind(code, '=');
+            if isempty(eqPos)
+                name = code;
+            else
+                name = strtrim(code(1:eqPos(1)-1));
+            end
+            nc = char(name);
+            if ~isempty(nc) && (isstrprop(nc(1), 'alpha') || nc(1) == '_')
+                v.PushBack(string(name));
+            end
+        end
+    end
+    propertyVars = string(v.Data(:));
+    builder = MATLAB.DataTypes.ArrayBuilder();
+    for i = 1:nLines
+        cs = strtrim(char(lines(i)));
+        if isempty(cs) || startsWith(cs, '%')
+            continue;
+        end
+        code = char(MatlabLint.stripStringLiterals(cs));
+        eqPos = strfind(code, ' = ');
+        if isempty(eqPos)
+            continue;
+        end
+        eqPos = eqPos(1);
+        lhs = strtrim(string(code(1:eqPos-1)));
+        if strlength(lhs) == 0
+            continue;
+        end
+        lhsMatch = extract(lhs, lettersPattern(1) + ...
+            asManyOfPattern(characterListPattern('A':'Z') | ...
+            characterListPattern('a':'z') | characterListPattern('0':'9') | "_", 0));
+        if isempty(lhsMatch) || numel(lhsMatch) ~= 1 || strlength(lhsMatch) ~= strlength(lhs)
+            continue;
+        end
+        builder.Append(struct('line', i, 'var', string(lhsMatch), ...
+            'rhs', strtrim(string(code(eqPos+3:end))), 'code', string(code)));
+    end
+    assigns = builder.Harvest();
+    if isempty(assigns)
+        assigns = struct('line', {}, 'var', {}, 'rhs', {}, 'code', {});
+    end
+    assignments = assigns;
 
 delim = [" ", newline, ";", ",", "(", ")", "=", "+", "-", "*", "/", "~", ...
          "<", ">", "&", "|", "[", "]", "{", "}", ".", "'", ":", "%"];
 
 % ── 为当前函数构建语句级 CFG ──
-[succ, lineKinds] = iBuildStmtCFG(lines, nLines, functionEnds, loopBlocks);
+    % 为每条有效代码行构建后继列表和行类型。
+    succ = cell(nLines, 1);
+    lineKinds = strings(nLines, 1);
+    
+    % 第一遍：标记行类型
+    for i = 1:nLines
+        code = iCodeOnlyLine(char(lines(i)));
+        if strlength(code) == 0
+            continue;
+        end
+        if startsWith(code, "function ")
+            lineKinds(i) = "function";
+        elseif startsWith(code, "if ")
+            lineKinds(i) = "if";
+        elseif startsWith(code, "elseif ")
+            lineKinds(i) = "elseif";
+        elseif strcmp(code, "else")
+            lineKinds(i) = "else";
+        elseif startsWith(code, "for " | "while ")
+            lineKinds(i) = "loop";
+        elseif startsWith(code, "switch ")
+            lineKinds(i) = "switch";
+        elseif startsWith(code, "case ") || strcmp(code, "otherwise")
+            lineKinds(i) = "case";
+        elseif startsWith(code, "try")
+            lineKinds(i) = "try";
+        elseif startsWith(code, "catch")
+            lineKinds(i) = "catch";
+        elseif strcmp(code, "end")
+            lineKinds(i) = "end";
+        elseif strcmp(code, "break") || strcmp(code, "break;")
+            lineKinds(i) = "break";
+        elseif strcmp(code, "continue") || strcmp(code, "continue;")
+            lineKinds(i) = "continue";
+        elseif strcmp(code, "return") || strcmp(code, "return;")
+            lineKinds(i) = "return";
+        else
+            lineKinds(i) = "stmt";
+        end
+    end
+    
+    % 修正：单行自闭合控制结构（如 if..., end）不参与嵌套匹配
+    for i = 1:nLines
+        if ~ismember(lineKinds(i), ["if","loop","switch","try","function"])
+            continue;
+        end
+        tokens = iExtractCtrlTokens(char(lines(i)));
+        balance = 0;
+        for t = 1:numel(tokens)
+            tok = tokens{t};
+            if ismember(tok, ["if","for","parfor","while","switch","try","function"])
+                balance = balance + 1;
+            elseif tok == "end"
+                balance = balance - 1;
+            end
+        end
+        if balance == 0
+            lineKinds(i) = "stmt";  % 该行自闭合，不产生跨行分支
+        end
+    end
+    
+    % 第二遍：建立后继边
+    for i = 1:nLines
+        if strlength(lineKinds(i)) == 0
+            continue;
+        end
+    
+        next = iFindNextLine(lineKinds, i + 1, nLines);
+    
+        switch lineKinds(i)
+            case "stmt"
+                succ{i} = next;
+                if ~isempty(next)
+                    if ismember(lineKinds(next), ["elseif","else","catch","case"])
+                        ownerHdr = iFindOwningBranchHeader(lineKinds, next, nLines);
+                        if ownerHdr > 0
+                            succ{i} = iFindNextLine(lineKinds, iFindMatchingEnd(lineKinds, ownerHdr, nLines) + 1, nLines);
+                        end
+                    end
+                end
+            case {"case","catch","else"}
+                % 仅由父头部可达；但从 end 回退时也应能继续
+                succ{i} = iFindNextLine(lineKinds, i + 1, nLines);
+            case {"if","elseif"}
+                % if/elseif header → then-body 或下一个分支头/if-chain之后
+                m = iFindMatchingEndOrElse(lineKinds, i, nLines);
+                if ismember(lineKinds(m), ["elseif","else"])
+                    falseTarget = double(m);
+                else
+                    falseTarget = iFindNextLine(lineKinds, m + 1, nLines);
+                end
+                succ{i} = [next, falseTarget];
+            case {"loop","switch","try"}
+                m = iFindMatchingEnd(lineKinds, i, nLines);
+                succ{i} = [next, iFindNextLine(lineKinds, m + 1, nLines)];
+            case "end"
+                % 函数尾 → 终端
+                if ismember(i, functionEnds)
+                    succ{i} = [];
+                else
+                    % 用 loopBlocks 精确判定是否为循环尾
+                    isLoopEnd = false;
+                    for b = 1:numel(loopBlocks.starts)
+                        if loopBlocks.ends(b) == i
+                            succ{i} = [loopBlocks.starts(b), iFindNextLine(lineKinds, i + 1, nLines)];
+                            isLoopEnd = true;
+                            break;
+                        end
+                    end
+                    if ~isLoopEnd
+                        succ{i} = iFindNextLine(lineKinds, i + 1, nLines);
+                    end
+                end
+            case "break"
+                loopHdr = iFindEnclosingLoopHeader(lineKinds, i);
+                if loopHdr > 0
+                    succ{i} = iFindNextLine(lineKinds, iFindMatchingEnd(lineKinds, loopHdr, nLines) + 1, nLines);
+                else
+                    succ{i} = [];  % 死路径
+                end
+            case "continue"
+                loopHdr = iFindEnclosingLoopHeader(lineKinds, i);
+                if loopHdr > 0
+                    succ{i} = double(loopHdr);
+                else
+                    succ{i} = [];
+                end
+            case "return"
+                succ{i} = [];  % 终端
+            otherwise
+                succ{i} = next;
+        end
+    end
 
 % ── 按变量分组 ──
 allVars = unique(string({assignments.var}));
@@ -110,136 +386,6 @@ end
 %  CFG 构建
 % ========================================================================
 
-function [succ, lineKinds] = iBuildStmtCFG(lines, nLines, functionEnds, loopBlocks)
-% 为每条有效代码行构建后继列表和行类型。
-succ = cell(nLines, 1);
-lineKinds = strings(nLines, 1);
-
-% 第一遍：标记行类型
-for i = 1:nLines
-    code = iCodeOnlyLine(char(lines(i)));
-    if strlength(code) == 0
-        continue;
-    end
-    if startsWith(code, "function ")
-        lineKinds(i) = "function";
-    elseif startsWith(code, "if ")
-        lineKinds(i) = "if";
-    elseif startsWith(code, "elseif ")
-        lineKinds(i) = "elseif";
-    elseif strcmp(code, "else")
-        lineKinds(i) = "else";
-    elseif startsWith(code, "for " | "while ")
-        lineKinds(i) = "loop";
-    elseif startsWith(code, "switch ")
-        lineKinds(i) = "switch";
-    elseif startsWith(code, "case ") || strcmp(code, "otherwise")
-        lineKinds(i) = "case";
-    elseif startsWith(code, "try")
-        lineKinds(i) = "try";
-    elseif startsWith(code, "catch")
-        lineKinds(i) = "catch";
-    elseif strcmp(code, "end")
-        lineKinds(i) = "end";
-    elseif strcmp(code, "break") || strcmp(code, "break;")
-        lineKinds(i) = "break";
-    elseif strcmp(code, "continue") || strcmp(code, "continue;")
-        lineKinds(i) = "continue";
-    elseif strcmp(code, "return") || strcmp(code, "return;")
-        lineKinds(i) = "return";
-    else
-        lineKinds(i) = "stmt";
-    end
-end
-
-% 修正：单行自闭合控制结构（如 if..., end）不参与嵌套匹配
-for i = 1:nLines
-    if ~ismember(lineKinds(i), ["if","loop","switch","try","function"])
-        continue;
-    end
-    tokens = iExtractCtrlTokens(char(lines(i)));
-    balance = 0;
-    for t = 1:numel(tokens)
-        tok = tokens{t};
-        if ismember(tok, ["if","for","parfor","while","switch","try","function"])
-            balance = balance + 1;
-        elseif tok == "end"
-            balance = balance - 1;
-        end
-    end
-    if balance == 0
-        lineKinds(i) = "stmt";  % 该行自闭合，不产生跨行分支
-    end
-end
-
-% 第二遍：建立后继边
-for i = 1:nLines
-    if strlength(lineKinds(i)) == 0
-        continue;
-    end
-
-    next = iFindNextLine(lineKinds, i + 1, nLines);
-
-    switch lineKinds(i)
-        case "stmt"
-            succ{i} = next;
-            if ~isempty(next)
-                if ismember(lineKinds(next), ["elseif","else","catch","case"])
-                    ownerHdr = iFindOwningBranchHeader(lineKinds, next, nLines);
-                    if ownerHdr > 0
-                        succ{i} = iFindNextLine(lineKinds, iFindMatchingEnd(lineKinds, ownerHdr, nLines) + 1, nLines);
-                    end
-                end
-            end
-        case {"case","catch","else"}
-            % 仅由父头部可达；但从 end 回退时也应能继续
-            succ{i} = iFindNextLine(lineKinds, i + 1, nLines);
-        case {"if","elseif"}
-            % if/elseif header → then-body 或下一个分支头/if-chain之后
-            m = iFindMatchingEndOrElse(lineKinds, i, nLines);
-            succ{i} = [next, iFalseBranchTarget(lineKinds, m, nLines)];
-        case {"loop","switch","try"}
-            m = iFindMatchingEnd(lineKinds, i, nLines);
-            succ{i} = [next, iFindNextLine(lineKinds, m + 1, nLines)];
-        case "end"
-            % 函数尾 → 终端
-            if ismember(i, functionEnds)
-                succ{i} = [];
-            else
-                % 用 loopBlocks 精确判定是否为循环尾
-                isLoopEnd = false;
-                for b = 1:numel(loopBlocks.starts)
-                    if loopBlocks.ends(b) == i
-                        succ{i} = [loopBlocks.starts(b), iFindNextLine(lineKinds, i + 1, nLines)];
-                        isLoopEnd = true;
-                        break;
-                    end
-                end
-                if ~isLoopEnd
-                    succ{i} = iFindNextLine(lineKinds, i + 1, nLines);
-                end
-            end
-        case "break"
-            loopHdr = iFindEnclosingLoopHeader(lineKinds, i);
-            if loopHdr > 0
-                succ{i} = iFindNextLine(lineKinds, iFindMatchingEnd(lineKinds, loopHdr, nLines) + 1, nLines);
-            else
-                succ{i} = [];  % 死路径
-            end
-        case "continue"
-            loopHdr = iFindEnclosingLoopHeader(lineKinds, i);
-            if loopHdr > 0
-                succ{i} = double(loopHdr);
-            else
-                succ{i} = [];
-            end
-        case "return"
-            succ{i} = [];  % 终端
-        otherwise
-            succ{i} = next;
-    end
-end
-end
 
 function next = iFindNextLine(lineKinds, from, nLines)
 for i = from:nLines
@@ -294,16 +440,6 @@ for i = start:nLines
     end
 end
 m = nLines;
-end
-
-function target = iFalseBranchTarget(lineKinds, m, nLines)
-% if/elseif 条件为 false 时：转到下一个分支头；若无分支则转到 if-chain 之后。
-k = lineKinds(m);
-if ismember(k, ["elseif","else"])
-    target = double(m);
-else
-    target = iFindNextLine(lineKinds, m + 1, nLines);
-end
 end
 
 function hdr = iFindOwningBranchHeader(lineKinds, branchLine, nLines)
@@ -450,7 +586,7 @@ while head <= numel(queue)
         continue;
     end
 
-    if numel(nxt) > 1 || iIsBranchPoint(lineKinds, ln)
+    if numel(nxt) > 1 || ismember(lineKinds(ln), ["if","elseif","loop","switch","try","function","end"])
         branchingSeen = true;
     end
 
@@ -499,12 +635,6 @@ else
         end
     end
 end
-end
-
-function tf = iIsBranchPoint(lineKinds, ln)
-k = lineKinds(ln);
-% end 关闭非循环块时是控制流合并点（多路径汇合），也应视为"非线性"。
-tf = ismember(k, ["if","elseif","loop","switch","try","function","end"]);
 end
 
 function endLine = iBlockEnd(lineNo, blocks)
@@ -652,45 +782,6 @@ end
 %  Phase 1 — 控制流解析
 % ========================================================================
 
-function ctrlFlow = iParseControlFlow(lines, nLines)
-tblBuilder = MATLAB.DataTypes.InsertiveTable();
-ctrlStack  = MATLAB.Containers.Vector();
-loopStack  = MATLAB.Containers.Vector();
-fnStack    = MATLAB.Containers.Vector();
-
-for i = 1:nLines
-    tokens = iExtractCtrlTokens(char(lines(i)));
-    for t = 1:numel(tokens)
-        tok = tokens{t};
-        if ismember(tok, ["function","if","for","parfor","while","switch","try"])
-            ctrlStack.PushBack(i);
-            if ismember(tok, ["for","parfor","while"])
-                loopStack.PushBack(i);
-            end
-            if tok == "function"
-                fnStack.PushBack(i);
-            end
-        elseif tok == "end"
-            if ~isempty(ctrlStack.Data)
-                cs = ctrlStack.Back();
-                ctrlStack.PopBack();
-                isLoop = ~isempty(loopStack.Data) && loopStack.Back() == cs;
-                isFn   = ~isempty(fnStack.Data) && fnStack.Back() == cs;
-                tblBuilder(end+1, {'ctrlStart','ctrlEnd','loopStart','loopEnd','fnEnd'}) = ...
-                    {cs, i, ternary(isLoop, cs, 0), ternary(isLoop, i, 0), ternary(isFn, i, 0)};
-                if isLoop
-                    loopStack.PopBack();
-                end
-                if isFn
-                    fnStack.PopBack();
-                end
-            end
-        end
-    end
-end
-
-ctrlFlow = table(tblBuilder);
-end
 
 function ctrlBlocks = iCtrlBlocksFromTable(ctrlFlow)
 if isempty(ctrlFlow)
@@ -730,132 +821,10 @@ else
 end
 end
 
-function vars = iCollectPersistent(lines, nLines)
-v = MATLAB.Containers.Vector();
-for i = 1:nLines
-    code = iCodeOnlyLine(char(lines(i)));
-    if startsWith(code, "persistent ")
-        rest = strtrim(extractAfter(string(code), "persistent "));
-        for token = split(rest, " ")'
-            tk = strtrim(token);
-            if tk ~= "" && tk ~= "..."
-                v.PushBack(tk);
-            end
-        end
-    end
-end
-vars = string(v.Data(:));
-end
 
-function vars = iCollectForLoopVars(lines, nLines)
-v = MATLAB.Containers.Vector();
-for i = 1:nLines
-    code = iCodeOnlyLine(char(lines(i)));
-    if startsWith(code, "for ")
-        tok = extractBetween(string(code), "for ", " =");
-        if ~isempty(tok) && tok ~= ""
-            v.PushBack(strtrim(tok));
-        end
-    end
-end
-vars = string(v.Data(:));
-end
 
-function vars = iCollectOutputVars(lines, nLines)
-v = MATLAB.Containers.Vector();
-for i = 1:nLines
-    code = iCodeOnlyLine(strtrim(char(lines(i))));
-    if ~startsWith(code, "function ")
-        continue;
-    end
-    rest = strtrim(extractAfter(string(code), "function "));
-    if contains(rest, "=")
-        lhs = strtrim(extractBefore(rest, "="));
-        if lhs ~= ""
-            if startsWith(lhs, "[")
-                lhs = extractBetween(lhs, "[", "]");
-            end
-            for p = split(lhs, ",")'
-                pv = strtrim(p);
-                if pv ~= "" && ~startsWith(pv, "~")
-                    v.PushBack(pv);
-                end
-            end
-        end
-    end
-end
-vars = string(v.Data(:));
-end
 
-function vars = iCollectProperties(lines, nLines)
-% 收集 properties 块中定义的变量名，这些是类属性，不应被检查。
-v = MATLAB.Containers.Vector();
-inProps = false;
-for i = 1:nLines
-    code = codeLine(strtrim(char(lines(i))));
-    if strlength(code) == 0
-        continue;
-    end
-    if startsWith(lower(code), "properties")
-        inProps = true;
-        continue;
-    end
-    if inProps
-        cs2 = strtrim(char(lines(i)));
-        if isempty(cs2) || startsWith(cs2, '%')
-            continue;
-        end
-        if strcmp(code, "end")
-            inProps = false;
-            continue;
-        end
-        % 简单属性名（可选默认值）：name 或 name = ...
-        eqPos = strfind(code, '=');
-        if isempty(eqPos)
-            name = code;
-        else
-            name = strtrim(code(1:eqPos(1)-1));
-        end
-        nc = char(name);
-        if ~isempty(nc) && (isstrprop(nc(1), 'alpha') || nc(1) == '_')
-            v.PushBack(string(name));
-        end
-    end
-end
-vars = string(v.Data(:));
-end
 
-function assigns = iCollectAssignments(lines, nLines)
-builder = MATLAB.DataTypes.ArrayBuilder();
-for i = 1:nLines
-    cs = strtrim(char(lines(i)));
-    if isempty(cs) || startsWith(cs, '%')
-        continue;
-    end
-    code = char(MatlabLint.stripStringLiterals(cs));
-    eqPos = strfind(code, ' = ');
-    if isempty(eqPos)
-        continue;
-    end
-    eqPos = eqPos(1);
-    lhs = strtrim(string(code(1:eqPos-1)));
-    if strlength(lhs) == 0
-        continue;
-    end
-    lhsMatch = extract(lhs, lettersPattern(1) + ...
-        asManyOfPattern(characterListPattern('A':'Z') | ...
-        characterListPattern('a':'z') | characterListPattern('0':'9') | "_", 0));
-    if isempty(lhsMatch) || numel(lhsMatch) ~= 1 || strlength(lhsMatch) ~= strlength(lhs)
-        continue;
-    end
-    builder.Append(struct('line', i, 'var', string(lhsMatch), ...
-        'rhs', strtrim(string(code(eqPos+3:end))), 'code', string(code)));
-end
-assigns = builder.Harvest();
-if isempty(assigns)
-    assigns = struct('line', {}, 'var', {}, 'rhs', {}, 'code', {});
-end
-end
 
 function skip = iShouldAlwaysSkip2(codeLine, rhs)
 skip = false;
@@ -1072,6 +1041,13 @@ end
 kw = "";
 adv = 0;
 end
+
+
+
+
+
+
+
 
 
 

@@ -13,7 +13,19 @@ lines = splitlines(string(fileread(filePath)));
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
 [stmts, stmtLines] = collectStatements(lines);
-isemptyVars = iCollectIsEmptyVars(stmts);
+    varsVector = MATLAB.Containers.Vector();
+    for i = 1:numel(stmts)
+        found = iExtractIsEmptyVars(char(stmts(i)));
+        for k = 1:numel(found)
+            varsVector.PushBack(found(k));
+        end
+    end
+    
+    vars = string(varsVector.Data(:));
+    if ~isempty(vars)
+        vars = unique(vars);
+    end
+    isemptyVars = vars;
 
 for k = 1:numel(stmts)
     stmt = strtrim(char(stmts(k)));
@@ -108,20 +120,6 @@ for i = 1:numel(emptyIndexTokens)
 end
 end
 
-function vars = iCollectIsEmptyVars(stmts)
-varsVector = MATLAB.Containers.Vector();
-for i = 1:numel(stmts)
-    found = iExtractIsEmptyVars(char(stmts(i)));
-    for k = 1:numel(found)
-        varsVector.PushBack(found(k));
-    end
-end
-
-vars = string(varsVector.Data(:));
-if ~isempty(vars)
-    vars = unique(vars);
-end
-end
 
 function [ok, varName, expr] = iParseAssignment(stmt)
 ok = false;

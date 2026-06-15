@@ -13,7 +13,32 @@ funcs = splitFunctions(lines, numel(lines));
 for f = 1:numel(funcs)
     fnStart = funcs(f).start;
     fnEnd   = funcs(f).end;
-    vars = iCollectAccumulatorVars(lines, fnStart, fnEnd);
+    varBuilder = MATLAB.DataTypes.ArrayBuilder();
+    for i = fnStart:fnEnd
+        raw = strtrim(char(lines(i)));
+        if isempty(raw) || raw(1) == '%'
+            continue;
+        end
+        code = codeLine(raw);
+        if isempty(code)
+            continue;
+        end
+        % 匹配 varName = MATLAB.DataTypes.ArrayBuilder(); 或 Vector()
+        eqPos = strfind(code, '=');
+        if isempty(eqPos)
+            continue;
+        end
+        lhs = strtrim(code(1:eqPos(1)-1));
+        rhs = strtrim(code(eqPos(1)+1:end));
+        if isempty(lhs) || ~isstrprop(lhs(1), 'alpha')
+            continue;
+        end
+        if startsWith(rhs, "MATLAB.DataTypes.ArrayBuilder(" | "MATLAB.Containers.Vector(")
+            varBuilder.Append(string(lhs));
+        end
+    end
+    vars = string(varBuilder.Harvest());
+    vars = unique(vars);
     if numel(vars) < 2
         continue;
     end
@@ -26,8 +51,49 @@ for f = 1:numel(funcs)
     appendKinds = strings(numel(vars), 1);
     harvestKinds = strings(numel(vars), 1);
     for vi = 1:numel(vars)
-        [appendCounts(vi), harvestLines(vi), firstAppendLines(vi), appendLines{vi}, appendKinds(vi), harvestKinds(vi)] = ...
-            iCollectAccumulatorOps(lines, fnStart, fnEnd, vars(vi));
+        appendRowsBuilder = MATLAB.Containers.Vector();
+        varName = vars(vi);
+        for scanLine = fnStart:fnEnd
+            raw = strtrim(char(lines(scanLine)));
+            if isempty(raw) || raw(1) == '%'
+                continue;
+            end
+            code = string(codeLine(raw));
+            if strlength(code) == 0
+                continue;
+            end
+
+            hasAppend = contains(code, varName + ".Append(");
+            hasPushBack = contains(code, varName + ".PushBack(");
+            if hasAppend || hasPushBack
+                appendCounts(vi) = appendCounts(vi) + 1;
+                appendRowsBuilder.PushBack(scanLine);
+                if firstAppendLines(vi) == 0
+                    firstAppendLines(vi) = scanLine;
+                end
+                if hasAppend && ~hasPushBack
+                    appendKinds(vi) = iPickKind(appendKinds(vi), "Append");
+                elseif hasPushBack && ~hasAppend
+                    appendKinds(vi) = iPickKind(appendKinds(vi), "PushBack");
+                else
+                    appendKinds(vi) = iPickKind(appendKinds(vi), "Mixed");
+                end
+            end
+
+            hasHarvest = contains(code, varName + ".Harvest()");
+            hasData = contains(code, varName + ".Data");
+            if hasHarvest || hasData
+                harvestLines(vi) = scanLine;
+                if hasHarvest && ~hasData
+                    harvestKinds(vi) = iPickKind(harvestKinds(vi), "Harvest");
+                elseif hasData && ~hasHarvest
+                    harvestKinds(vi) = iPickKind(harvestKinds(vi), "Data");
+                else
+                    harvestKinds(vi) = iPickKind(harvestKinds(vi), "Mixed");
+                end
+            end
+        end
+        appendLines{vi} = double(appendRowsBuilder.Data(:));
     end
 
     % 查找“真正同步”的配对：同构造器、同追加方式、追加次数>=2、逐次追加邻近、同收割方式且收割邻近
@@ -45,88 +111,6 @@ for f = 1:numel(funcs)
 end
 
 issues = table(issuesBuilder);
-end
-
-% -------------------------------------------------------------------------
-function vars = iCollectAccumulatorVars(lines, fnStart, fnEnd)
-varBuilder = MATLAB.DataTypes.ArrayBuilder();
-for i = fnStart:fnEnd
-    raw = strtrim(char(lines(i)));
-    if isempty(raw) || raw(1) == '%'
-        continue;
-    end
-    code = codeLine(raw);
-    if isempty(code)
-        continue;
-    end
-    % 匹配 varName = MATLAB.DataTypes.ArrayBuilder(); 或 Vector()
-    eqPos = strfind(code, '=');
-    if isempty(eqPos)
-        continue;
-    end
-    lhs = strtrim(code(1:eqPos(1)-1));
-    rhs = strtrim(code(eqPos(1)+1:end));
-    if isempty(lhs) || ~isstrprop(lhs(1), 'alpha')
-        continue;
-    end
-    if startsWith(rhs, "MATLAB.DataTypes.ArrayBuilder(" | "MATLAB.Containers.Vector(")
-        varBuilder.Append(string(lhs));
-    end
-end
-vars = string(varBuilder.Harvest());
-vars = unique(vars);
-end
-
-% -------------------------------------------------------------------------
-function [appendCount, harvestLine, firstAppendLine, appendRows, appendKind, harvestKind] = iCollectAccumulatorOps(lines, fnStart, fnEnd, varName)
-appendCount = 0;
-harvestLine = 0;
-firstAppendLine = 0;
-appendRowsBuilder = MATLAB.Containers.Vector();
-appendKind = "";
-harvestKind = "";
-
-for i = fnStart:fnEnd
-    raw = strtrim(char(lines(i)));
-    if isempty(raw) || raw(1) == '%'
-        continue;
-    end
-    code = string(codeLine(raw));
-    if strlength(code) == 0
-        continue;
-    end
-
-    hasAppend = contains(code, varName + ".Append(");
-    hasPushBack = contains(code, varName + ".PushBack(");
-    if hasAppend || hasPushBack
-        appendCount = appendCount + 1;
-        appendRowsBuilder.PushBack(i);
-        if firstAppendLine == 0
-            firstAppendLine = i;
-        end
-        if hasAppend && ~hasPushBack
-            appendKind = iPickKind(appendKind, "Append");
-        elseif hasPushBack && ~hasAppend
-            appendKind = iPickKind(appendKind, "PushBack");
-        else
-            appendKind = iPickKind(appendKind, "Mixed");
-        end
-    end
-
-    hasHarvest = contains(code, varName + ".Harvest()");
-    hasData = contains(code, varName + ".Data");
-    if hasHarvest || hasData
-        harvestLine = i;
-        if hasHarvest && ~hasData
-            harvestKind = iPickKind(harvestKind, "Harvest");
-        elseif hasData && ~hasHarvest
-            harvestKind = iPickKind(harvestKind, "Data");
-        else
-            harvestKind = iPickKind(harvestKind, "Mixed");
-        end
-    end
-end
-appendRows = double(appendRowsBuilder.Data(:));
 end
 
 function tf = iIsSynchronousPair(aCount, aHarvestLine, aAppendRows, aAppendKind, aHarvestKind, ...
@@ -153,6 +137,7 @@ else
     out = "Mixed";
 end
 end
+
 
 
 

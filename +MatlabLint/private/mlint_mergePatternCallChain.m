@@ -23,7 +23,79 @@ end
 
 function tf = iHasMergeablePatternCallChain(stmt)
 tf = false;
-terms = iSplitTopLevelOr(stmt);
+    parts = MATLAB.DataTypes.ArrayBuilder();
+    startPos = 1;
+    
+    dParen = 0;
+    dBracket = 0;
+    dBrace = 0;
+    inSingle = false;
+    inDouble = false;
+    
+    i = 1;
+    n = numel(stmt);
+    while i <= n
+        ch = stmt(i);
+        if ch == '"'
+            if ~inSingle
+                if inDouble
+                    if i < n && stmt(i + 1) == '"'
+                        i = i + 2;
+                        continue;
+                    end
+                    inDouble = false;
+                else
+                    inDouble = true;
+                end
+            end
+            i = i + 1;
+            continue;
+        end
+    
+        if ch == ''''
+            if inDouble
+                i = i + 1;
+                continue;
+            end
+            if inSingle
+                if i < n && stmt(i + 1) == ''''
+                    i = i + 2;
+                    continue;
+                end
+                inSingle = false;
+            else
+                inSingle = true;
+            end
+            i = i + 1;
+            continue;
+        end
+    
+        if ~inSingle && ~inDouble
+            if ch == '('
+                dParen = dParen + 1;
+            elseif ch == ')'
+                dParen = dParen - 1;
+            elseif ch == '['
+                dBracket = dBracket + 1;
+            elseif ch == ']'
+                dBracket = dBracket - 1;
+            elseif ch == '{'
+                dBrace = dBrace + 1;
+            elseif ch == '}'
+                dBrace = dBrace - 1;
+            elseif ch == '|' && i < n && stmt(i + 1) == '|' && dParen == 0 && dBracket == 0 && dBrace == 0
+                parts.Append(string(strtrim(stmt(startPos:i-1))));
+                startPos = i + 2;
+                i = i + 2;
+                continue;
+            end
+        end
+    
+        i = i + 1;
+    end
+    
+    parts.Append(string(strtrim(stmt(startPos:end))));
+    terms = string(parts.Harvest());
 if numel(terms) < 2
     return;
 end
@@ -43,81 +115,6 @@ for i = 1:numel(terms)
 end
 end
 
-function terms = iSplitTopLevelOr(stmt)
-parts = MATLAB.DataTypes.ArrayBuilder();
-startPos = 1;
-
-dParen = 0;
-dBracket = 0;
-dBrace = 0;
-inSingle = false;
-inDouble = false;
-
-i = 1;
-n = numel(stmt);
-while i <= n
-    ch = stmt(i);
-    if ch == '"'
-        if ~inSingle
-            if inDouble
-                if i < n && stmt(i + 1) == '"'
-                    i = i + 2;
-                    continue;
-                end
-                inDouble = false;
-            else
-                inDouble = true;
-            end
-        end
-        i = i + 1;
-        continue;
-    end
-
-    if ch == ''''
-        if inDouble
-            i = i + 1;
-            continue;
-        end
-        if inSingle
-            if i < n && stmt(i + 1) == ''''
-                i = i + 2;
-                continue;
-            end
-            inSingle = false;
-        else
-            inSingle = true;
-        end
-        i = i + 1;
-        continue;
-    end
-
-    if ~inSingle && ~inDouble
-        if ch == '('
-            dParen = dParen + 1;
-        elseif ch == ')'
-            dParen = dParen - 1;
-        elseif ch == '['
-            dBracket = dBracket + 1;
-        elseif ch == ']'
-            dBracket = dBracket - 1;
-        elseif ch == '{'
-            dBrace = dBrace + 1;
-        elseif ch == '}'
-            dBrace = dBrace - 1;
-        elseif ch == '|' && i < n && stmt(i + 1) == '|' && dParen == 0 && dBracket == 0 && dBrace == 0
-            parts.Append(string(strtrim(stmt(startPos:i-1))));
-            startPos = i + 2;
-            i = i + 2;
-            continue;
-        end
-    end
-
-    i = i + 1;
-end
-
-parts.Append(string(strtrim(stmt(startPos:end))));
-terms = string(parts.Harvest());
-end
 
 function [ok, fn, target] = iParsePatternCallTerm(term)
 ok = false;
@@ -129,7 +126,21 @@ if strlength(s) == 0
     return;
 end
 
-s = iUnwrapOuterParens(s);
+changed = true;
+while changed
+    changed = false;
+    if strlength(s) < 2
+        break;
+    end
+    txt = char(s);
+    if txt(1) ~= '(' || txt(end) ~= ')'
+        break;
+    end
+    if iFindMatchingParen(txt, 1) == numel(txt)
+        s = strtrim(string(txt(2:end-1)));
+        changed = true;
+    end
+end
 ls = lower(s);
 
 if startsWith(ls, "if " | "elseif " | "while ")
@@ -167,7 +178,9 @@ if numel(args) < 2
     return;
 end
 
-target = iCompactArg(args(1));
+target = lower(strtrim(string(args(1))));
+target = replace(target, " ", "");
+target = replace(target, sprintf('\t'), "");
 if strlength(target) == 0
     return;
 end
@@ -175,24 +188,6 @@ end
 ok = true;
 end
 
-function s = iUnwrapOuterParens(in)
-s = strtrim(string(in));
-changed = true;
-while changed
-    changed = false;
-    if strlength(s) < 2
-        break;
-    end
-    txt = char(s);
-    if txt(1) ~= '(' || txt(end) ~= ')'
-        break;
-    end
-    if iFindMatchingParen(txt, 1) == numel(txt)
-        s = strtrim(string(txt(2:end-1)));
-        changed = true;
-    end
-end
-end
 
 
 function pos = iFindMatchingParen(txt, openPos)
@@ -258,8 +253,5 @@ while i <= n
 end
 end
 
-function out = iCompactArg(s)
-out = lower(strtrim(string(s)));
-out = replace(out, " ", "");
-out = replace(out, sprintf('\t'), "");
-end
+
+

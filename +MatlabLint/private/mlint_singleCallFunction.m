@@ -63,11 +63,46 @@ for k = startIdx:numel(funcs)
         end
     end
 
-    if callCount == 1
+    if callCount == 1 && ~iHasEarlyReturn(lines, declLineNum, nLines)
         issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, declLineNum, "mlint_singleCallFunction", ...
-            sprintf('局部函数"%s"只有一处调用，建议将不同文件中逻辑相同的局部函数独立出来共享，不能共享的则内联', fnName)}; %#ok<AGROW>
+            sprintf('局部函数"%s"只有一处调用，建议内联掉', fnName)}; %#ok<AGROW>
     end
 end
 
 issues = table(issuesBuilder);
+end
+
+function tf = iHasEarlyReturn(lines, declLineNum, nLines)
+tf = false;
+depth = 0;
+bs = ["function ","if ","for ","parfor ","while ","switch ","try","try "];
+for i = declLineNum:nLines
+    s = strtrim(char(lines(i)));
+    if i == declLineNum
+        depth = 1;
+    else
+        isB = false;
+        for b = bs
+            if strcmp(s, strtrim(b)) || startsWith(s, b)
+                isB = true;
+                break;
+            end
+        end
+        if isB
+            depth = depth + 1;
+        elseif strcmp(s, "end")
+            depth = depth - 1;
+        end
+    end
+    if depth>=1 && i>declLineNum
+        cs = codeLine(s);
+        if strcmp(cs, "return") || strcmp(cs, "return;")
+            tf = true;
+            return;
+        end
+    end
+    if depth <= 0
+        break;
+    end
+end
 end

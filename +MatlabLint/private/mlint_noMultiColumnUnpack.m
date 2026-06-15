@@ -11,7 +11,21 @@ nLines = numel(lines);
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
 % 先拦截 table2array 拆表（无论出现次数，均视为违规）
-t2aLines = iFindTable2ArrayUnpacks(lines, nLines);
+    lineBuilder = MATLAB.Containers.Vector();
+    for i = 1:nLines
+        raw = strtrim(char(lines(i)));
+        if isempty(raw) || raw(1) == '%'
+            continue;
+        end
+        code = codeLine(raw);
+        if isempty(code)
+            continue;
+        end
+        if contains(strrep(code, ' ', ''), "table2array(")
+            lineBuilder.PushBack(i);
+        end
+    end
+    t2aLines = unique(double(lineBuilder.Data(:)));
 for ti = 1:numel(t2aLines)
     issuesBuilder(end+1, {'file','line','rule','message'}) = ...
         {filePath, t2aLines(ti), "mlint_noMultiColumnUnpack", ...
@@ -19,7 +33,36 @@ for ti = 1:numel(t2aLines)
 end
 
 % 先收集所有 table() / InsertiveTable 变量
-tblVars = iCollectTableVars(lines, nLines);
+    varBuilder = MATLAB.DataTypes.ArrayBuilder();
+    
+    for i = 1:nLines
+        raw = strtrim(char(lines(i)));
+        if isempty(raw) || raw(1) == '%'
+            continue;
+        end
+        code = codeLine(raw);
+        if isempty(code)
+            continue;
+        end
+    
+        % 匹配: varName = table(builder);  或  varName = table(fields...);
+        eqPos = strfind(code, '=');
+        if isempty(eqPos)
+            continue;
+        end
+        lhs = strtrim(code(1:eqPos(1)-1));
+        rhs = strtrim(code(eqPos(1)+1:end));
+        if isempty(lhs) || ~isstrprop(lhs(1), 'alpha')
+            continue;
+        end
+        s = strrep(rhs, ' ', '');
+        if startsWith(s, "table(" | "MATLAB.DataTypes.InsertiveTable(")
+            varBuilder.Append(string(lhs));
+        end
+    end
+    
+    tblVars = string(varBuilder.Harvest());
+    tblVars = unique(tblVars);
 if isempty(tblVars)
     issues = table(issuesBuilder);
     return;
@@ -27,8 +70,32 @@ end
 
 % 对每个表变量，检测紧跟的列拆分模式
 for tv = 1:numel(tblVars)
-    vn = tblVars(tv);
-    unpackLines = iFindColumnUnpacks(lines, nLines, vn);
+    allLines = lines;
+    lineBuilder = MATLAB.Containers.Vector();
+    vn = string(tblVars(tv));
+    
+    for i = 1:nLines
+        raw = strtrim(char(allLines(i)));
+        if isempty(raw) || raw(1) == '%'
+            continue;
+        end
+        code = codeLine(raw);
+        if isempty(code)
+            continue;
+        end
+    
+        % 匹配: something = tbl.columnName  或  something = string(tbl.columnName)
+        eqPos = strfind(code, '=');
+        if isempty(eqPos)
+            continue;
+        end
+    
+        % 允许 rhs 为 string(tableVar.xxx) 或 tableVar.xxx
+        if contains(strrep(strtrim(code(eqPos(1)+1:end)), ' ', ''), vn + '.')
+            lineBuilder.PushBack(i);
+        end
+    end
+    unpackLines = double(lineBuilder.Data(:));
     if numel(unpackLines) >= 2
         issuesBuilder(end+1, {'file','line','rule','message'}) = ...
             {filePath, unpackLines(1), "mlint_noMultiColumnUnpack", ...
@@ -40,83 +107,10 @@ issues = table(issuesBuilder);
 end
 
 % -------------------------------------------------------------------------
-function t2aLines = iFindTable2ArrayUnpacks(lines, nLines)
-lineBuilder = MATLAB.Containers.Vector();
-for i = 1:nLines
-    raw = strtrim(char(lines(i)));
-    if isempty(raw) || raw(1) == '%'
-        continue;
-    end
-    code = codeLine(raw);
-    if isempty(code)
-        continue;
-    end
-    if contains(strrep(code, ' ', ''), "table2array(")
-        lineBuilder.PushBack(i);
-    end
-end
-t2aLines = unique(double(lineBuilder.Data(:)));
-end
 
 % -------------------------------------------------------------------------
-function tblVars = iCollectTableVars(lines, nLines)
-varBuilder = MATLAB.DataTypes.ArrayBuilder();
-
-for i = 1:nLines
-    raw = strtrim(char(lines(i)));
-    if isempty(raw) || raw(1) == '%'
-        continue;
-    end
-    code = codeLine(raw);
-    if isempty(code)
-        continue;
-    end
-
-    % 匹配: varName = table(builder);  或  varName = table(fields...);
-    eqPos = strfind(code, '=');
-    if isempty(eqPos)
-        continue;
-    end
-    lhs = strtrim(code(1:eqPos(1)-1));
-    rhs = strtrim(code(eqPos(1)+1:end));
-    if isempty(lhs) || ~isstrprop(lhs(1), 'alpha')
-        continue;
-    end
-    s = strrep(rhs, ' ', '');
-    if startsWith(s, "table(" | "MATLAB.DataTypes.InsertiveTable(")
-        varBuilder.Append(string(lhs));
-    end
-end
-
-tblVars = string(varBuilder.Harvest());
-tblVars = unique(tblVars);
-end
 
 % -------------------------------------------------------------------------
-function unpackLines = iFindColumnUnpacks(allLines, nLines, tblVar)
-lineBuilder = MATLAB.Containers.Vector();
-vn = string(tblVar);
 
-for i = 1:nLines
-    raw = strtrim(char(allLines(i)));
-    if isempty(raw) || raw(1) == '%'
-        continue;
-    end
-    code = codeLine(raw);
-    if isempty(code)
-        continue;
-    end
 
-    % 匹配: something = tbl.columnName  或  something = string(tbl.columnName)
-    eqPos = strfind(code, '=');
-    if isempty(eqPos)
-        continue;
-    end
 
-    % 允许 rhs 为 string(tableVar.xxx) 或 tableVar.xxx
-    if contains(strrep(strtrim(code(eqPos(1)+1:end)), ' ', ''), vn + '.')
-        lineBuilder.PushBack(i);
-    end
-end
-unpackLines = double(lineBuilder.Data(:));
-end

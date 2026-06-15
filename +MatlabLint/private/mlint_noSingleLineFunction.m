@@ -24,10 +24,51 @@ for i = 1:nLines
         continue;
     end
 
-    if iCountEffectiveLines(lines(i+1:endLine-1)) == 1
-        fnName = extractFunctionName(decl);
+    segment = lines(i+1:endLine-1);
+    effectiveLineCount = 0;
+    buf = "";
+    for segmentIndex = 1:numel(segment)
+        s2 = strtrim(char(segment(segmentIndex)));
+        if isempty(s2) || startsWith(s2, '%')
+            continue;
+        end
+
+        s2 = codeLine(s2);
+        if isempty(s2) || strcmp(s2, "end") || strcmp(s2, "else") || ...
+                startsWith(s2, "elseif " | "case " | "catch") || strcmp(s2, "otherwise")
+            continue;
+        end
+
+        if endsWith(s2, "...")
+            part = regexprep(s2, '\\.\\.\\.\\s*$', '');
+            part = strtrim(part);
+            if ~isempty(part)
+                if strlength(buf) == 0
+                    buf = string(part);
+                else
+                    buf = buf + " " + string(part);
+                end
+            end
+        else
+            if strlength(buf) == 0
+                stmt = string(s2);
+            else
+                stmt = buf + " " + string(s2);
+            end
+            if strlength(strtrim(stmt)) > 0
+                effectiveLineCount = effectiveLineCount + 1;
+            end
+            buf = "";
+        end
+    end
+
+    if strlength(strtrim(buf)) > 0
+        effectiveLineCount = effectiveLineCount + 1;
+    end
+
+    if effectiveLineCount == 1
         issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, i, "mlint_noSingleLineFunction", ...
-            sprintf('函数"%s"只有一行有效代码，建议内联', fnName)}; %#ok<AGROW>
+            sprintf('函数"%s"只有一行有效代码，建议内联', extractFunctionName(decl))}; %#ok<AGROW>
     end
 end
 
@@ -98,47 +139,3 @@ for k = startLine:nLines
 end
 end
 
-
-function n = iCountEffectiveLines(segment)
-n = 0;
-buf = "";
-
-for i = 1:numel(segment)
-    s = strtrim(char(segment(i)));
-    if isempty(s) || startsWith(s, '%')
-        continue;
-    end
-
-    s = codeLine(s);
-    if isempty(s) || strcmp(s, "end") || strcmp(s, "else") || ...
-            startsWith(s, "elseif " | "case " | "catch") || strcmp(s, "otherwise")
-        continue;
-    end
-
-    if endsWith(s, "...")
-        part = regexprep(s, '\\.\\.\\.\\s*$', '');
-        part = strtrim(part);
-        if ~isempty(part)
-            if strlength(buf) == 0
-                buf = string(part);
-            else
-                buf = buf + " " + string(part);
-            end
-        end
-    else
-        if strlength(buf) == 0
-            stmt = string(s);
-        else
-            stmt = buf + " " + string(s);
-        end
-        if strlength(strtrim(stmt)) > 0
-            n = n + 1;
-        end
-        buf = "";
-    end
-end
-
-if strlength(strtrim(buf)) > 0
-    n = n + 1;
-end
-end

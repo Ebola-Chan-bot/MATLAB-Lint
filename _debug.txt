@@ -4344,4 +4344,725 @@ for fi = 1:numel(ufiles)
     for k = 1:numel(fns)
         fn = fns(k);
         try; MatlabLint.inlineSingleCallHelpers(fp, char(fn)); ok=ok+1;
-      
+        catch; skip=skip+1; end
+    end
+end
+fprintf('OK=%d SKIP=%d\n', ok, skip);
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+issues = MatlabLint.lint('.', struct('OutputToConsole',false));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+cfg = struct('OutputToConsole', false);
+issues = MatlabLint.lint('.', cfg);
+sf = issues(string(issues.rule) == "mlint_singleCallFunction", :);
+fprintf('BEFORE=%d\n', height(sf));
+[ufiles, ~, ~] = unique(string(sf.file));
+ok = 0; skip = 0;
+for fi = 1:numel(ufiles)
+    fp = char(ufiles(fi));
+    mask = string(sf.file) == string(fp);
+    fns = regexprep(string(sf.message(mask)), '^.*"([^"]+)".*$', '$1');
+    for k = 1:numel(fns)
+        fn = fns(k);
+        try; MatlabLint.inlineSingleCallHelpers(fp, char(fn)); ok=ok+1;
+        catch; skip=skip+1; end
+    end
+end
+fprintf('OK=%d SKIP=%d\n', ok, skip);
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+issues = MatlabLint.lint('.', struct('OutputToConsole',false));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);t = fileread('+MatlabLint\private\mlint_mergePatternCallChain.m');
+lines = split(string(t), newline);
+for i = 195:212; if i<=numel(lines); fprintf('%3d: %s\n', i, lines(i)); end; end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+cfg = struct('OutputToConsole', false);
+issues = MatlabLint.lint('.', cfg);
+sf = issues(string(issues.rule) == "mlint_singleCallFunction", :);
+fprintf('BEFORE=%d\n', height(sf));
+[ufiles, ~, ~] = unique(string(sf.file));
+ok = 0; skip = 0;
+for fi = 1:numel(ufiles)
+    fp = char(ufiles(fi));
+    mask = string(sf.file) == string(fp);
+    fns = regexprep(string(sf.message(mask)), '^.*"([^"]+)".*$', '$1');
+    for k = 1:numel(fns)
+        fn = fns(k);
+        try; MatlabLint.inlineSingleCallHelpers(fp, char(fn)); ok=ok+1;
+        catch ME; skip=skip+1; end
+    end
+end
+fprintf('OK=%d SKIP=%d\n', ok, skip);
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+issues = MatlabLint.lint('.', struct('OutputToConsole',false));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+cfg = struct('OutputToConsole', false);
+
+% 逐轮内联——每轮只取第一个文件的第一个函数
+for round = 1:50
+    issues = MatlabLint.lint('.', cfg);
+    sf = issues(string(issues.rule) == "mlint_singleCallFunction", :);
+    if isempty(sf); fprintf('DONE after %d rounds\n', round); break; end
+    
+    % 取第一个文件、第一个函数
+    fp = char(sf.file(1));
+    fn = char(regexprep(sf.message(1), '^.*"([^"]+)".*$', '$1'));
+    short = strrep(fp, [pwd '\'], '');
+    
+    try
+        MatlabLint.inlineSingleCallHelpers(fp, fn);
+        fprintf('  OK  %s / %s\n', short, fn);
+    catch ME
+        fprintf('  SKIP %s / %s: %s\n', short, fn, ME.message);
+        % 把这个文件和函数名加入黑名单，换下一个
+        blacklist = struct('file', fp, 'func', fn);
+        % 简单跳过——取下一个不同的文件
+        for k = 2:height(sf)
+            if string(sf.file(k)) ~= string(fp)
+                fp2 = char(sf.file(k));
+                fn2 = char(regexprep(sf.message(k), '^.*"([^"]+)".*$', '$1'));
+                try
+                    MatlabLint.inlineSingleCallHelpers(fp2, fn2);
+                    fprintf('  OK  %s / %s\n', strrep(fp2, [pwd '\'], ''), fn2);
+                    break;
+                catch
+                    % skip this too
+                end
+            end
+        end
+        % 如果整个文件内所有函数都失败，退出
+    end
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.')); issues = MatlabLint.lint('.', struct('OutputToConsole',false)); sf = issues(string(issues.rule) == "mlint_singleCallFunction", :); fprintf('SINGLECALL=%d TOTAL=%d\n', height(sf), height(issues)); if height(sf) > 0; fns = regexprep(string(sf.message), '^.*"([^"]+)".*$', '$1'); fps = string(sf.file); for k = 1:numel(fns); fprintf('  %s / %s\n', char(fns(k)), strrep(char(fps(k)), [pwd '\'], '')); end; end; other = issues(string(issues.rule) ~= "mlint_singleCallFunction", :); if height(other) > 0; [G,id] = findgroups(string(other.rule)); fprintf('Other:\n'); for k = 1:numel(id); fprintf('  %s: %d\n', id(k), sum(G==k)); end; end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+cfg = struct('OutputToConsole', false);
+issues = MatlabLint.lint('.', cfg);
+sf = issues(string(issues.rule) == "mlint_singleCallFunction", :);
+fprintf('豁免后: %d\n', height(sf));
+[ufiles, ~, ~] = unique(string(sf.file));
+ok = 0; skip = 0;
+for fi = 1:numel(ufiles)
+    fp = char(ufiles(fi));
+    mask = string(sf.file) == string(fp);
+    fns = regexprep(string(sf.message(mask)), '^.*"([^"]+)".*$', '$1');
+    for k = 1:numel(fns)
+        fn = fns(k);
+        try; MatlabLint.inlineSingleCallHelpers(fp, char(fn)); ok=ok+1;
+        catch; skip=skip+1; end
+    end
+end
+fprintf('内联: OK=%d SKIP=%d\n', ok, skip);
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+issues = MatlabLint.lint('.', struct('OutputToConsole',false));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+cfg = struct('OutputToConsole', false);
+issues = MatlabLint.lint('.', cfg);
+sf = issues(string(issues.rule) == "mlint_singleCallFunction", :);
+fprintf('豁免后: %d\n', height(sf));
+[ufiles, ~, ~] = unique(string(sf.file));
+ok = 0; skip = 0;
+for fi = 1:numel(ufiles)
+    fp = char(ufiles(fi));
+    mask = string(sf.file) == string(fp);
+    fns = regexprep(string(sf.message(mask)), '^.*"([^"]+)".*$', '$1');
+    for k = 1:numel(fns)
+        fn = fns(k);
+        try; MatlabLint.inlineSingleCallHelpers(fp, char(fn)); ok=ok+1;
+        catch; skip=skip+1; end
+    end
+end
+fprintf('OK=%d SKIP=%d\n', ok, skip);
+issues = MatlabLint.lint('.', cfg);
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);% 先检查当前损坏文件的 checkcode 输出
+msgs = checkcode('+MatlabLint\private\mlint_singleUseVariable.m');
+fprintf('%d messages from checkcode\n', numel(msgs));
+for k = 1:numel(msgs); fprintf('  [%s]\n', msgs(k).message); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+cfg = struct('OutputToConsole', false);
+issues = MatlabLint.lint('.', cfg);
+sf = issues(string(issues.rule) == "mlint_singleCallFunction", :);
+fprintf('豁免后: %d\n', height(sf));
+[ufiles, ~, ~] = unique(string(sf.file));
+ok = 0; skip = 0;
+for fi = 1:numel(ufiles)
+    fp = char(ufiles(fi));
+    mask = string(sf.file) == string(fp);
+    fns = regexprep(string(sf.message(mask)), '^.*"([^"]+)".*$', '$1');
+    for k = 1:numel(fns)
+        fn = fns(k);
+        try; MatlabLint.inlineSingleCallHelpers(fp, char(fn)); ok=ok+1;
+        catch; skip=skip+1; end
+    end
+end
+fprintf('OK=%d SKIP=%d\n', ok, skip);
+issues = MatlabLint.lint('.', cfg);
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+% 手工单步测试 singleUseVariable
+copyfile('+MatlabLint\private\mlint_singleUseVariable.m', 'test_suv.m');
+fns = {'iBuildStmtCFG','iFindMatchingEndOrElse','iFalseBranchTarget','iFindOwningBranchHeader',...
+       'iEnumeratePaths','iCountVarRefsOnLine','iIsBranchPoint','iBlockEnd','iIsLoopCarriedSingleUse',...
+       'iFindKillingAssignmentCFG','iNextExecutableIsReturn','iAreDifferentBranches','iHasTopLevelElseBetween',...
+       'iParseControlFlow','iCtrlBlocksFromTable','iLoopBlocksFromTable','iFunctionEndsFromTable',...
+       'iCollectPersistent','iCollectForLoopVars','iCollectOutputVars','iCollectProperties','iCollectAssignments',...
+       'iShouldAlwaysSkip2','iHasBranchMergeBetweenLines','iMatchKeyword'};
+for k = 1:numel(fns)
+    try
+        MatlabLint.inlineSingleCallHelpers('test_suv.m', char(fns(k)));
+        fprintf('  OK %s\n', fns(k));
+        % 立即检查
+        msgs = checkcode('test_suv.m');
+        hasIssue = false;
+        for m = 1:numel(msgs)
+            if contains(msgs(m).message, '解析') || contains(msgs(m).message, '非法') || ...
+               contains(msgs(m).message, '对齐') || contains(msgs(m).message, 'parse')
+                fprintf('    %s\n', msgs(m).message);
+                hasIssue = true;
+            end
+        end
+        if hasIssue
+            fprintf('    STOPPING at %s\n', fns(k));
+            break;
+        end
+    catch ME
+        fprintf('  SKIP %s: %s\n', fns(k), ME.message);
+    end
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+copyfile('+MatlabLint\private\mlint_singleUseVariable.m', 'test_suv.m');
+fns = {'iBuildStmtCFG','iFindMatchingEndOrElse','iEnumeratePaths','iParseControlFlow'};
+for k = 1:numel(fns)
+    try
+        MatlabLint.inlineSingleCallHelpers('test_suv.m', fns{k});
+        fprintf('OK %s\n', fns{k});
+        msgs = checkcode('test_suv.m');
+        for m = 1:numel(msgs)
+            if contains(msgs(m).message, '解析') || contains(msgs(m).message, '非法') || ...
+               contains(msgs(m).message, '对齐')
+                fprintf('  CC: %s\n', msgs(m).message);
+            end
+        end
+    catch ME
+        fprintf('SKIP %s: %s\n', fns{k}, ME.message);
+    end
+end
+delete('test_suv.m');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+issues = MatlabLint.lint('.', struct('OutputToConsole',false));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+issues = MatlabLint.lint('.', struct('OutputToConsole',false));
+sf = issues(string(issues.rule) == "mlint_singleCallFunction", :);
+fprintf('原始 singleCall: %d\n', height(sf));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+cfg = struct('OutputToConsole', false);
+issues = MatlabLint.lint('.', cfg);
+sf = issues(string(issues.rule) == "mlint_singleCallFunction", :);
+fprintf('豁免后: %d\n', height(sf));
+[ufiles, ~, ~] = unique(string(sf.file));
+ok = 0; skip = 0;
+for fi = 1:numel(ufiles)
+    fp = char(ufiles(fi));
+    mask = string(sf.file) == string(fp);
+    fns = regexprep(string(sf.message(mask)), '^.*"([^"]+)".*$', '$1');
+    for k = 1:numel(fns)
+        fn = fns(k);
+        try; MatlabLint.inlineSingleCallHelpers(fp, char(fn)); ok=ok+1;
+        catch; skip=skip+1; end
+    end
+end
+fprintf('OK=%d SKIP=%d\n', ok, skip);
+issues = MatlabLint.lint('.', cfg);
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+cfg = struct('OutputToConsole', false);
+issues = MatlabLint.lint('.', cfg);
+sf = issues(string(issues.rule) == "mlint_singleCallFunction", :);
+fprintf('豁免后: %d\n', height(sf));
+[ufiles, ~, ~] = unique(string(sf.file));
+ok = 0; skip = 0;
+for fi = 1:numel(ufiles)
+    fp = char(ufiles(fi));
+    mask = string(sf.file) == string(fp);
+    fns = regexprep(string(sf.message(mask)), '^.*"([^"]+)".*$', '$1');
+    for k = 1:numel(fns)
+        fn = fns(k);
+        try; MatlabLint.inlineSingleCallHelpers(fp, char(fn)); ok=ok+1;
+        catch; skip=skip+1; end
+    end
+end
+fprintf('OK=%d SKIP=%d\n', ok, skip);
+issues = MatlabLint.lint('.', cfg);
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+cfg = struct('OutputToConsole', false);
+issues = MatlabLint.lint('.', cfg);
+sf = issues(string(issues.rule) == "mlint_singleCallFunction", :);
+fprintf('豁免后: %d\n', height(sf));
+[ufiles, ~, ~] = unique(string(sf.file));
+ok = 0; skip = 0;
+for fi = 1:numel(ufiles)
+    fp = char(ufiles(fi));
+    mask = string(sf.file) == string(fp);
+    fns = regexprep(string(sf.message(mask)), '^.*"([^"]+)".*$', '$1');
+    for k = 1:numel(fns)
+        fn = fns(k);
+        try; MatlabLint.inlineSingleCallHelpers(fp, char(fn)); ok=ok+1;
+        catch; skip=skip+1; end
+    end
+end
+fprintf('OK=%d SKIP=%d\n', ok, skip);
+issues = MatlabLint.lint('.', cfg);
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);t = fileread('+MatlabLint\private\mlint_mergeIdenticalCaseBranches.m');
+lines = split(string(t), newline);
+for i = 20:50; if i<=numel(lines); fprintf('%3d: %s\n', i, lines(i)); end; end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+copyfile('+MatlabLint\private\mlint_mergeIdenticalCaseBranches.m','test_micb.m');
+% 只内联 iCollectCaseBranches
+try
+    MatlabLint.inlineSingleCallHelpers('test_micb.m', 'iCollectCaseBranches');
+    fprintf('OK\n');
+catch ME
+    fprintf('ERR: %s line %d\n', ME.message, ME.stack(1).line);
+end
+% 查看内联结果
+t = fileread('test_micb.m');
+lines = split(string(t), newline);
+fprintf('=== Lines 16-40 ===\n');
+for i = 16:min(40,numel(lines)); fprintf('%3d: %s\n', i, lines(i)); end
+delete('test_micb.m');
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+issues = MatlabLint.lint('.', struct('OutputToConsole',false));
+sf = issues(string(issues.rule) == "mlint_singleCallFunction", :);
+fprintf('原始: %d singleCall / %d total\n', height(sf), height(issues));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+cfg = struct('OutputToConsole', false);
+issues = MatlabLint.lint('.', cfg);
+sf = issues(string(issues.rule) == "mlint_singleCallFunction", :);
+fprintf('豁免后: %d\n', height(sf));
+[ufiles, ~, ~] = unique(string(sf.file)); ok = 0; skip = 0;
+for fi = 1:numel(ufiles)
+    fp = char(ufiles(fi));
+    mask = string(sf.file) == string(fp);
+    fns = regexprep(string(sf.message(mask)), '^.*"([^"]+)".*$', '$1');
+    for k = 1:numel(fns)
+        fn = fns(k);
+        try; MatlabLint.inlineSingleCallHelpers(fp, char(fn)); ok=ok+1;
+        catch; skip=skip+1; end
+    end
+end
+fprintf('OK=%d SKIP=%d\n', ok, skip);
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);% 检查是否损坏
+[status, result] = system('C:\Program Files\MATLAB\R2026a\bin\matlab.exe -batch "addpath(genpath(''c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint'')); try; mtree(''+MatlabLint\private\mlint_mergeIdenticalCaseBranches.m'',''-file''); fprintf(''OK''); catch; fprintf(''FAIL''); end; exit"');
+disp(result);
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+try; mtree('+MatlabLint\private\mlint_mergeIdenticalCaseBranches.m','-file'); fprintf('PARSE OK\n');
+catch ME; fprintf('PARSE FAIL: %s\n', ME.message); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+try
+    issues = MatlabLint.lint('+MatlabLint\private\mlint_mergeIdenticalCaseBranches.m', struct('OutputToConsole',false));
+    fprintf('lint OK, issues=%d\n', height(issues));
+catch ME
+    fprintf('lint ERR: %s\n', ME.message);
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);% 查看 checkcode 返回结构
+msgs = checkcode('+MatlabLint\private\mlint_singleUseVariable.m');
+for k = 1:numel(msgs)
+    fprintf('[%d/%d] id=%s msg=%s\n', msgs(k).line, msgs(k).column, msgs(k).id, msgs(k).message);
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);msgs = checkcode('+MatlabLint\private\mlint_singleUseVariable.m');
+if ~isempty(msgs); disp(fieldnames(msgs)); disp(msgs(1)); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);msgs = checkcode('+MatlabLint\private\mlint_singleUseVariable.m');
+fprintf('%d messages:\n', numel(msgs));
+for k = 1:numel(msgs); fprintf('  [%d] %s\n', msgs(k).line, msgs(k).message); end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+cfg = struct('OutputToConsole', false);
+issues = MatlabLint.lint('.', cfg);
+sf = issues(string(issues.rule) == "mlint_singleCallFunction", :);
+fprintf('豁免后: %d singleCall\n', height(sf));
+[ufiles, ~, ~] = unique(string(sf.file)); ok = 0; skip = 0;
+for fi = 1:numel(ufiles)
+    fp = char(ufiles(fi));
+    mask = string(sf.file) == string(fp);
+    fns = regexprep(string(sf.message(mask)), '^.*"([^"]+)".*$', '$1');
+    for k = 1:numel(fns)
+        fn = fns(k);
+        try; MatlabLint.inlineSingleCallHelpers(fp, char(fn)); ok=ok+1;
+        catch; skip=skip+1; end
+    end
+end
+fprintf('OK=%d SKIP=%d\n', ok, skip);
+issues = MatlabLint.lint('.', cfg);
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+try
+    cfg = struct('OutputToConsole', false);
+    issues = MatlabLint.lint('.', cfg);
+    sf = issues(string(issues.rule) == "mlint_singleCallFunction", :);
+    fprintf('OK lint ran. TOTAL=%d SINGLECALL=%d\n', height(issues), height(sf));
+    if height(sf) > 0
+        fns = regexprep(string(sf.message), '^.*"([^"]+)".*$', '$1');
+        fps = string(sf.file);
+        for k = 1:min(30, numel(fns))
+            fprintf('  %s / %s\n', char(fns(k)), strrep(char(fps(k)), [pwd '\'], ''));
+        end
+    end
+catch ME
+    fprintf('LINT_ERROR: %s\n', ME.message);
+    if ~isempty(ME.stack)
+        for k = 1:min(numel(ME.stack), 5)
+            fprintf('  at %s:%d\n', ME.stack(k).file, ME.stack(k).line);
+        end
+    end
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+try
+    cfg = struct('OutputToConsole', false);
+    issues = MatlabLint.lint('.', cfg);
+    sf = issues(string(issues.rule) == "mlint_singleCallFunction", :);
+    fprintf('OK lint ran. TOTAL=%d SINGLECALL=%d\n', height(issues), height(sf));
+    if height(sf) > 0
+        fns = regexprep(string(sf.message), '^.*"([^"]+)".*$', '$1');
+        fps = string(sf.file);
+        for k = 1:min(numel(fns), 30)
+            fprintf('  %s / %s\n', char(fns(k)), strrep(char(fps(k)), [pwd '\'], ''));
+        end
+    end
+catch ME
+    fprintf('LINT_ERROR: %s\n', ME.message);
+    if ~isempty(ME.stack)
+        for k = 1:min(numel(ME.stack), 8)
+            fprintf('  at %s:%d\n', ME.stack(k).file, ME.stack(k).line);
+        end
+    end
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+cfg = struct('OutputToConsole', false);
+issues = MatlabLint.lint('.', cfg);
+other = issues(string(issues.rule) ~= "mlint_singleCallFunction", :);
+fprintf('OTHER=%d\n', height(other));
+if height(other) > 0
+    [G, id] = findgroups(string(other.rule));
+    for k = 1:numel(id)
+        fprintf('  %s: %d\n', id(k), sum(G == k));
+    end
+    fprintf('\nFirst 30 other issues:\n');
+    for k = 1:min(30, height(other))
+        fprintf('  %s:%d %s %s\n', strrep(char(other.file(k)), [pwd '\'], ''), other.line(k), char(other.rule(k)), char(other.message(k)));
+    end
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+try
+    mtree('+MatlabLint/inlineSingleCallHelpers.m', '-file');
+    fprintf('inlineSingleCallHelpers parse OK\n');
+catch ME
+    fprintf('inlineSingleCallHelpers parse ERROR: %s\n', ME.message);
+end
+
+try
+    cfg = struct('OutputToConsole', false);
+    issues = MatlabLint.lint('+MatlabLint/inlineSingleCallHelpers.m', cfg);
+    fprintf('inlineSingleCallHelpers lint issues=%d\n', height(issues));
+    if height(issues) > 0
+        for k = 1:min(20, height(issues))
+            fprintf('  %d %s %s\n', issues.line(k), char(issues.rule(k)), char(issues.message(k)));
+        end
+    end
+catch ME
+    fprintf('inlineSingleCallHelpers lint ERROR: %s\n', ME.message);
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+cfg = struct('OutputToConsole', false);
+issues = MatlabLint.lint('.', cfg);
+sf = issues(string(issues.rule) == "mlint_singleCallFunction", :);
+selfPath = string(fullfile(pwd, '+MatlabLint', 'inlineSingleCallHelpers.m'));
+sf = sf(string(sf.file) ~= selfPath);
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+cfg = struct('OutputToConsole', false);
+issues = MatlabLint.lint('.', cfg);
+sf = issues(string(issues.rule) == "mlint_singleCallFunction", :);
+selfPath = string(fullfile(pwd, '+MatlabLint', 'inlineSingleCallHelpers.m'));
+sf = sf(string(sf.file) ~= selfPath, :);
+fprintf('candidate singleCall excluding self=%d\n', height(sf));
+
+[ufiles, ~, ~] = unique(string(sf.file));
+okCount = 0;
+skipCount = 0;
+for fi = 1:numel(ufiles)
+    fp = char(ufiles(fi));
+    mask = string(sf.file) == string(fp);
+    fns = regexprep(string(sf.message(mask)), '^.*"([^"]+)".*$', '$1');
+    for k = 1:numel(fns)
+        fn = char(fns(k));
+        try
+            MatlabLint.inlineSingleCallHelpers(fp, fn);
+            okCount = okCount + 1;
+            fprintf('  OK   %s / %s\n', strrep(fp, [pwd '\'], ''), fn);
+        catch ME
+            skipCount = skipCount + 1;
+            fprintf('  SKIP %s / %s : %s\n', strrep(fp, [pwd '\'], ''), fn, ME.message);
+        end
+    end
+end
+fprintf('inline run done: OK=%d SKIP=%d\n', okCount, skipCount);
+
+issues2 = MatlabLint.lint('.', cfg);
+sf2 = issues2(string(issues2.rule) == "mlint_singleCallFunction", :);
+fprintf('after run TOTAL=%d SINGLECALL=%d\n', height(issues2), height(sf2));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+cfg = struct('OutputToConsole', false);
+issues = MatlabLint.lint('.', cfg);
+sf = issues(string(issues.rule) == "mlint_singleCallFunction", :);
+fprintf('TOTAL=%d SINGLECALL=%d\n', height(issues), height(sf));
+if height(sf) > 0
+    fns = regexprep(string(sf.message), '^.*"([^"]+)".*$', '$1');
+    fps = string(sf.file);
+    fprintf('Remaining singleCall:\n');
+    for k = 1:numel(fns)
+        fprintf('  %s / %s\n', char(fns(k)), strrep(char(fps(k)), [pwd '\'], ''));
+    end
+end
+other = issues(string(issues.rule) ~= "mlint_singleCallFunction", :);
+if height(other) > 0
+    fprintf('\nOther issue groups:\n');
+    [G, id] = findgroups(string(other.rule));
+    for k = 1:numel(id)
+        fprintf('  %s: %d\n', id(k), sum(G == k));
+    end
+    fprintf('\nFirst 25 other issues:\n');
+    for k = 1:min(25, height(other))
+        fprintf('  %s:%d %s %s\n', strrep(char(other.file(k)), [pwd '\'], ''), other.line(k), char(other.rule(k)), char(other.message(k)));
+    end
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+try
+    cfg = struct('OutputToConsole', false);
+    issues = MatlabLint.lint('.', cfg);
+    sf = issues(string(issues.rule) == "mlint_singleCallFunction", :);
+    fprintf('OK lint ran. TOTAL=%d SINGLECALL=%d\n', height(issues), height(sf));
+    if height(sf) > 0
+        fns = regexprep(string(sf.message), '^.*"([^"]+)".*$', '$1');
+        fps = string(sf.file);
+        for k = 1:min(30, numel(fns))
+            fprintf('  %s / %s\n', char(fns(k)), strrep(char(fps(k)), [pwd '\'], ''));
+        end
+    end
+catch ME
+    fprintf('LINT_ERROR: %s\n', ME.message);
+    if ~isempty(ME.stack)
+        for k = 1:min(numel(ME.stack), 8)
+            fprintf('  at %s:%d\n', ME.stack(k).file, ME.stack(k).line);
+        end
+    end
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+try
+    cfg = struct('OutputToConsole', false);
+    issues = MatlabLint.lint('+MatlabLint/addRule.m', cfg);
+    fprintf('addRule issues=%d\n', height(issues));
+    if height(issues) > 0
+        for k = 1:height(issues)
+            fprintf('  %d %s %s\n', issues.line(k), char(issues.rule(k)), char(issues.message(k)));
+        end
+    end
+catch ME
+    fprintf('addRule lint error: %s\n', ME.message);
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+cfg = struct('OutputToConsole', false);
+issues = MatlabLint.lint('.', cfg);
+sf = issues(string(issues.rule) == "mlint_singleCallFunction", :);
+fprintf('TOTAL=%d SINGLECALL=%d\n', height(issues), height(sf));
+if height(sf) > 0
+    fns = regexprep(string(sf.message), '^.*"([^"]+)".*$', '$1');
+    fps = string(sf.file);
+    for k = 1:numel(fns)
+        fprintf('  %s / %s\n', char(fns(k)), strrep(char(fps(k)), [pwd '\'], ''));
+    end
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+selfFile = fullfile(pwd, '+MatlabLint', 'inlineSingleCallHelpers.m');
+helpers = ["iRejectReturnBody", "iBuildInlineBlock", "iReplaceCallAndDeleteFunction", "iWriteIfValid"];
+for i = 1:numel(helpers)
+    try
+        MatlabLint.inlineSingleCallHelpers(selfFile, helpers(i));
+        fprintf('OK self/%s\n', helpers(i));
+    catch ME
+        fprintf('SKIP self/%s: %s\n', helpers(i), ME.message);
+    end
+end
+
+issues = MatlabLint.lint(selfFile, struct('OutputToConsole', false));
+fprintf('self lint issues=%d\n', height(issues));
+for k = 1:min(20, height(issues))
+    fprintf('  %d %s %s\n', issues.line(k), char(issues.rule(k)), char(issues.message(k)));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+cfg = struct('OutputToConsole', false);
+issues = MatlabLint.lint('.', cfg);
+sf = issues(string(issues.rule) == "mlint_singleCallFunction", :);
+fprintf('singleCall before targeted pass=%d\n', height(sf));
+fns = regexprep(string(sf.message), '^.*"([^"]+)".*$', '$1');
+fps = string(sf.file);
+for k = 1:numel(fns)
+    fp = char(fps(k));
+    fn = char(fns(k));
+    try
+        MatlabLint.inlineSingleCallHelpers(fp, fn);
+        fprintf('  OK   %s / %s\n', strrep(fp, [pwd '\'], ''), fn);
+    catch ME
+        fprintf('  SKIP %s / %s : %s\n', strrep(fp, [pwd '\'], ''), fn, ME.message);
+    end
+end
+issues2 = MatlabLint.lint('.', cfg);
+sf2 = issues2(string(issues2.rule) == "mlint_singleCallFunction", :);
+fprintf('singleCall after targeted pass=%d total=%d\n', height(sf2), height(issues2));
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+cfg = struct('OutputToConsole', false);
+issues = MatlabLint.lint('.', cfg);
+sf = issues(string(issues.rule) == "mlint_singleCallFunction", :);
+fprintf('TOTAL=%d SINGLECALL=%d\n', height(issues), height(sf));
+if height(sf) > 0
+    fns = regexprep(string(sf.message), '^.*"([^"]+)".*$', '$1');
+    fps = string(sf.file);
+    for k = 1:numel(fns)
+        fprintf('  %s / %s\n', char(fns(k)), strrep(char(fps(k)), [pwd '\'], ''));
+    end
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+cfg = struct('OutputToConsole', false);
+issues = MatlabLint.lint('.', cfg);
+sf = issues(string(issues.rule) == "mlint_singleCallFunction", :);
+fprintf('TOTAL=%d SINGLECALL=%d\n', height(issues), height(sf));
+if height(sf) > 0
+    fns = regexprep(string(sf.message), '^.*"([^"]+)".*$', '$1');
+    fps = string(sf.file);
+    for k = 1:numel(fns)
+        fprintf('  %s / %s\n', char(fns(k)), strrep(char(fps(k)), [pwd '\'], ''));
+    end
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+cfg = struct('OutputToConsole', false);
+issues = MatlabLint.lint('.', cfg);
+sf = issues(string(issues.rule) == "mlint_singleCallFunction", :);
+fprintf('TOTAL=%d SINGLECALL=%d\n', height(issues), height(sf));
+if height(sf) > 0
+    fns = regexprep(string(sf.message), '^.*"([^"]+)".*$', '$1');
+    fps = string(sf.file);
+    for k = 1:numel(fns)
+        fprintf('  %s / %s\n', char(fns(k)), strrep(char(fps(k)), [pwd '\'], ''));
+    end
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+cfg = struct('OutputToConsole', false);
+issues = MatlabLint.lint('.', cfg);
+sf = issues(string(issues.rule) == "mlint_singleCallFunction", :);
+fprintf('TOTAL=%d SINGLECALL=%d\n', height(issues), height(sf));
+if height(sf) > 0
+    fns = regexprep(string(sf.message), '^.*"([^"]+)".*$', '$1');
+    fps = string(sf.file);
+    for k = 1:numel(fns)
+        fprintf('  %s / %s\n', char(fns(k)), strrep(char(fps(k)), [pwd '\'], ''));
+    end
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+cfg = struct('OutputToConsole', false);
+issues = MatlabLint.lint('.', cfg);
+sf = issues(string(issues.rule) == "mlint_singleCallFunction", :);
+fprintf('TOTAL=%d SINGLECALL=%d\n', height(issues), height(sf));
+if height(sf) > 0
+    fns = regexprep(string(sf.message), '^.*"([^"]+)".*$', '$1');
+    fps = string(sf.file);
+    for k = 1:numel(fns)
+        fprintf('  %s / %s\n', char(fns(k)), strrep(char(fps(k)), [pwd '\'], ''));
+    end
+end
+other = issues(string(issues.rule) ~= "mlint_singleCallFunction", :);
+if height(other) > 0
+    [G, id] = findgroups(string(other.rule));
+    fprintf('Other issue groups:\n');
+    for k = 1:numel(id)
+        fprintf('  %s: %d\n', id(k), sum(G == k));
+    end
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+issues = MatlabLint.lint('.', struct('OutputToConsole', false));
+for k = 1:height(issues)
+    fprintf('%s:%d %s %s\n', strrep(char(issues.file(k)), [pwd '\'], ''), issues.line(k), char(issues.rule(k)), char(issues.message(k)));
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+issues = MatlabLint.lint('.', struct('OutputToConsole', false));
+fprintf('TOTAL=%d\n', height(issues));
+if height(issues) > 0
+    [G, id] = findgroups(string(issues.rule));
+    for k = 1:numel(id)
+        fprintf('  %s: %d\n', id(k), sum(G == k));
+    end
+    fprintf('\nIssues:\n');
+    for k = 1:height(issues)
+        fprintf('  %s:%d %s %s\n', strrep(char(issues.file(k)), [pwd '\'], ''), issues.line(k), char(issues.rule(k)), char(issues.message(k)));
+    end
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+issues = MatlabLint.lint('.', struct('OutputToConsole', false));
+fprintf('TOTAL=%d\n', height(issues));
+if height(issues) > 0
+    [G, id] = findgroups(string(issues.rule));
+    for k = 1:numel(id)
+        fprintf('  %s: %d\n', id(k), sum(G == k));
+    end
+    for k = 1:height(issues)
+        fprintf('  %s:%d %s %s\n', strrep(char(issues.file(k)), [pwd '\'], ''), issues.line(k), char(issues.rule(k)), char(issues.message(k)));
+    end
+end
+feature('HotLinks',0);cd('c:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint')
+feature('HotLinks',0);clear functions; rehash; addpath(genpath('.'));
+issues = MatlabLint.lint('.', struct('OutputToConsole', false));
+fprintf('TOTAL=%d\n', height(issues));
+if height(issues) > 0
+    for k = 1:height(issues)
+        fprintf('  %s:%d %s %s\n', strrep(char(issues.file(k)), [pwd '\'], ''), issues.line(k), char(issues.rule(k)), char(issues

@@ -15,7 +15,16 @@
 %[text] configPath(1,1)string
 function configPath = addRule(ruleId, varargin)
 
-[configPathOrDir, enabled] = iParseOptionalArgs(varargin{:});
+configPathOrDir = "";
+enabled = true;
+for i = 1:numel(varargin)
+    v = varargin{i};
+    if islogical(v)
+        enabled = logical(v);
+    else
+        configPathOrDir = string(v);
+    end
+end
 
 spec = strtrim(ruleId);
 if strlength(spec) == 0
@@ -23,7 +32,15 @@ if strlength(spec) == 0
 end
 
 if strlength(configPathOrDir) == 0
-    p = iGetUserConfigPath();
+    if ispc
+        appdataPath = getenv('APPDATA');
+        if isempty(appdataPath)
+            appdataPath = iUserHome();
+        end
+        p = fullfile(appdataPath, 'MATLAB-Lint', '.matlablint.json');
+    else
+        p = fullfile(iUserHome(), '.config', 'matlab-lint', '.matlablint.json');
+    end
 else
     p = iNormalizeConfigPath(configPathOrDir);
 end
@@ -37,7 +54,11 @@ else
     cfg = struct;
 end
 
-entry = iBuildRuleEntry(spec, enabled);
+    if strlength(spec) == 0
+        error('MatlabLint:EmptyRuleId', 'ruleId 不能为空。');
+    end
+    entry = struct('Id', string(spec), ...
+        'Enabled', logical(enabled));
 if ~isfield(cfg, 'Rules') || ~isstruct(cfg.Rules) || isempty(cfg.Rules)
     cfg.Rules = entry;
 else
@@ -61,27 +82,6 @@ fclose(fid);
 configPath = string(p);
 end
 
-function [configPathOrDir, enabled] = iParseOptionalArgs(varargin)
-configPathOrDir = "";
-enabled = true;
-
-for i = 1:numel(varargin)
-    v = varargin{i};
-    if islogical(v)
-        enabled = logical(v);
-    else
-        configPathOrDir = string(v);
-    end
-end
-end
-
-function entry = iBuildRuleEntry(spec, enabled)
-if strlength(spec) == 0
-    error('MatlabLint:EmptyRuleId', 'ruleId 不能为空。');
-end
-entry = struct('Id', string(spec), ...
-    'Enabled', logical(enabled));
-end
 
 function p = iNormalizeConfigPath(target)
 t = string(target);
@@ -113,17 +113,6 @@ if ~isfolder(d)
 end
 end
 
-function p = iGetUserConfigPath()
-if ispc
-    appdataPath = getenv('APPDATA');
-    if isempty(appdataPath)
-        appdataPath = iUserHome();
-    end
-    p = fullfile(appdataPath, 'MATLAB-Lint', '.matlablint.json');
-else
-    p = fullfile(iUserHome(), '.config', 'matlab-lint', '.matlablint.json');
-end
-end
 
 function p = iUserHome()
 if ispc
@@ -138,3 +127,5 @@ end
 
 %[appendix]{"version":"1.0"}
 %---
+
+

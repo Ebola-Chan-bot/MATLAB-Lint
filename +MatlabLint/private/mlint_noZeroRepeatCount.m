@@ -47,7 +47,16 @@ while scanPos <= strlength(string(stmt))
         for k = 1:numel(repeats)
             if iHasZeroNumericLiteral(char(repeats(k)))
                 hasViolation = true;
-                frag = strtrim(stmt(iCallStart(stmt, openPos):closePos));
+                callStart = openPos;
+                for startScan = openPos-1:-1:1
+                    ch = stmt(startScan);
+                    if isstrprop(ch, 'alphanum') || ch == '_'
+                        callStart = startScan;
+                    else
+                        break;
+                    end
+                end
+                frag = strtrim(stmt(callStart:closePos));
                 if strlength(string(frag)) == 0
                     frag = string(fnName) + "(...)";
                 end
@@ -170,14 +179,3 @@ for i = 1:numel(chars)
 end
 end
 
-function startPos = iCallStart(stmt, openPos)
-startPos = openPos;
-for i = openPos-1:-1:1
-    ch = stmt(i);
-    if isstrprop(ch, 'alphanum') || ch == '_'
-        startPos = i;
-    else
-        break;
-    end
-end
-end
