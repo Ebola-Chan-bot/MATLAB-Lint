@@ -1,4 +1,4 @@
-function args = splitTopLevelArgs(text)
+function args = splitTopLevelArgs(ArgText)
 parts = MATLAB.DataTypes.ArrayBuilder();
 startPos = 1;
 
@@ -9,13 +9,13 @@ inSingle = false;
 inDouble = false;
 
 i = 1;
-n = numel(text);
+n = numel(ArgText);
 while i <= n
-    ch = text(i);
+    ch = ArgText(i);
     if ch == '"'
         if ~inSingle
             if inDouble
-                if i < n && text(i + 1) == '"'
+                if i < n && ArgText(i + 1) == '"'
                     i = i + 2;
                     continue;
                 end
@@ -34,7 +34,7 @@ while i <= n
             continue;
         end
         if inSingle
-            if i < n && text(i + 1) == ''''
+            if i < n && ArgText(i + 1) == ''''
                 i = i + 2;
                 continue;
             end
@@ -47,27 +47,30 @@ while i <= n
     end
 
     if ~inSingle && ~inDouble
-        if ch == '('
-            dParen = dParen + 1;
-        elseif ch == ')'
-            dParen = dParen - 1;
-        elseif ch == '['
-            dBracket = dBracket + 1;
-        elseif ch == ']'
-            dBracket = dBracket - 1;
-        elseif ch == '{'
-            dBrace = dBrace + 1;
-        elseif ch == '}'
-            dBrace = dBrace - 1;
-        elseif ch == ',' && dParen == 0 && dBracket == 0 && dBrace == 0
-            parts.Append(string(strtrim(text(startPos:i-1))));
-            startPos = i + 1;
+        switch ch
+            case '('
+                dParen = dParen + 1;
+            case ')'
+                dParen = dParen - 1;
+            case '['
+                dBracket = dBracket + 1;
+            case ']'
+                dBracket = dBracket - 1;
+            case '{'
+                dBrace = dBrace + 1;
+            case '}'
+                dBrace = dBrace - 1;
+            case ','
+                if dParen == 0 && dBracket == 0 && dBrace == 0
+                    parts.Append(string(strtrim(ArgText(startPos:i-1))));
+                    startPos = i + 1;
+                end
         end
     end
 
     i = i + 1;
 end
 
-parts.Append(string(strtrim(text(startPos:end))));
+parts.Append(string(strtrim(ArgText(startPos:end))));
 args = string(parts.Harvest());
 end

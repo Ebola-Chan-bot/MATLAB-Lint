@@ -5,13 +5,13 @@ if nargin == 0
     issues = "tiledlayout 仅一个 tile 时建议去掉 layout";
     return;
 end
-lines = splitlines(string(fileread(filePath)));
+AllLines = splitlines(string(fileread(filePath)));
 
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
-nLines = numel(lines);
+nLines = numel(AllLines);
 for i = 1:nLines
-    s = strtrim(char(lines(i)));
+    s = strtrim(char(AllLines(i)));
     if isempty(s) || startsWith(s, '%')
         continue;
     end
@@ -21,7 +21,7 @@ for i = 1:nLines
     end
     tileCount = 0;
     for j = i+1:nLines
-        sj = strtrim(char(lines(j)));
+        sj = strtrim(char(AllLines(j)));
         if isempty(sj) || startsWith(sj, '%')
             continue;
         end

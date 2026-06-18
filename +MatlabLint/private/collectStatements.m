@@ -1,12 +1,12 @@
-function [stmts, stmtLines] = collectStatements(lines)
-%collectStatements 将多行代码合并为逻辑语句（处理 ... 续行），返回语句文本与起始行号。
+function data = collectStatements(AllLines)
+%collectStatements 将多行代码合并为逻辑语句（处理 ... 续行），返回 table(data.stmt, data.line)。
 builder = MATLAB.DataTypes.InsertiveTable();
 
 buf = "";
 startLine = 0;
 
-for i = 1:numel(lines)
-    code = codeLine(lines(i));
+for i = 1:numel(AllLines)
+    code = codeLine(AllLines(i));
     if isempty(code)
         continue;
     end
@@ -35,12 +35,5 @@ for i = 1:numel(lines)
     startLine = 0;
 end
 
-tblOut = table(builder);
-if isempty(tblOut)
-    stmts = strings(0, 1);
-    stmtLines = zeros(0, 1);
-else
-    stmts = string(tblOut{:, 'stmt'});
-    stmtLines = double(tblOut{:, 'line'});
-end
+data = table(builder);
 end

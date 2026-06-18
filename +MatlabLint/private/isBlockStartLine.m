@@ -1,5 +1,5 @@
-function tf = isBlockStartLine(s)
-cs = codeLine(s);
+function tf = isBlockStartLine(cs)
+cs = codeLine(cs);
 tf = startsWith(cs, "if " | "for " | "parfor " | "while " | "switch " | "classdef " | ...
        "spmd" | "try " | "methods " | "properties " | "events " | "enumeration ") || ...
     any(strcmp(cs, ["try", "methods", "properties", "events", "enumeration"]));

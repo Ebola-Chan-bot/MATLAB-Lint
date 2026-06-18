@@ -5,20 +5,20 @@ if nargin == 0
     issues = "连续内容相同且最后一步为跳出（continue/break/return）的 if 链应合并";
     return;
 end
-lines = splitlines(string(fileread(filePath)));
+AllLines = splitlines(string(fileread(filePath)));
 
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
-nLines = numel(lines);
+nLines = numel(AllLines);
 i = 1;
 while i <= nLines
-    s = strtrim(char(lines(i)));
+    s = strtrim(char(AllLines(i)));
     if isempty(s) || startsWith(s, '%')
         i = i + 1;
         continue;
     end
 
-    [ok, blockEnd, skipAction, bodyPrefixKey] = iParseSimpleSkipIfBlock(i, lines, nLines);
+    [ok, blockEnd, skipAction, bodyPrefixKey] = iParseSimpleSkipIfBlock(i, AllLines, nLines);
     if ~ok
         i = i + 1;
         continue;
@@ -30,13 +30,13 @@ while i <= nLines
     j = blockEnd + 1;
 
     while j <= nLines
-        sj = strtrim(char(lines(j)));
+        sj = strtrim(char(AllLines(j)));
         if isempty(sj) || startsWith(sj, '%')
             j = j + 1;
             continue;
         end
 
-        [ok2, blockEnd2, skipAction2, bodyPrefixKey2] = iParseSimpleSkipIfBlock(j, lines, nLines);
+        [ok2, blockEnd2, skipAction2, bodyPrefixKey2] = iParseSimpleSkipIfBlock(j, AllLines, nLines);
         if ~ok2 || skipAction2 ~= skipAction || bodyPrefixKey2 ~= bodyPrefixKey
             break;
         end
@@ -59,20 +59,20 @@ issues = table(issuesBuilder);
 end
 
 % -------------------------------------------------------------------------
-function [ok, endLine, skipAction, bodyPrefixKey] = iParseSimpleSkipIfBlock(startLine, lines, nLines)
+function [ok, endLine, skipAction, bodyPrefixKey] = iParseSimpleSkipIfBlock(headerEnd, AllLines, nLines)
 ok = false;
 endLine = 0;
 skipAction = "";
 bodyPrefixKey = "";
 
-if startLine < 1 || startLine > nLines || ...
-   ~startsWith(codeLine(lines(startLine)), "if ")
+if headerEnd < 1 || headerEnd > nLines || ...
+   ~startsWith(codeLine(AllLines(headerEnd)), "if ")
     return;
 end
 
 depth = 0;
-for k = startLine:nLines
-    sk = strtrim(char(lines(k)));
+for k = headerEnd:nLines
+    sk = strtrim(char(AllLines(k)));
     if isempty(sk) || startsWith(sk, '%')
         continue;
     end
@@ -93,10 +93,10 @@ if endLine == 0
     return;
 end
 
-bodyVector = MATLAB.Containers.Vector();
-headerEnd = findIfHeaderEnd(startLine, endLine, lines);
+body = MATLAB.Containers.Vector();
+headerEnd = findIfHeaderEnd(headerEnd, endLine, AllLines);
 for k = headerEnd + 1:endLine - 1
-    sk = strtrim(char(lines(k)));
+    sk = strtrim(char(AllLines(k)));
     if isempty(sk) || startsWith(sk, '%')
         continue;
     end
@@ -104,10 +104,10 @@ for k = headerEnd + 1:endLine - 1
     if startsWith(sk, "elseif ") || strcmp(sk, "else")
         return;
     end
-    bodyVector.PushBack(string(sk));
+    body.PushBack(string(sk));
 end
 
-body = string(bodyVector.Data);
+body = string(body.Data);
 
 if isempty(body)
     return;
@@ -138,8 +138,7 @@ end
 
 parts = strings(numel(prefix), 1);
 for i = 1:numel(prefix)
-    part = lower(strtrim(string(prefix(i))));
-    part = replace(part, sprintf('\t'), " ");
+    part = replace(lower(strtrim(string(prefix(i)))), sprintf('\t'), " ");
     while contains(part, "  ")
         part = replace(part, "  ", " ");
     end

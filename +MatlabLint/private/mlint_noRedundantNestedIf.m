@@ -6,30 +6,30 @@ if nargin == 0
     return;
 end
 
-lines = splitlines(string(fileread(filePath)));
+AllLines = splitlines(string(fileread(filePath)));
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
-nLines = numel(lines);
+nLines = numel(AllLines);
 i = 1;
 while i <= nLines
-    s = strtrim(char(lines(i)));
+    s = strtrim(char(AllLines(i)));
     if isempty(s) || startsWith(s, '%')
         i = i + 1;
         continue;
     end
 
-    [ok, endLine] = iParseIfBlock(i, lines, nLines);
+    [ok, endLine] = iParseIfBlock(i, AllLines, nLines);
     if ~ok
         i = i + 1;
         continue;
     end
 
     tf = false;
-    [innerIfStart, topPlainCount, hasTopElse] = iTopLevelBodySummary(i, endLine, lines);
+    [innerIfStart, topPlainCount, hasTopElse] = iTopLevelBodySummary(i, endLine, AllLines);
     if ~hasTopElse && topPlainCount == 0 && innerIfStart > 0
-        [okInner, innerEnd] = iParseIfBlock(innerIfStart, lines, endLine - 1);
+        [okInner, innerEnd] = iParseIfBlock(innerIfStart, AllLines, endLine - 1);
         if okInner
-            [innerNestedIfStart, innerTopPlainCount, innerHasTopElse] = iTopLevelBodySummary(innerIfStart, innerEnd, lines);
+            [innerNestedIfStart, innerTopPlainCount, innerHasTopElse] = iTopLevelBodySummary(innerIfStart, innerEnd, AllLines);
             if ~innerHasTopElse && innerNestedIfStart == 0 && innerTopPlainCount > 0
                 tf = true;
             end
@@ -48,15 +48,15 @@ end
 issues = table(issuesBuilder);
 end
 
-function [firstIfStart, topPlainCount, hasTopElse] = iTopLevelBodySummary(startLine, endLine, lines)
+function [firstIfStart, topPlainCount, hasTopElse] = iTopLevelBodySummary(headerEnd, endLine, AllLines)
 firstIfStart = 0;
 topPlainCount = 0;
 hasTopElse = false;
 
 depth = 0;
-headerEnd = findIfHeaderEnd(startLine, endLine, lines);
+headerEnd = findIfHeaderEnd(headerEnd, endLine, AllLines);
 for k = headerEnd + 1:endLine - 1
-    sk = strtrim(char(lines(k)));
+    sk = strtrim(char(AllLines(k)));
     if isempty(sk) || startsWith(sk, '%')
         continue;
     end
@@ -100,17 +100,17 @@ for k = headerEnd + 1:endLine - 1
 end
 end
 
-function [ok, endLine] = iParseIfBlock(startLine, lines, nLines)
+function [ok, endLine] = iParseIfBlock(startLine, AllLines, nLines)
 ok = false;
 endLine = 0;
 
-if startLine < 1 || startLine > nLines || ~startsWith(string(codeLine(strtrim(char(lines(startLine))))), "if ")
+if startLine < 1 || startLine > nLines || ~startsWith(string(codeLine(strtrim(char(AllLines(startLine))))), "if ")
     return;
 end
 
 depth = 0;
 for k = startLine:nLines
-    sk = strtrim(char(lines(k)));
+    sk = strtrim(char(AllLines(k)));
     if isempty(sk) || startsWith(sk, '%')
         continue;
     end

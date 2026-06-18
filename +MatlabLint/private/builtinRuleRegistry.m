@@ -8,7 +8,7 @@ if ~isempty(cachedBuiltinFns) && isstruct(cachedBuiltinFns) && ...
     return;
 end
 
-idsVector = MATLAB.Containers.Vector();
+ids = MATLAB.Containers.Vector();
 
 % 排序保证 fieldnames 顺序稳定，避免不同文件系统顺序差异。
 names = sort({dir(fullfile(fileparts(mfilename('fullpath')), 'mlint_*.m')).name});
@@ -17,10 +17,10 @@ for i = 1:numel(names)
     if ~isValidIdentifier(rid)
         continue;
     end
-    idsVector.PushBack(rid);
+    ids.PushBack(rid);
 end
 
-ids = string(idsVector.Data(:));
+ids = string(ids.Data(:));
 
 if isempty(ids)
     builtinFns = struct;

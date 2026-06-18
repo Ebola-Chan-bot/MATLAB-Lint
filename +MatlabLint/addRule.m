@@ -13,7 +13,7 @@
 %[text] enabled(1,1)logical
 %[text] ## 返回值
 %[text] configPath(1,1)string
-function configPath = addRule(ruleId, varargin)
+function configPath = addRule(spec, varargin)
 
 configPathOrDir = "";
 enabled = true;
@@ -26,7 +26,7 @@ for i = 1:numel(varargin)
     end
 end
 
-spec = strtrim(ruleId);
+spec = strtrim(spec);
 if strlength(spec) == 0
     error('MatlabLint:EmptyRuleId', 'ruleId 不能为空。');
 end
@@ -83,8 +83,8 @@ configPath = string(p);
 end
 
 
-function p = iNormalizeConfigPath(target)
-t = string(target);
+function p = iNormalizeConfigPath(t)
+t = string(t);
 if isfolder(t)
     p = fullfile(char(t), '.matlablint.json');
     return;
@@ -103,8 +103,8 @@ if isempty(folderPart)
 end
 end
 
-function iEnsureParentDir(configPath)
-d = fileparts(configPath);
+function iEnsureParentDir(d)
+d = fileparts(d);
 if isempty(d)
     return;
 end

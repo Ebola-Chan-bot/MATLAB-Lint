@@ -6,9 +6,9 @@ if isempty(override)
     return;
 end
 
-fields = fieldnames(override);
-for i = 1:numel(fields)
-    name = fields{i};
+FieldNames = fieldnames(override);
+for i = 1:numel(FieldNames)
+    name = FieldNames{i};
     if strcmp(name, 'Rules')
         if isfield(out, name)
             out.(name) = mergeRuleEntries(out.(name), override.(name));

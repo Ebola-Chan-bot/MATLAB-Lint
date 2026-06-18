@@ -1,380 +1,148 @@
 function issues = mlint_singleUseVariable(filePath)
-%mlint_singleUseVariable CFG 路径枚举驱动的单次使用检测。
+%mlint_singleUseVariable 基于 mtree + digraph 的单次使用检测。
 % 规则：
-%  1. 仅当变量在下一次赋值前在所有执行路径上都零引用，才报"未使用"
-%  2. 仅当全路径仅一次引用且赋值到该引用的路径无控制流分叉，才报"仅使用一次"
+%  1) 赋值后可达范围内零引用 -> 未使用
+%  2) 赋值后可达范围内恰好一次引用 -> 仅使用一次
 
 if nargin == 0
     issues = "禁止一次性中间变量（赋值后仅用一次/从未使用）";
     return;
 end
 
-lines = splitlines(string(fileread(filePath)));
-nLines = numel(lines);
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
-% ── 全局结构解析 ──
-    tblBuilder = MATLAB.DataTypes.InsertiveTable();
-    ctrlStack  = MATLAB.Containers.Vector();
-    loopStack  = MATLAB.Containers.Vector();
-    fnStack    = MATLAB.Containers.Vector();
-    
-    for i = 1:nLines
-        tokens = iExtractCtrlTokens(char(lines(i)));
-        for t = 1:numel(tokens)
-            tok = tokens{t};
-            if ismember(tok, ["function","if","for","parfor","while","switch","try"])
-                ctrlStack.PushBack(i);
-                if ismember(tok, ["for","parfor","while"])
-                    loopStack.PushBack(i);
-                end
-                if tok == "function"
-                    fnStack.PushBack(i);
-                end
-            elseif tok == "end"
-                if ~isempty(ctrlStack.Data)
-                    cs = ctrlStack.Back();
-                    ctrlStack.PopBack();
-                    isLoop = ~isempty(loopStack.Data) && loopStack.Back() == cs;
-                    isFn   = ~isempty(fnStack.Data) && fnStack.Back() == cs;
-                    tblBuilder(end+1, {'ctrlStart','ctrlEnd','loopStart','loopEnd','fnEnd'}) = ...
-                        {cs, i, ternary(isLoop, cs, 0), ternary(isLoop, i, 0), ternary(isFn, i, 0)};
-                    if isLoop
-                        loopStack.PopBack();
-                    end
-                    if isFn
-                        fnStack.PopBack();
-                    end
-                end
-            end
-        end
-    end
-    
-    ctrlFlow = table(tblBuilder);
-ctrlBlocks = iCtrlBlocksFromTable(ctrlFlow);
-loopBlocks = iLoopBlocksFromTable(ctrlFlow);
-functionEnds = iFunctionEndsFromTable(ctrlFlow);
-    v = MATLAB.Containers.Vector();
-    for i = 1:nLines
-        code = iCodeOnlyLine(char(lines(i)));
-        if startsWith(code, "persistent ")
-            rest = strtrim(extractAfter(string(code), "persistent "));
-            for token = split(rest, " ")'
-                tk = strtrim(token);
-                if tk ~= "" && tk ~= "..."
-                    v.PushBack(tk);
-                end
-            end
-        end
-    end
-    persistentVars = string(v.Data(:));
-    v = MATLAB.Containers.Vector();
-    for i = 1:nLines
-        code = iCodeOnlyLine(char(lines(i)));
-        if startsWith(code, "for ")
-            tok = extractBetween(string(code), "for ", " =");
-            if ~isempty(tok) && tok ~= ""
-                v.PushBack(strtrim(tok));
-            end
-        end
-    end
-    forLoopVars = string(v.Data(:));
-    v = MATLAB.Containers.Vector();
-    for i = 1:nLines
-        code = iCodeOnlyLine(strtrim(char(lines(i))));
-        if ~startsWith(code, "function ")
-            continue;
-        end
-        rest = strtrim(extractAfter(string(code), "function "));
-        if contains(rest, "=")
-            lhs = strtrim(extractBefore(rest, "="));
-            if lhs ~= ""
-                if startsWith(lhs, "[")
-                    lhs = extractBetween(lhs, "[", "]");
-                end
-                for p = split(lhs, ",")'
-                    pv = strtrim(p);
-                    if pv ~= "" && ~startsWith(pv, "~")
-                        v.PushBack(pv);
-                    end
-                end
-            end
-        end
-    end
-    outputVars = string(v.Data(:));
-    % 收集 properties 块中定义的变量名，这些是类属性，不应被检查。
-    v = MATLAB.Containers.Vector();
-    inProps = false;
-    for i = 1:nLines
-        code = codeLine(strtrim(char(lines(i))));
-        if strlength(code) == 0
-            continue;
-        end
-        if startsWith(lower(code), "properties")
-            inProps = true;
-            continue;
-        end
-        if inProps
-            cs2 = strtrim(char(lines(i)));
-            if isempty(cs2) || startsWith(cs2, '%')
-                continue;
-            end
-            if strcmp(code, "end")
-                inProps = false;
-                continue;
-            end
-            % 简单属性名（可选默认值）：name 或 name = ...
-            eqPos = strfind(code, '=');
-            if isempty(eqPos)
-                name = code;
-            else
-                name = strtrim(code(1:eqPos(1)-1));
-            end
-            nc = char(name);
-            if ~isempty(nc) && (isstrprop(nc(1), 'alpha') || nc(1) == '_')
-                v.PushBack(string(name));
-            end
-        end
-    end
-    propertyVars = string(v.Data(:));
-    builder = MATLAB.DataTypes.ArrayBuilder();
-    for i = 1:nLines
-        cs = strtrim(char(lines(i)));
-        if isempty(cs) || startsWith(cs, '%')
-            continue;
-        end
-        code = char(MatlabLint.stripStringLiterals(cs));
-        eqPos = strfind(code, ' = ');
-        if isempty(eqPos)
-            continue;
-        end
-        eqPos = eqPos(1);
-        lhs = strtrim(string(code(1:eqPos-1)));
-        if strlength(lhs) == 0
-            continue;
-        end
-        lhsMatch = extract(lhs, lettersPattern(1) + ...
-            asManyOfPattern(characterListPattern('A':'Z') | ...
-            characterListPattern('a':'z') | characterListPattern('0':'9') | "_", 0));
-        if isempty(lhsMatch) || numel(lhsMatch) ~= 1 || strlength(lhsMatch) ~= strlength(lhs)
-            continue;
-        end
-        builder.Append(struct('line', i, 'var', string(lhsMatch), ...
-            'rhs', strtrim(string(code(eqPos+3:end))), 'code', string(code)));
-    end
-    assigns = builder.Harvest();
-    if isempty(assigns)
-        assigns = struct('line', {}, 'var', {}, 'rhs', {}, 'code', {});
-    end
-    assignments = assigns;
+FullTree = List(mtree(filePath, '-file'));
 
-delim = [" ", newline, ";", ",", "(", ")", "=", "+", "-", "*", "/", "~", ...
-         "<", ">", "&", "|", "[", "]", "{", "}", ".", "'", ":", "%"];
+funcs = MatlabLint.parseFunctions(filePath);
+if isempty(funcs)
+    issues = table(issuesBuilder);
+    return;
+end
 
-% ── 为当前函数构建语句级 CFG ──
-    % 为每条有效代码行构建后继列表和行类型。
-    succ = cell(nLines, 1);
-    lineKinds = strings(nLines, 1);
-    
-    % 第一遍：标记行类型
-    for i = 1:nLines
-        code = iCodeOnlyLine(char(lines(i)));
-        if strlength(code) == 0
-            continue;
-        end
-        if startsWith(code, "function ")
-            lineKinds(i) = "function";
-        elseif startsWith(code, "if ")
-            lineKinds(i) = "if";
-        elseif startsWith(code, "elseif ")
-            lineKinds(i) = "elseif";
-        elseif strcmp(code, "else")
-            lineKinds(i) = "else";
-        elseif startsWith(code, "for " | "while ")
-            lineKinds(i) = "loop";
-        elseif startsWith(code, "switch ")
-            lineKinds(i) = "switch";
-        elseif startsWith(code, "case ") || strcmp(code, "otherwise")
-            lineKinds(i) = "case";
-        elseif startsWith(code, "try")
-            lineKinds(i) = "try";
-        elseif startsWith(code, "catch")
-            lineKinds(i) = "catch";
-        elseif strcmp(code, "end")
-            lineKinds(i) = "end";
-        elseif strcmp(code, "break") || strcmp(code, "break;")
-            lineKinds(i) = "break";
-        elseif strcmp(code, "continue") || strcmp(code, "continue;")
-            lineKinds(i) = "continue";
-        elseif strcmp(code, "return") || strcmp(code, "return;")
-            lineKinds(i) = "return";
-        else
-            lineKinds(i) = "stmt";
+    fnIdx = FullTree.mtfind('Kind', 'FUNCTION').indices;
+
+% 构建每行语句 kind（由 AST 节点反推，不做关键字字符串识别）
+lineKindMap = dictionary;
+iMarkLineKinds(FullTree, lineKindMap);
+
+% 构建按变量聚合的引用计数（只统计 ID 读，不统计写）
+refMap = collectReadRefs(FullTree);
+
+for fi = 1:numel(funcs)
+    fStart = funcs(fi).startLine;
+    fEnd = funcs(fi).endLine;
+
+    fnNode = [];
+    for k = 1:numel(fnIdx)
+        nd = FullTree.select(fnIdx(k));
+        if double(nd.lineno) == fStart
+            fnNode = nd;
+            break;
         end
     end
-    
-    % 修正：单行自闭合控制结构（如 if..., end）不参与嵌套匹配
-    for i = 1:nLines
-        if ~ismember(lineKinds(i), ["if","loop","switch","try","function"])
-            continue;
-        end
-        tokens = iExtractCtrlTokens(char(lines(i)));
-        balance = 0;
-        for t = 1:numel(tokens)
-            tok = tokens{t};
-            if ismember(tok, ["if","for","parfor","while","switch","try","function"])
-                balance = balance + 1;
-            elseif tok == "end"
-                balance = balance - 1;
-            end
-        end
-        if balance == 0
-            lineKinds(i) = "stmt";  % 该行自闭合，不产生跨行分支
-        end
-    end
-    
-    % 第二遍：建立后继边
-    for i = 1:nLines
-        if strlength(lineKinds(i)) == 0
-            continue;
-        end
-    
-        next = iFindNextLine(lineKinds, i + 1, nLines);
-    
-        switch lineKinds(i)
-            case "stmt"
-                succ{i} = next;
-                if ~isempty(next)
-                    if ismember(lineKinds(next), ["elseif","else","catch","case"])
-                        ownerHdr = iFindOwningBranchHeader(lineKinds, next, nLines);
-                        if ownerHdr > 0
-                            succ{i} = iFindNextLine(lineKinds, iFindMatchingEnd(lineKinds, ownerHdr, nLines) + 1, nLines);
-                        end
-                    end
-                end
-            case {"case","catch","else"}
-                % 仅由父头部可达；但从 end 回退时也应能继续
-                succ{i} = iFindNextLine(lineKinds, i + 1, nLines);
-            case {"if","elseif"}
-                % if/elseif header → then-body 或下一个分支头/if-chain之后
-                m = iFindMatchingEndOrElse(lineKinds, i, nLines);
-                if ismember(lineKinds(m), ["elseif","else"])
-                    falseTarget = double(m);
-                else
-                    falseTarget = iFindNextLine(lineKinds, m + 1, nLines);
-                end
-                succ{i} = [next, falseTarget];
-            case {"loop","switch","try"}
-                m = iFindMatchingEnd(lineKinds, i, nLines);
-                succ{i} = [next, iFindNextLine(lineKinds, m + 1, nLines)];
-            case "end"
-                % 函数尾 → 终端
-                if ismember(i, functionEnds)
-                    succ{i} = [];
-                else
-                    % 用 loopBlocks 精确判定是否为循环尾
-                    isLoopEnd = false;
-                    for b = 1:numel(loopBlocks.starts)
-                        if loopBlocks.ends(b) == i
-                            succ{i} = [loopBlocks.starts(b), iFindNextLine(lineKinds, i + 1, nLines)];
-                            isLoopEnd = true;
-                            break;
-                        end
-                    end
-                    if ~isLoopEnd
-                        succ{i} = iFindNextLine(lineKinds, i + 1, nLines);
-                    end
-                end
-            case "break"
-                loopHdr = iFindEnclosingLoopHeader(lineKinds, i);
-                if loopHdr > 0
-                    succ{i} = iFindNextLine(lineKinds, iFindMatchingEnd(lineKinds, loopHdr, nLines) + 1, nLines);
-                else
-                    succ{i} = [];  % 死路径
-                end
-            case "continue"
-                loopHdr = iFindEnclosingLoopHeader(lineKinds, i);
-                if loopHdr > 0
-                    succ{i} = double(loopHdr);
-                else
-                    succ{i} = [];
-                end
-            case "return"
-                succ{i} = [];  % 终端
-            otherwise
-                succ{i} = next;
-        end
-    end
-
-% ── 按变量分组 ──
-allVars = unique(string({assignments.var}));
-
-for v = 1:numel(allVars)
-    varName = allVars(v);
-    if any(persistentVars == varName) || any(forLoopVars == varName) || any(propertyVars == varName)
+    if isempty(fnNode)
         continue;
     end
-    isOutput = any(outputVars == varName);
 
-    % 该变量的全部赋值索引
-    varAssignIdx = find(string({assignments.var}) == varName);
+    outputVars = iGetFunctionOutputs(fnNode);
 
-    for ai = 1:numel(varAssignIdx)
-        a = varAssignIdx(ai);
-        assignLine = assignments(a).line;
-        rhs        = assignments(a).rhs;
+    persistentVars = iGetPersistentVars(FullTree, fStart, fEnd);
 
-        % 基础过滤
-        if iShouldAlwaysSkip2(assignments(a).code, rhs)
+    assignments = collectAssignments(FullTree, fStart, fEnd, true);
+    if isempty(assignments)
+        continue;
+    end
+
+    stmtLines = collectStmtLines(FullTree, fStart, fEnd, fEnd);
+    if isempty(stmtLines)
+        continue;
+    end
+
+    g = iBuildCfgDigraph(stmtLines, FullTree, lineKindMap);
+
+    whileHeadVars = iCollectWhileHeadVars(FullTree, fStart, fEnd);
+
+    allVars = unique(string({assignments.var}));
+    for vi = 1:numel(allVars)
+        varName = allVars(vi);
+        if any(persistentVars == varName)
+            continue;
+        end
+        isOutput = any(outputVars == varName);
+        aIdx = find(string({assignments.var}) == varName);
+        if isempty(aIdx)
             continue;
         end
 
-        % 同变量下一次赋值
-        [killLine, killIsOtherBranch] = iFindKillingAssignmentCFG(...
-            assignments, a, ctrlBlocks, lines, functionEnds);
+        % 所有同名赋值行均可作为 blocker（BFS 在 blocker 处计数但阻断遍历）。
+        % CFG 已负责跳过 if/else/switch 的兄弟分支，不在这里按文本分隔符排除。
+        varAssignLines = unique([assignments(aIdx).line]);
 
-        % 输出变量末次赋值 或 分支合并模式
-        if (isOutput && (killLine == 0 || killIsOtherBranch)) || killIsOtherBranch
-            continue;
+        varLineMap = [];
+        if isKey(refMap, char(varName))
+            varLineMap = refMap(char(varName));
         end
 
-        % 路径枚举（限制在当前函数范围内）
-        funcEnd = iEnclosingFuncEnd(assignLine, functionEnds, nLines);
-        result = iEnumeratePaths(lines, succ, lineKinds, ...
-            assignLine, killLine, killIsOtherBranch, ...
-            varName, isOutput, funcEnd, delim);
+        defUseLines = cell(1, numel(aIdx));
+        useOwnerCount = dictionary;
 
-        % 循环体赋值且紧跟 continue：跨迭代引用，豁免。
-        if iBlockEnd(assignLine, loopBlocks) > 0 && ~isOutput
-            nextLine = iFindNextLine(lineKinds, assignLine + 1, nLines);
-            if ~isempty(nextLine) && lineKinds(nextLine(1)) == "continue"
-                continue;
+        for ai = 1:numel(aIdx)
+            a = assignments(aIdx(ai));
+            % 保留赋值行之后的可达行 + 循环回边可达的早前行
+            reach = iReachableWithoutRedef(g, a.line, fEnd, varAssignLines(varAssignLines ~= a.line));
+            useLines = iIntersectRefLines(varLineMap, reach(reach ~= a.line & reach <= fEnd));
+            defUseLines{ai} = useLines;
+
+            for ui = 1:numel(useLines)
+                ln = useLines(ui);
+                % while 循环头读变量：循环体内对同变量的 def 不计入 owner count
+                skipOwner = false;
+                if isKey(whileHeadVars, ln)
+                    whv = whileHeadVars(ln);
+                    if ~isempty(whv) && any(whv == string(varName)) ...
+                            && iIsInsideBlock(FullTree, a.line, ln, 'WHILE')
+                        skipOwner = true;
+                    end
+                end
+                if ~skipOwner
+                    if isKey(useOwnerCount, ln)
+                        useOwnerCount(ln) = useOwnerCount(ln) + 1;
+                    else
+                        useOwnerCount(ln) = 1;
+                    end
+                end
             end
         end
 
-        % 规则 1: 全路径零引用？
-        if result.maxRefs == 0
-            issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, assignLine, ...
-                "mlint_singleUseVariable", ...
-                sprintf('变量"%s"已赋值但未使用', varName)}; %#ok<AGROW>
-        end
+        for ai = 1:numel(aIdx)
+            a = assignments(aIdx(ai));
 
-        % 规则 2: 恰好一次引用；仅当赋值到该引用之间存在“分支合并”才抑制报警
-        if result.totalRefOccurrences == 1
-            useLine = result.refLines(1);
-            % 0 = 隐式 return 使用 / 唯一引用在 return 上 → 跳过
-            if useLine == 0 || lineKinds(useLine) == "return" || ...
-                    iIsLoopCarriedSingleUse(assignLine, useLine, loopBlocks, lineKinds, lines) || ...
-                    iHasBranchMergeBetweenLines(assignLine, useLine, succ, lineKinds, funcEnd, killLine, killIsOtherBranch) || ...
-                    (contains(iCodeOnlyLine(char(lines(useLine))), varName + "(" | varName + " (") && ...
-                    endsWith(strtrim(rhs), ")" | ");"))
-                continue;
+            blockers = varAssignLines(varAssignLines ~= a.line);
+            useLines = defUseLines{ai};
+
+            [occ, firstUse] = iCountRefsOnLines(varLineMap, useLines);
+
+            if isempty(useLines)
+                if isOutput && iDefReachesFunctionExitWithoutRedef(g, a.line, blockers, fEnd, lineKindMap)
+                    continue;
+                end
+                issuesBuilder(end+1, {'file','line','rule','message'}) = { ...
+                    filePath, a.line, "mlint_singleUseVariable", ...
+                    sprintf('变量"%s"已赋值但未使用', varName)}; %#ok<AGROW>
+            elseif occ == 1
+                % 若唯一引用行被其他 def 共享，或为输出变量出口，或仅用作下标 → 豁免
+                if (isKey(useOwnerCount, firstUse) && useOwnerCount(firstUse) > 1) ...
+                        || (isOutput && iDefReachesFunctionExitWithoutRedef(g, a.line, blockers, fEnd, lineKindMap)) ...
+                        || iOnlyUseIsParenIndexing(FullTree, char(varName), firstUse) ...
+                        || iIsOperatorRhsWithDotUse(FullTree, char(varName), a.line, firstUse)
+                    continue;
+                end
+                if iIsMustUseWithoutRedef(g, a.line, firstUse, blockers, fEnd)
+                    issuesBuilder(end+1, {'file','line','rule','message'}) = { ...
+                        filePath, a.line, "mlint_singleUseVariable", ...
+                        sprintf('变量"%s"赋值后仅使用一次（第 %d 行），建议内联', varName, firstUse)}; %#ok<AGROW>
+                end
             end
-
-            issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, assignLine, ...
-                "mlint_singleUseVariable", ...
-                sprintf('变量"%s"赋值后仅使用一次（第 %d 行），建议内联', ...
-                varName, useLine)}; %#ok<AGROW>
         end
     end
 end
@@ -382,672 +150,1056 @@ end
 issues = table(issuesBuilder);
 end
 
-% ========================================================================
-%  CFG 构建
-% ========================================================================
+function iMarkLineKinds(FullTree, lineKindMap)
+kinds = [ ...
+    "IF", "ELSEIF", "ELSE", "FOR", "PARFOR", "WHILE", "SWITCH", ...
+    "CASE", "OTHERWISE", "TRY", "CATCH", "RETURN", "BREAK", "CONTINUE", ...
+    "EQUALS", "EXPR", "FUNCTION", "END"];
 
-
-function next = iFindNextLine(lineKinds, from, nLines)
-for i = from:nLines
-    if strlength(lineKinds(i)) > 0
-        next = double(i);
-        return;
-    end
-end
-next = zeros(1, 0);
-end
-
-function m = iFindMatchingEnd(lineKinds, start, nLines)
-depth = 0;
-for i = start:nLines
-    k = lineKinds(i);
-    if strlength(k) == 0
+for ki = 1:numel(kinds)
+    nodes = FullTree.mtfind('Kind', kinds(ki));
+    if count(nodes) == 0
         continue;
     end
-    if ismember(k, ["if","loop","switch","try","function"])
-        depth = depth + 1;
-    elseif k == "end"
-        depth = depth - 1;
-        if depth == 0
-            m = i;
-            return;
-        end
-    end
-end
-m = nLines;
-end
-
-function m = iFindMatchingEndOrElse(lineKinds, start, nLines)
-depth = 0;
-for i = start:nLines
-    k = lineKinds(i);
-    if strlength(k) == 0
-        continue;
-    end
-    if ismember(k, ["if","loop","switch","try","function"])
-        if i > start
-            depth = depth + 1;
-        end
-    elseif k == "end"
-        if depth == 0
-            m = i;
-            return;
-        end
-        depth = depth - 1;
-    elseif ismember(k, ["elseif","else"]) && depth == 0 && i > start
-        m = i;
-        return;
-    end
-end
-m = nLines;
-end
-
-function hdr = iFindOwningBranchHeader(lineKinds, branchLine, nLines)
-% 为 elseif/else/catch/case 找到其所属头部（if/try/switch）。
-hdr = 0;
-if branchLine < 1 || branchLine > nLines
-    return;
-end
-bk = lineKinds(branchLine);
-if bk == "elseif" || bk == "else"
-    target = "if";
-elseif bk == "catch"
-    target = "try";
-elseif bk == "case"
-    target = "switch";
-else
-    return;
-end
-
-depth = 0;
-for i = branchLine-1:-1:1
-    k = lineKinds(i);
-    if strlength(k) == 0
-        continue;
-    end
-    if k == "end"
-        depth = depth + 1;
-    elseif ismember(k, ["if","loop","switch","try","function"])
-        if depth == 0
-            if k == target
-                hdr = i;
-            end
-            return;
-        end
-        depth = depth - 1;
-    end
-end
-end
-
-function hdr = iFindEnclosingLoopHeader(lineKinds, line)
-% 从 line 往回找第一个 loop 头（最近的闭合循环）
-for i = line:-1:1
-    k = lineKinds(i);
-    if strlength(k) == 0
-        continue;
-    end
-    if ismember(k, ["if","loop","switch","try","function"]) && k == "loop"
-        hdr = i;
-        return;
-    end
-end
-hdr = 0;
-end
-
-% ========================================================================
-%  路径枚举
-% ========================================================================
-
-function result = iEnumeratePaths(lines, succ, lineKinds, ...
-        startLine, killLine, killIsOtherBranch, varName, isOutput, nLines, delim)
-% 节点引用预计算 + BFS：每个节点最多访问一次，不依赖路径枚举。
-% 返回 minRefs/maxRefs/totalDistinctRefs 等结果。
-
-result = struct('minRefs', 0, 'maxRefs', 0, ...
-    'totalDistinctRefs', 0, 'totalRefOccurrences', 0, 'refLines', [], ...
-    'pathToRefIsLinear', false, ...
-    'pathWithZeroRefsIsDead', false);
-
-if startLine > nLines
-    return;
-end
-
-% 确定 effectiveEnd
-stopAtKillLine = false;
-if killLine > 0 && ~killIsOtherBranch
-    if killLine <= startLine
-        stopAtKillLine = true;
-        effectiveEnd = nLines;
-    else
-        effectiveEnd = killLine - 1;
-    end
-else
-    effectiveEnd = nLines;
-end
-
-if ~stopAtKillLine && startLine > effectiveEnd
-    result.pathWithZeroRefsIsDead = true;
-    return;
-end
-
-% ── 预计算每个节点的引用计数 ──
-nodeRefCount = zeros(nLines, 1);
-for i = 1:nLines
-    if strlength(lineKinds(i)) == 0
-        continue;
-    end
-    c = iCountVarRefsOnLine(lines(i), varName, delim, ...
-        i == killLine && killLine > 0);
-    if isOutput && lineKinds(i) == "return"
-        c = c + 1;
-    end
-    nodeRefCount(i) = c;
-end
-
-% ── BFS 从起点探索所有可达节点 ──
-visited = false(nLines, 1);
-if startLine >= 1 && startLine <= nLines && ~isempty(succ{startLine})
-    queue = succ{startLine};
-else
-    queue = iFindNextLine(lineKinds, startLine + 1, nLines);
-end
-queue = unique(queue(queue > 0 & queue <= nLines));
-if isempty(queue)
-    return;
-end
-visited(queue) = true;
-
-totalRefLines = [];
-totalRefOccurrences = 0;
-branchingSeen = false;
-head = 1;
-while head <= numel(queue)
-    ln = queue(head);
-    head = head + 1;
-
-    if ln > effectiveEnd
-        if isOutput
-            totalRefLines = union(totalRefLines, 0);
-        end
-        continue;
-    end
-
-    if stopAtKillLine && ln == killLine
-        continue;
-    end
-
-    if nodeRefCount(ln) > 0
-        totalRefLines = union(totalRefLines, ln);
-        totalRefOccurrences = totalRefOccurrences + nodeRefCount(ln);
-    end
-
-    nxt = succ{ln};
-    if isempty(nxt)
-        continue;
-    end
-
-    if numel(nxt) > 1 || ismember(lineKinds(ln), ["if","elseif","loop","switch","try","function","end"])
-        branchingSeen = true;
-    end
-
-    for ni = 1:numel(nxt)
-        to = nxt(ni);
-        if to > 0 && to <= nLines && ~visited(to)
-            visited(to) = true;
-            queue(end+1) = to; %#ok<AGROW>
-        end
-    end
-end
-
-result.maxRefs = numel(totalRefLines);
-result.minRefs = result.maxRefs;  % BFS 不区分路径，min=max
-result.totalDistinctRefs = result.maxRefs;
-result.totalRefOccurrences = totalRefOccurrences;
-result.refLines = totalRefLines;
-result.pathToRefIsLinear = ~branchingSeen && result.totalDistinctRefs <= 1;
-result.pathWithZeroRefsIsDead = false;
-end
-
-function c = iCountVarRefsOnLine(lineText, varName, delim, isKillLine)
-sj = strtrim(char(lineText));
-if isempty(sj) || startsWith(sj, '%')
-    c = 0;
-    return;
-end
-code = char(MatlabLint.stripStringLiterals(sj));
-if isKillLine
-    eqj = iFindAssignmentEqPos(code);
-    if eqj > 0
-        c = sum(split(strtrim(string(code(eqj+1:end))), delim) == varName);
-    else
-        c = 0;
-    end
-else
-    c = sum(split(string(code), delim) == varName);
-    % 排除 LHS 同名（赋值目标不算引用）
-    if c > 0
-        eqj = iFindAssignmentEqPos(code);
-        if eqj > 0
-            lhsj = strtrim(string(code(1:eqj-1)));
-            if strlength(lhsj) > 0 && lhsj == varName
-                c = max(0, c - 1);
-            end
+    ix = nodes.indices;
+    for i = 1:numel(ix)
+        nd = FullTree.select(ix(i));
+        if ~isKey(lineKindMap, double(nd.lineno))
+            lineKindMap(double(nd.lineno)) = char(kinds(ki));
         end
     end
 end
 end
 
-function endLine = iBlockEnd(lineNo, blocks)
-endLine = 0;
-if isempty(blocks.starts)
-    return;
-end
-bestSpan = inf;
-for k = 1:numel(blocks.starts)
-    s = blocks.starts(k);
-    e = blocks.ends(k);
-    if s < lineNo && lineNo < e
-        span = e - s;
-        if span < bestSpan
-            bestSpan = span;
-            endLine = e;
-        end
-    end
-end
-end
-
-function tf = iIsLoopCarriedSingleUse(assignLine, useLine, loopBlocks, lineKinds, lines)
+function tf = iOnlyUseIsParenIndexing(FullTree, varName, useLine)
 tf = false;
-if useLine <= 0 || useLine >= assignLine || isempty(loopBlocks.starts)
+ix = FullTree.mtfind('Kind', 'ID').indices;
+if isempty(ix)
     return;
 end
 
-bestSpan = inf;
-for k = 1:numel(loopBlocks.starts)
-    s = loopBlocks.starts(k);
-    e = loopBlocks.ends(k);
-    inWhileHeader = (useLine == s) && lineKinds(s) == "loop" && startsWith(iCodeOnlyLine(char(lines(s))), "while ");
-    if (inWhileHeader || (s < useLine && useLine < assignLine)) && assignLine < e
-        span = e - s;
-        if span < bestSpan
-            bestSpan = span;
+for i = 1:numel(ix)
+    nd = FullTree.select(ix(i));
+    try
+        if double(nd.lineno) ~= useLine || string(nd.string) ~= string(varName)
+            continue;
+        end
+        p = Parent(nd);
+        if count(p) > 0 && strcmp(char(p.kind), 'SUBSCR')
             tf = true;
+            return;
+        end
+    catch
+    end
+end
+end
+
+function tf = iIsOperatorRhsWithDotUse(FullTree, varName, assignLine, useLine)
+% 豁免场景：赋值右端为运算符表达式（如 ix = A | B | C），
+% 且唯一引用处使用点索引（如 ix.indices）。运算符链无法直接接 .indices。
+tf = false;
+
+% 检查赋值处：EQUALS 节点的 RHS 是否为运算符
+ix = FullTree.mtfind('Kind', 'EQUALS').indices;
+if isempty(ix)
+    return;
+end
+for i = 1:numel(ix)
+    nd = FullTree.select(ix(i));
+    if double(nd.lineno) ~= assignLine
+        continue;
+    end
+    lhs = Left(nd);
+    if count(lhs) ~= 1 || string(lhs.string) ~= varName
+        continue;
+    end
+    rhs = Right(nd);
+    k = char(rhs.kind);
+    if ~ismember(k, ["OR","AND","SHORTOR","SHORTAND","PLUS","MINUS","MUL","DIV", ...
+            "LDIV","DOTMUL","DOTDIV","DOTLDIV","EXP","DOTEXP","EQ","NE", ...
+            "LT","GT","LE","GE","COLON"])
+        return;
+    end
+    % 检查引用处：唯一使用行为 useLine，变量 varName 的父节点是否为 DOT
+    ids = FullTree.mtfind('Kind', 'ID');
+    if count(ids) == 0
+        return;
+    end
+    iix = ids.indices;
+    for j = 1:numel(iix)
+        idNd = FullTree.select(iix(j));
+        if double(idNd.lineno) == useLine && string(idNd.string) == varName
+            p = Parent(idNd);
+            if count(p) > 0 && strcmp(char(p.kind), 'DOT')
+                tf = true;
+                return;
+            end
         end
     end
 end
 end
 
-% ========================================================================
-%  辅助：kill 查找（CFG 版）
-% ========================================================================
+function assignments = iCollectAssignments(FullTree, fStart, fEnd)
+builder = MATLAB.DataTypes.ArrayBuilder();
 
-function [killLine, isOtherBranch] = iFindKillingAssignmentCFG(...
-        assignments, idx, ctrlBlocks, lines, functionEnds)
-killLine = 0;
-isOtherBranch = false;
-thisLine = assignments(idx).line;
-thisVar  = assignments(idx).var;
-thisFuncEnd = iEnclosingFuncEnd(thisLine, functionEnds, numel(lines));
-
-% 赋值后若紧跟 return，则该生命周期在此终止；后续赋值不构成 kill。
-if iNextExecutableIsReturn(lines, thisLine, thisFuncEnd)
+ix = FullTree.mtfind('Kind', 'EQUALS').indices;
+if isempty(ix)
+    assignments = struct('line', {}, 'var', {}, 'isSelfRef', {});
     return;
 end
 
-for k = idx + 1:numel(assignments)
-    if assignments(k).line > thisFuncEnd
-        break;
-    end
-    % 非同名变量，或同名但 RHS 自引用（如 x = x + 1）都不构成杀伤
-    if assignments(k).var ~= thisVar || contains(assignments(k).rhs, thisVar)
+for i = 1:numel(ix)
+    nd = FullTree.select(ix(i));
+    ln = double(nd.lineno);
+    if ln < fStart || ln > fEnd
         continue;
     end
-    killLine = assignments(k).line;
-    isOtherBranch = iAreDifferentBranches(thisLine, killLine, ctrlBlocks, lines);
-    if ~isOtherBranch && iNestingDepth(killLine, ctrlBlocks) > iNestingDepth(thisLine, ctrlBlocks)
-        isOtherBranch = true;
-    end
-    if ~isOtherBranch
-        return;
-    end
-end
-end
 
-function tf = iNextExecutableIsReturn(lines, lineNo, funcEnd)
-tf = false;
-for k = lineNo + 1:funcEnd
-    code = iCodeOnlyLine(char(lines(k)));
-    if strlength(code) == 0
+    lhs = Left(nd);
+    if count(lhs) ~= 1 || ~strcmp(char(lhs.kind), 'ID')
         continue;
     end
-    tf = (code == "return" || code == "return;");
-    return;
-end
-end
 
-function d = iNestingDepth(lineNo, blocks)
-d = 0;
-if isempty(blocks.starts)
-    return;
-end
-for k = 1:numel(blocks.starts)
-    if blocks.starts(k) < lineNo && lineNo < blocks.ends(k)
-        d = d + 1;
-    end
-end
-end
-
-function tf = iAreDifferentBranches(lineA, lineB, ctrlBlocks, lines)
-tf = false;
-if isempty(ctrlBlocks.starts)
-    return;
-end
-sa = ctrlBlocks.starts;
-ea = ctrlBlocks.ends;
-for b = 1:numel(sa)
-    if sa(b) < lineA && lineA < ea(b) && sa(b) < lineB && lineB < ea(b)
-        tf = iHasTopLevelElseBetween(lines, lineA, lineB);
-        return;
-    end
-end
-end
-
-function tf = iHasTopLevelElseBetween(lines, lo, hi)
-tf = false;
-depth = 0;
-for k = lo + 1:hi - 1
-    code = iCodeOnlyLine(char(lines(k)));
-    if strlength(code) == 0
+    varName = string(lhs.string);
+    if strlength(varName) == 0
         continue;
     end
-    if startsWith(code, "if " | "for " | "parfor " | "while " | "switch " | "try")
-        depth = depth + 1;
-        continue;
+    isSelfRef = iTreeContainsSelfRef(Right(nd), FullTree, varName);
+    % 循环控制标记：while 头读该变量，且当前赋值是常量（true/false），视为自引用
+    if ~isSelfRef
+        isSelfRef = iIsLoopControlFlagAssign(FullTree, nd, varName);
     end
-    if code == "end"
-        if depth > 0
-            depth = depth - 1;
-        end
-        continue;
-    end
-    if depth == 0 && (startsWith(code, "elseif ") || strcmp(code, "else") || ...
-                      startsWith(code, "catch"))
-        tf = true;
-        return;
-    end
-end
+    builder.Append(struct('line', ln, 'var', char(varName), 'isSelfRef', isSelfRef, 'rhsKind', char(Right(nd).kind)));
 end
 
-% ========================================================================
-%  Phase 1 — 控制流解析
-% ========================================================================
-
-
-function ctrlBlocks = iCtrlBlocksFromTable(ctrlFlow)
-if isempty(ctrlFlow)
-    ctrlBlocks = struct('starts', [], 'ends', []);
-    return;
+if isempty(builder.Harvest())
+    assignments = struct('line', {}, 'var', {}, 'isSelfRef', {}, 'rhsKind', {});
+else
+    assignments = builder.Harvest();
 end
-ctrlBlocks = struct('starts', double(ctrlFlow{:, 'ctrlStart'}), ...
-                    'ends', double(ctrlFlow{:, 'ctrlEnd'}));
-end
-
-function loopBlocks = iLoopBlocksFromTable(ctrlFlow)
-if isempty(ctrlFlow)
-    loopBlocks = struct('starts', [], 'ends', []);
-    return;
-end
-loopStarts = double(ctrlFlow{:, 'loopStart'});
-loopEnds = double(ctrlFlow{:, 'loopEnd'});
-loopBlocks = struct('starts', loopStarts(loopStarts > 0), ...
-                    'ends', loopEnds(loopEnds > 0));
-end
-
-function functionEnds = iFunctionEndsFromTable(ctrlFlow)
-if isempty(ctrlFlow)
-    functionEnds = [];
-    return;
-end
-fe = double(ctrlFlow{:, 'fnEnd'});
-functionEnds = fe(fe > 0);
 end
 
 % -------------------------------------------------------------------------
-function v = ternary(cond, t, f)
-if cond
-    v = t;
-else
-    v = f;
-end
-end
-
-
-
-
-
-
-function skip = iShouldAlwaysSkip2(codeLine, rhs)
-skip = false;
-if startsWith(codeLine, "for ") || ...
-        contains(codeLine, "==" | "~=" | ">=" | "<=") || ...
-        strlength(rhs) == 0 || ...
-        contains(rhs, string(extractBefore(string(codeLine), " =")))
-    skip = true;
-    return;
-end
-end
-
-function tf = iHasBranchMergeBetweenLines(assignLine, useLine, succ, lineKinds, funcEnd, killLine, killIsOtherBranch)
-% 检查 [assignLine+1, useLine] 区间内是否存在“赋值路径”和“其他路径”在同一点合并。
+function tf = iTreeContainsSelfRef(node, FullTree, varName)
+% 递归遍历 RHS 子树，检查是否包含对 varName 的自引用。
 tf = false;
-if useLine <= 0 || useLine <= assignLine
+if count(node) == 0
+    return;
+end
+k = char(node.kind);
+if k == "ID"
+    if string(node.string) == varName
+        tf = true;
+    end
     return;
 end
 
-upper = min(useLine, funcEnd);
-if killLine > 0 && ~killIsOtherBranch
-    upper = min(upper, killLine - 1);
-end
-if upper <= assignLine
+% 一元运算符：Arg
+if ismember(k, ["NOT","UMINUS","UPLUS","TRANS","DOTTRANS"])
+    if count(Arg(node)) > 0
+        tf = iTreeContainsSelfRef(Arg(node), FullTree, varName);
+    end
     return;
 end
 
-nLines = numel(lineKinds);
-visited = false(nLines, 1);
-reachableFromAssign = false(nLines, 1);
-
-startNodes = succ{assignLine};
-if isempty(startNodes)
-    startNodes = iFindNextLine(lineKinds, assignLine + 1, nLines);
-end
-startNodes = unique(startNodes(startNodes >= assignLine + 1 & startNodes <= upper));
-if isempty(startNodes)
+% 二元运算符：Left + Right
+if ismember(k, ["PLUS","MINUS","MUL","DIV","LDIV","DOTMUL","DOTDIV","DOTLDIV", ...
+               "EXP","DOTEXP","EQ","NE","LT","GT","LE","GE","AND","OR","SHORTAND","SHORTOR", ...
+               "COLON","DOT"])
+    if iTreeContainsSelfRef(Left(node), FullTree, varName)
+        tf = true;
+        return;
+    end
+    if count(Right(node)) > 0
+        tf = iTreeContainsSelfRef(Right(node), FullTree, varName);
+    end
     return;
 end
 
-queue = startNodes(:)';
-visited(startNodes) = true;
-reachableFromAssign(startNodes) = true;
+% 下标/圆括号引用：Left 是被索引对象，Right 是索引列表
+if k == "SUBSCR"
+    if count(Left(node)) > 0 ...
+            && iTreeContainsSelfRef(Left(node), FullTree, varName)
+        tf = true;
+        return;
+    end
+    if count(Right(node)) > 0
+        tf = iTreeContainsSelfRef(Right(node), FullTree, varName);
+    end
+    return;
+end
 
-head = 1;
-while head <= numel(queue)
-    from = queue(head);
-    head = head + 1;
+% 函数调用：遍历实参列表
+if k == "CALL"
+    % 函数名不检查（Left 是函数名）
+    args = Right(node);
+    if count(args) > 0
+        tf = iTreeContainsSelfRef(args, FullTree, varName);
+    end
+    return;
+end
 
-    nextNodes = succ{from};
-    if isempty(nextNodes)
+% 容器类型：EXPR/PARENS/LB 单子节点(Arg)，ROW/CELL 链表(Next)
+if ismember(k, ["EXPR","PARENS","LB"])
+    if count(Arg(node)) > 0
+        tf = iTreeContainsSelfRef(Arg(node), FullTree, varName);
+    end
+    return;
+end
+
+if ismember(k, ["ROW","CELL"])
+    child = Arg(node);
+    while count(child) > 0
+        if iTreeContainsSelfRef(child, FullTree, varName)
+            tf = true;
+            return;
+        end
+        try
+            child = Next(child);
+        catch
+            break;
+        end
+    end
+    return;
+end
+
+% 通用回退：尝试 Left/Right/Arg
+if (count(Left(node)) > 0 && iTreeContainsSelfRef(Left(node), FullTree, varName)) ...
+        || (count(Right(node)) > 0 && iTreeContainsSelfRef(Right(node), FullTree, varName))
+    tf = true;
+    return;
+end
+if count(Arg(node)) > 0
+    tf = iTreeContainsSelfRef(Arg(node), FullTree, varName);
+end
+end
+
+% -------------------------------------------------------------------------
+function whileHeadVars = iCollectWhileHeadVars(FullTree, fStart, fEnd)
+% 收集 while 头条件中读取的变量名，key=while头行号，value=变量名数组。
+whileHeadVars = dictionary;
+ix = FullTree.mtfind('Kind', 'WHILE').indices;
+if isempty(ix)
+    return;
+end
+for i = 1:numel(ix)
+    nd = FullTree.select(ix(i));
+    ln = double(nd.lineno);
+    if ln < fStart || ln > fEnd
+        continue;
+    end
+    % while 条件的 ID 引用（不包含写入）
+    ids = List(Left(nd)).mtfind('Kind', 'ID');
+    if count(ids) == 0
+        continue;
+    end
+    vars = strings(0, 1);
+    iix = ids.indices;
+    for ki = 1:numel(iix)
+        vars(end + 1) = string(FullTree.select(iix(ki)).string); %#ok<AGROW>
+    end
+    if ~isempty(vars)
+        whileHeadVars(ln) = unique(vars);
+    end
+end
+end
+
+function tf = iIsInsideBlock(FullTree, defLine, headLine, ix)
+% 检查 defLine 是否在指定控制块内部（头行之后、匹配 end 之前）
+tf = false;
+ix = FullTree.mtfind('Kind', ix).indices;
+if isempty(ix)
+    return;
+end
+for i = 1:numel(ix)
+    nd = FullTree.select(ix(i));
+    if double(nd.lineno) ~= headLine
+        continue;
+    end
+    [endL, ~] = pos2lc(nd, righttreepos(nd));
+    tf = defLine > headLine && defLine <= endL;
+    return;
+end
+end
+
+% -------------------------------------------------------------------------
+function tf = iIsLoopControlFlagAssign(FullTree, p, varName)
+% 检查是否为 while 循环内的控制标记赋值（如 changed = false）
+tf = false;
+p = Parent(p);
+while count(p) > 0
+    if char(p.kind) == "WHILE"
+        condIDs = List(Left(p)).mtfind('Kind', 'ID');
+        if count(condIDs) == 0
+            return;
+        end
+        cix = condIDs.indices;
+        for ki = 1:numel(cix)
+            if string(FullTree.select(cix(ki)).string) == varName
+                tf = true;
+                return;
+            end
+        end
+        return;
+    end
+    p = Parent(p);
+end
+end
+
+% -------------------------------------------------------------------------
+function pv = iGetPersistentVars(FullTree, fStart, fEnd)
+pv = strings(0, 1);
+ix = FullTree.mtfind('Kind', 'PERSISTENT').indices;
+if isempty(ix)
+    return;
+end
+for i = 1:numel(ix)
+    nd = FullTree.select(ix(i));
+    ln = double(nd.lineno);
+    if ln < fStart || ln > fEnd
+        continue;
+    end
+    % Arg → ID, 然后 Next → ID, Next → ID ... 链
+    cur = Arg(nd);
+    while count(cur) > 0
+        if strcmp(char(cur.kind), 'ID')
+            pv(end + 1) = string(cur.string); %#ok<AGROW>
+        end
+        try
+            cur = Next(cur);
+        catch
+            break;
+        end
+    end
+end
+pv = unique(pv);
+end
+
+function outVars = iGetFunctionOutputs(outs)
+outVars = strings(0, 1);
+outs = Outs(outs);
+if count(outs) == 0
+    return;
+end
+
+if count(outs) == 1 && strcmp(char(outs.kind), 'LB')
+    cur = Arg(outs);
+else
+    cur = outs;
+end
+
+while count(cur) > 0
+    if strcmp(char(cur.kind), 'ID')
+        s = strtrim(string(cur.string));
+        if strlength(s) > 0
+            outVars(end + 1) = s; %#ok<AGROW>
+        end
+    end
+    try
+        cur = Next(cur);
+    catch
+        break;
+    end
+end
+end
+
+function stmtLines = iBuildStatementLines(assignments, refMap, fStart, fEnd, lineKindMap, FullTree)
+stmtLineBuffer = double([assignments.line]);
+stmtLineBuffer(end + 1) = fEnd;
+
+keys = refMap.keys;
+for i = 1:numel(keys)
+    k = refMap(keys{i}).keys;
+    if ~isempty(k)
+        stmtLineBuffer = [stmtLineBuffer, [k{:}]]; %#ok<AGROW>
+    end
+end
+
+ctrlKeys = lineKindMap.keys;
+for i = 1:numel(ctrlKeys)
+    ln = ctrlKeys{i};
+    if ln >= fStart && ln <= fEnd
+        stmtLineBuffer(end + 1) = ln; %#ok<AGROW>
+    end
+end
+
+% mtree 不产出 END 节点，需从控制块头用 righttreepos 推断 end 行
+ctrlKinds = ["IF","SWITCH","FOR","PARFOR","WHILE","TRY"];
+for ki = 1:numel(ctrlKinds)
+    nodes = FullTree.mtfind('Kind', ctrlKinds(ki));
+    if count(nodes) == 0
+        continue;
+    end
+    ix = nodes.indices;
+    for ii = 1:numel(ix)
+        nd = FullTree.select(ix(ii));
+        [endL, ~] = pos2lc(nd, righttreepos(nd));
+        if endL >= fStart && endL <= fEnd
+            stmtLineBuffer(end + 1) = endL; %#ok<AGROW>
+        end
+    end
+end
+
+stmtLines = unique(stmtLineBuffer);
+stmtLines = stmtLines(stmtLines >= fStart & stmtLines <= fEnd);
+end
+
+function g = iBuildCfgDigraph(MissingNodes, FullTree, lineKindMap)
+if numel(MissingNodes) <= 1
+    if isempty(MissingNodes)
+        g = digraph;
+    else
+        g = addnode(digraph, string(MissingNodes));
+    end
+    return;
+end
+
+s = strings(0, 1);
+edgeTargets = strings(0, 1);
+
+    [ifFalseTarget, branchOwner, ifEnd, loopEnd, enclosingLoop, switchTargets, switchOwner, switchEnd, tryEnd] = iAnalyzeControlBlocks(MissingNodes, FullTree, lineKindMap);
+
+for i = 1:numel(MissingNodes)
+    from = MissingNodes(i);
+    next = iNextStmtLine(MissingNodes, i);
+
+    k = iKindAt(lineKindMap, from);
+    if strcmp(k, 'RETURN')
         continue;
     end
 
-    for ni = 1:numel(nextNodes)
-        to = nextNodes(ni);
-        if to < assignLine + 1 || to > upper
-            continue;
+    if strcmp(k, 'TRY')
+        % TRY → 第一句 try 体
+        if next > 0
+            s(end + 1) = string(from); %#ok<AGROW>
+            edgeTargets(end + 1) = string(next); %#ok<AGROW>
         end
-        reachableFromAssign(to) = true;
-        if ~visited(to)
-            visited(to) = true;
-            queue(end+1) = to; %#ok<AGROW>
+        % TRY → CATCH（异常路径）
+        key = char(string(from));
+        if isKey(ifFalseTarget, key)
+            catchLine = ifFalseTarget(key);
+            if catchLine > 0
+                s(end + 1) = string(from); %#ok<AGROW>
+                edgeTargets(end + 1) = string(catchLine); %#ok<AGROW>
+            end
         end
+        continue;
+    end
+
+    if strcmp(k, 'CATCH')
+        % CATCH → 第一句 catch 体
+        if next > 0
+            s(end + 1) = string(from); %#ok<AGROW>
+            edgeTargets(end + 1) = string(next); %#ok<AGROW>
+        end
+        continue;
+    end
+
+    if strcmp(k, 'IF') || strcmp(k, 'ELSEIF')
+        % true-branch
+        if next > 0
+            s(end + 1) = string(from); %#ok<AGROW>
+            edgeTargets(end + 1) = string(next); %#ok<AGROW>
+        end
+        % false-branch（elseif/else/if之后）
+        key = char(string(from));
+        if isKey(ifFalseTarget, key)
+            falseTo = ifFalseTarget(key);
+            if falseTo > 0
+                s(end + 1) = string(from); %#ok<AGROW>
+                edgeTargets(end + 1) = string(falseTo); %#ok<AGROW>
+            end
+        end
+        continue;
+    end
+
+    if strcmp(k, 'FOR') || strcmp(k, 'PARFOR') || strcmp(k, 'WHILE')
+        % loop true-branch: 进入循环体
+        if next > 0
+            s(end + 1) = string(from); %#ok<AGROW>
+            edgeTargets(end + 1) = string(next); %#ok<AGROW>
+        end
+        % loop false-branch: 跳到循环后
+        key = char(string(from));
+        if isKey(loopEnd, key)
+            falseTo = iNextStmtAfterLine(MissingNodes, loopEnd(key));
+            if falseTo > 0
+                s(end + 1) = string(from); %#ok<AGROW>
+                edgeTargets(end + 1) = string(falseTo); %#ok<AGROW>
+            end
+        end
+        continue;
+    end
+
+    if strcmp(k, 'SWITCH')
+        key = char(string(from));
+        if isKey(switchTargets, key)
+            targets = switchTargets(key);
+            for ti = 1:numel(targets)
+                s(end + 1) = string(from); %#ok<AGROW>
+                edgeTargets(end + 1) = string(targets(ti)); %#ok<AGROW>
+            end
+        end
+        if isKey(switchEnd, key)
+            afterEnd = iNextStmtAfterLine(MissingNodes, switchEnd(key));
+            if afterEnd > 0
+                s(end + 1) = string(from); %#ok<AGROW>
+                edgeTargets(end + 1) = string(afterEnd); %#ok<AGROW>
+            end
+        end
+        continue;
+    end
+
+    if strcmp(k, 'BREAK')
+        key = char(string(from));
+        if isKey(enclosingLoop, key)
+            lsKey = char(string(enclosingLoop(key)));
+            if isKey(loopEnd, lsKey)
+                brTo = iNextStmtAfterLine(MissingNodes, loopEnd(lsKey));
+                if brTo > 0
+                    s(end + 1) = string(from); %#ok<AGROW>
+                    edgeTargets(end + 1) = string(brTo); %#ok<AGROW>
+                end
+            end
+        end
+        continue;
+    end
+
+    if strcmp(k, 'CONTINUE')
+        key = char(string(from));
+        if isKey(enclosingLoop, key) && enclosingLoop(key) > 0
+            s(end + 1) = string(from); %#ok<AGROW>
+            edgeTargets(end + 1) = string(enclosingLoop(key)); %#ok<AGROW>
+        end
+        continue;
+    end
+
+    % 语句块末尾若下一行是 elseif/else，不应顺序落入分支头；应跳到 if 结束后。
+    if next > 0
+        nk = iKindAt(lineKindMap, next);
+        if strcmp(nk, 'ELSEIF') || strcmp(nk, 'ELSE')
+            nkKey = char(string(next));
+            if isKey(branchOwner, nkKey)
+                ownerKey = char(string(branchOwner(nkKey)));
+                if isKey(ifEnd, ownerKey)
+                    jumpTo = iSkipSiblingBranchHeaders(MissingNodes, lineKindMap, branchOwner, ifEnd, switchOwner, switchEnd, tryEnd, iNextStmtAfterLine(MissingNodes, ifEnd(ownerKey)));
+                    if jumpTo > 0
+                        s(end + 1) = string(from); %#ok<AGROW>
+                        edgeTargets(end + 1) = string(jumpTo); %#ok<AGROW>
+                    end
+                    continue;
+                end
+            end
+        end
+
+        if strcmp(nk, 'CATCH')
+            % try 体末尾遇到 CATCH → 跳到 try 块后
+            nkKey = char(string(next));
+            if isKey(branchOwner, nkKey)
+                ownerKey = char(string(branchOwner(nkKey)));
+                if isKey(tryEnd, ownerKey)
+                    jumpTo = iSkipSiblingBranchHeaders(MissingNodes, lineKindMap, branchOwner, ifEnd, switchOwner, switchEnd, tryEnd, iNextStmtAfterLine(MissingNodes, tryEnd(ownerKey)));
+                    if jumpTo > 0
+                        s(end + 1) = string(from); %#ok<AGROW>
+                        edgeTargets(end + 1) = string(jumpTo); %#ok<AGROW>
+                    end
+                    continue;
+                end
+            end
+        end
+
+        if strcmp(nk, 'CASE') || strcmp(nk, 'OTHERWISE')
+            nkKey = char(string(next));
+            if isKey(switchOwner, nkKey)
+                swKey = char(string(switchOwner(nkKey)));
+                if isKey(switchEnd, swKey)
+                    jumpTo = iSkipSiblingBranchHeaders(MissingNodes, lineKindMap, branchOwner, ifEnd, switchOwner, switchEnd, tryEnd, iNextStmtAfterLine(MissingNodes, switchEnd(swKey)));
+                    if jumpTo > 0
+                        s(end + 1) = string(from); %#ok<AGROW>
+                        edgeTargets(end + 1) = string(jumpTo); %#ok<AGROW>
+                    end
+                    continue;
+                end
+            end
+        end
+
+        % 循环体内节点不创建跳出循环的默认边
+        key = char(string(from));
+        if isKey(enclosingLoop, key)
+            lsKey = char(string(enclosingLoop(key)));
+            if isKey(loopEnd, lsKey)
+                afterLoop = iNextStmtAfterLine(MissingNodes, loopEnd(lsKey));
+                if afterLoop > 0 && next >= afterLoop
+                    continue;
+                end
+            end
+        end
+
+        s(end + 1) = string(from); %#ok<AGROW>
+        edgeTargets(end + 1) = string(next); %#ok<AGROW>
     end
 end
 
-predFromAssignPath = false(nLines, 1);
-predFromOtherPath = false(nLines, 1);
+% 循环回边：最后一个循环体行跳回循环头
+loopKeys = loopEnd.keys;
+for ki = 1:numel(loopKeys)
+    sKey = loopKeys{ki};
+    startLine = str2double(sKey);
+    bodyLines = MissingNodes(MissingNodes >= startLine & MissingNodes <= loopEnd(sKey));
+    if numel(bodyLines) >= 2
+        s(end + 1) = string(bodyLines(end)); %#ok<AGROW>
+        edgeTargets(end + 1) = string(startLine); %#ok<AGROW>
+    end
+end
 
-for from = 1:nLines
-    nextNodes = succ{from};
-    if isempty(nextNodes)
+g = digraph(s, edgeTargets);
+MissingNodes = string(MissingNodes);
+MissingNodes(ismember(MissingNodes, g.Nodes.Name)) = [];
+if ~isempty(MissingNodes)
+    g = addnode(g, MissingNodes);
+end
+end
+
+function [ifFalseTarget, branchOwner, ifEnd, loopEnd, enclosingLoop, switchTargets, switchOwner, switchEnd, tryEnd] = iAnalyzeControlBlocks(stmtLines, FullTree, lineKindMap)
+ifFalseTarget = dictionary;
+branchOwner = dictionary;
+ifEnd = dictionary;
+loopEnd = dictionary;
+enclosingLoop = dictionary;
+switchTargets = dictionary;
+switchOwner = dictionary;
+switchEnd = dictionary;
+tryEnd = dictionary;
+
+% 从 AST 推断每个控制块的 end 行
+blockEnd = dictionary;
+ctrlKinds = ["IF","SWITCH","FOR","PARFOR","WHILE","TRY"];
+for ki = 1:numel(ctrlKinds)
+    nodes = FullTree.mtfind('Kind', ctrlKinds(ki));
+    if count(nodes) == 0
         continue;
     end
-    for ni = 1:numel(nextNodes)
-        to = nextNodes(ni);
-        if to < assignLine + 1 || to > upper
-            continue;
-        end
-        if from == assignLine || (from >= 1 && from <= nLines && reachableFromAssign(from))
-            predFromAssignPath(to) = true;
+    ix = nodes.indices;
+    for ii = 1:numel(ix)
+        nd = FullTree.select(ix(ii));
+        startLn = double(nd.lineno);
+        blockEnd(startLn) = findBlockEndLine(nd);
+    end
+end
+
+% 预填充 loopEnd/switchEnd/tryEnd
+endKeys = blockEnd.keys;
+for ki = 1:numel(endKeys)
+    startLn = endKeys{ki};
+    k = iKindAt(lineKindMap, startLn);
+    if strcmp(k, 'FOR') || strcmp(k, 'PARFOR') || strcmp(k, 'WHILE')
+        sKey = char(string(startLn));
+        loopEnd(sKey) = blockEnd(startLn);
+    end
+    if strcmp(k, 'SWITCH')
+        sKey = char(string(startLn));
+        switchEnd(sKey) = blockEnd(startLn);
+    end
+    if strcmp(k, 'TRY')
+        sKey = char(string(startLn));
+        tryEnd(sKey) = blockEnd(startLn);
+    end
+end
+
+stack = struct('kind', {}, 'start', {}, 'ifHeaders', {}, 'elseLine', {}, 'caseLines', {});
+
+for i = 1:numel(stmtLines)
+    ln = stmtLines(i);
+    k = iKindAt(lineKindMap, ln);
+
+    % 弹出所有已越过出口的控制块
+    while ~isempty(stack)
+        topStart = stack(end).start;
+        if isKey(blockEnd, topStart) && ln > blockEnd(topStart)
+            blk = stack(end);
+            stack(end) = [];
+            if strcmp(blk.kind, 'IF')
+                afterEnd = ln;
+                ifEnd(char(string(blk.start))) = blockEnd(blk.start);
+                hs = blk.ifHeaders;
+                for h = 1:numel(hs)
+                    thisIf = hs(h);
+                    if h < numel(hs)
+                        falseTo = hs(h + 1);
+                    elseif blk.elseLine > 0
+                        falseTo = blk.elseLine;
+                    else
+                        falseTo = afterEnd;
+                    end
+                    ifFalseTarget(char(string(thisIf))) = falseTo;
+                    if numel(hs) > 1
+                        branchOwner(char(string(thisIf))) = blk.start;
+                    end
+                end
+            end
+            if strcmp(blk.kind, 'LOOP')
+                sKey = char(string(blk.start));
+                loopEnd(sKey) = blockEnd(blk.start);
+            end
+            if strcmp(blk.kind, 'SWITCH')
+                sKey = char(string(blk.start));
+                switchEnd(sKey) = blockEnd(blk.start);
+                switchTargets(sKey) = blk.caseLines;
+            end
+            if strcmp(blk.kind, 'TRY')
+                sKey = char(string(blk.start));
+                tryEnd(sKey) = blockEnd(blk.start);
+            end
         else
-            predFromOtherPath(to) = true;
+            break;
+        end
+    end
+
+    topLoop = iTopLoopStart(stack);
+    if topLoop > 0
+        enclosingLoop(char(string(ln))) = topLoop;
+    end
+
+    if strcmp(k, 'IF')
+        blk.kind = 'IF';
+        blk.start = ln;
+        blk.ifHeaders = ln;
+        blk.elseLine = 0;
+        blk.caseLines = [];
+        stack(end + 1) = blk; %#ok<AGROW>
+        continue;
+    end
+
+    if strcmp(k, 'ELSEIF')
+        if ~isempty(stack) && strcmp(stack(end).kind, 'IF')
+            stack(end).ifHeaders(end + 1) = ln;
+            branchOwner(char(string(ln))) = stack(end).start;
+        end
+        continue;
+    end
+
+    if strcmp(k, 'ELSE')
+        if ~isempty(stack) && strcmp(stack(end).kind, 'IF')
+            stack(end).elseLine = ln;
+            branchOwner(char(string(ln))) = stack(end).start;
+        end
+        continue;
+    end
+
+    if strcmp(k, 'CASE') || strcmp(k, 'OTHERWISE')
+        if ~isempty(stack) && strcmp(stack(end).kind, 'SWITCH')
+            stack(end).caseLines(end + 1) = ln;
+            switchOwner(char(string(ln))) = stack(end).start;
+        end
+        continue;
+    end
+
+    if strcmp(k, 'CATCH')
+        if ~isempty(stack) && strcmp(stack(end).kind, 'TRY')
+            % TRY→CATCH 作为 false-branch（异常路径）
+            ifFalseTarget(char(string(stack(end).start))) = ln;
+            branchOwner(char(string(ln))) = stack(end).start;
+        end
+        continue;
+    end
+
+    if strcmp(k, 'FOR') || strcmp(k, 'PARFOR') || strcmp(k, 'WHILE') || ...
+            strcmp(k, 'SWITCH') || strcmp(k, 'TRY')
+        if strcmp(k, 'FOR') || strcmp(k, 'PARFOR') || strcmp(k, 'WHILE')
+            blk.kind = 'LOOP';
+        else
+            blk.kind = char(k);
+        end
+        blk.start = ln;
+        blk.ifHeaders = [];
+        blk.elseLine = 0;
+        blk.caseLines = [];
+        stack(end + 1) = blk; %#ok<AGROW>
+        continue;
+    end
+
+    % FUNCTION 不作为控制块，FUNCTION 的 END 不需要建边
+end
+
+% 弹出所有未关闭的控制块（文件末尾关闭）
+while ~isempty(stack)
+    blk = stack(end);
+    stack(end) = [];
+    endLine = stmtLines(end);
+    if strcmp(blk.kind, 'IF')
+        afterEnd = endLine + 1;
+        ifEnd(char(string(blk.start))) = endLine;
+        hs = blk.ifHeaders;
+        for h = 1:numel(hs)
+            thisIf = hs(h);
+            if h < numel(hs)
+                falseTo = hs(h + 1);
+            elseif blk.elseLine > 0
+                falseTo = blk.elseLine;
+            else
+                falseTo = afterEnd;
+            end
+            ifFalseTarget(char(string(thisIf))) = falseTo;
+            if numel(hs) > 1
+                branchOwner(char(string(thisIf))) = blk.start;
+            end
+        end
+    end
+    if strcmp(blk.kind, 'LOOP')
+        sKey = char(string(blk.start));
+        loopEnd(sKey) = endLine;
+    end
+    if strcmp(blk.kind, 'SWITCH')
+        sKey = char(string(blk.start));
+        switchEnd(sKey) = endLine;
+        switchTargets(sKey) = blk.caseLines;
+    end
+    if strcmp(blk.kind, 'TRY')
+        sKey = char(string(blk.start));
+        tryEnd(sKey) = endLine;
+    end
+end
+end
+
+function startLine = iTopLoopStart(stack)
+startLine = 0;
+for i = numel(stack):-1:1
+    if strcmp(stack(i).kind, 'LOOP')
+        startLine = stack(i).start;
+        return;
+    end
+end
+end
+
+function k = iKindAt(lineKindMap, ln)
+k = '';
+if isKey(lineKindMap, ln)
+    k = lineKindMap(ln);
+end
+end
+
+function next = iNextStmtLine(stmtLines, i)
+next = 0;
+if i < numel(stmtLines)
+    next = stmtLines(i + 1);
+end
+end
+
+function next = iNextStmtAfterLine(stmtLines, idx)
+next = 0;
+idx = find(stmtLines > idx, 1, 'first');
+if ~isempty(idx)
+    next = stmtLines(idx);
+end
+end
+
+function ln = iSkipSiblingBranchHeaders(stmtLines, lineKindMap, branchOwner, ifEnd, switchOwner, switchEnd, tryEnd, ln)
+while ln > 0
+    k = iKindAt(lineKindMap, ln);
+    key = char(string(ln));
+    if (strcmp(k, 'ELSEIF') || strcmp(k, 'ELSE')) && isKey(branchOwner, key)
+        ownerKey = char(string(branchOwner(key)));
+        if isKey(ifEnd, ownerKey)
+            nextLn = iNextStmtAfterLine(stmtLines, ifEnd(ownerKey));
+            if nextLn > 0 && nextLn ~= ln
+                ln = nextLn;
+                continue;
+            end
+        end
+    elseif strcmp(k, 'CATCH') && isKey(branchOwner, key)
+        ownerKey = char(string(branchOwner(key)));
+        if isKey(tryEnd, ownerKey)
+            nextLn = iNextStmtAfterLine(stmtLines, tryEnd(ownerKey));
+            if nextLn > 0 && nextLn ~= ln
+                ln = nextLn;
+                continue;
+            end
+        end
+    elseif (strcmp(k, 'CASE') || strcmp(k, 'OTHERWISE')) && isKey(switchOwner, key)
+        ownerKey = char(string(switchOwner(key)));
+        if isKey(switchEnd, ownerKey)
+            nextLn = iNextStmtAfterLine(stmtLines, switchEnd(ownerKey));
+            if nextLn > 0 && nextLn ~= ln
+                ln = nextLn;
+                continue;
+            end
+        end
+    end
+    break;
+end
+end
+
+function reachable = iReachableWithoutRedef(g, startLine, UpperBound, blockers)
+reachable = [];
+if numnodes(g) == 0
+    return;
+end
+
+startName = string(startLine);
+if ~any(g.Nodes.Name == startName)
+    return;
+end
+
+blocked = unique(blockers(:)');
+
+startNode = find(g.Nodes.Name == startName, 1, 'first');
+seen = false(1, numnodes(g));
+q = startNode;
+seen(startNode) = true;
+
+QHead = 1;
+while QHead <= numel(q)
+    u = q(QHead);
+    QHead = QHead + 1;
+
+    ln = str2double(g.Nodes.Name(u));
+    if ln <= UpperBound
+        reachable(end + 1) = ln; %#ok<AGROW>
+    end
+
+    nbr = successors(g, u)';
+    for v = nbr
+        ln2 = str2double(g.Nodes.Name(v));
+        if ln2 > UpperBound
+            continue;
+        end
+        if ln2 ~= startLine && any(blocked == ln2)
+            % blocker 参与引用计数（如自引用读旧值），但阻断继续遍历
+            if ln2 <= UpperBound
+                reachable(end + 1) = ln2; %#ok<AGROW>
+            end
+            continue;
+        end
+        if ~seen(v)
+            seen(v) = true;
+            q(end + 1) = v; %#ok<AGROW>
         end
     end
 end
 
-for ln = assignLine + 1:upper
-    if predFromAssignPath(ln) && predFromOtherPath(ln)
+reachable = unique(reachable);
+end
+
+function MatchedLines = iIntersectRefLines(lineMap, candidates)
+MatchedLines = zeros(1, 0);
+if isempty(lineMap) || isempty(candidates)
+    return;
+end
+for i = 1:numel(candidates)
+    ln = candidates(i);
+    if isKey(lineMap, ln)
+        MatchedLines(end + 1) = ln; %#ok<AGROW>
+    end
+end
+MatchedLines = unique(MatchedLines);
+end
+
+function tf = iDefReachesFunctionExitWithoutRedef(reach, assignLine, blockers, fEnd, lineKindMap)
+tf = false;
+reach = iReachableWithoutRedef(reach, assignLine, fEnd, blockers);
+if isempty(reach)
+    return;
+end
+
+if any(reach == fEnd)
+    tf = true;
+    return;
+end
+
+% 到达 return 语句的行也视为函数出口
+for r = 1:numel(reach)
+    if iKindAt(lineKindMap, reach(r)) == "RETURN"
         tf = true;
         return;
     end
 end
 end
 
-% ========================================================================
-%  Utilities
-% ========================================================================
-
-function code = iCodeOnlyLine(s)
-if isempty(s)
-    code = "";
+function tf = iIsMustUseWithoutRedef(g, assignLine, useLine, blockers, UpperBound)
+tf = false;
+reach = iReachableWithoutRedef(g, assignLine, UpperBound, blockers);
+if isempty(reach) || ~any(reach == useLine)
     return;
 end
-code = strtrim(string(MatlabLint.stripStringLiterals(string(s))));
-p = strfind(char(code), '%');
-if ~isempty(p)
-    code = strtrim(extractBefore(code, p(1)));
-end
-end
 
-function pos = iFindAssignmentEqPos(cs)
-pos = 0;
-eq = strfind(cs, '=');
-for k = 1:numel(eq)
-    p = eq(k);
-    prev = ' ';
-    next = ' ';
-    if p > 1
-        prev = cs(p-1);
-    end
-    if p < numel(cs)
-        next = cs(p+1);
-    end
-    if prev == '=' || prev == '>' || prev == '<' || prev == '~' || next == '='
-        continue;
-    end
-    pos = p;
+% 若 useLine 有多个入边（如循环回边+直线），赋值不支配引用 → 非 must-use
+useIdx = find(g.Nodes.Name == string(useLine), 1, 'first');
+if ~isempty(useIdx) && indegree(g, useIdx) > 1
     return;
 end
+
+tf = ~iExistsExitPathAvoidingUse(g, assignLine, reach, useLine, blockers);
 end
 
-function funcEnd = iEnclosingFuncEnd(lineNo, functionEnds, nLines)
-% 返回包含 lineNo 的函数的结束行号。
-% functionEnds 是升序排列的函数结束行向量。
-funcEnd = nLines;
-for k = 1:numel(functionEnds)
-    if functionEnds(k) > lineNo
-        funcEnd = functionEnds(k);
-        return;
-    end
-end
+function tf = iExistsExitPathAvoidingUse(g, assignLine, reachSet, useLine, blockers)
+tf = false;
+blocked = unique(blockers(:)');
+
+startName = string(assignLine);
+if ~any(g.Nodes.Name == startName)
+    return;
 end
 
-function tokens = iExtractCtrlTokens(line)
-% 从一行代码中按顺序提取所有控制流关键字（跳过字符串和注释内部）。
-tokensBuilder = MATLAB.DataTypes.ArrayBuilder();
-s = char(line);
-n = numel(s);
-inStr = false;
-strCh = '';
-i = 1;
-while i <= n
-    if inStr
-        if s(i) == strCh
-            if i < n && s(i+1) == strCh
-                i = i + 2;
-                continue;
-            end
-            inStr = false;
+startNode = find(g.Nodes.Name == startName, 1, 'first');
+seen = false(1, numnodes(g));
+q = startNode;
+seen(startNode) = true;
+
+QHead = 1;
+while QHead <= numel(q)
+    u = q(QHead);
+    QHead = QHead + 1;
+    succAll = successors(g, u)';
+    succInReach = zeros(1, 0);
+    succAllowed = zeros(1, 0);
+
+    for v = succAll
+        ln2 = str2double(g.Nodes.Name(v));
+        if (ln2 ~= assignLine && any(blocked == ln2)) || ~any(reachSet == ln2)
+            continue;
         end
-        i = i + 1;
-    elseif s(i) == '''' || s(i) == '"'
-        inStr = true;
-        strCh = s(i);
-        i = i + 1;
-    elseif s(i) == '%'
-        break;  % 行末注释
-    else
-        [kw, adv] = iMatchKeyword(s, i, n);
-        if adv > 0
-            tokensBuilder.Append(string(kw));
-            i = i + adv;
-        else
-            i = i + 1;
+
+        succInReach(end + 1) = v; %#ok<AGROW>
+        if ln2 ~= useLine
+            succAllowed(end + 1) = v; %#ok<AGROW>
         end
     end
-end
 
-tokens = cellstr(string(tokensBuilder.Harvest()));
-end
-
-function [kw, adv] = iMatchKeyword(s, pos, n)
-% 尝试在 s(pos:end) 匹配控制流关键字，返回 (keyword, 前进长度)。
-kwds = ["function","if","elseif","else","for","parfor","while",...
-        "switch","case","otherwise","try","catch","end",...
-        "break","continue","return","spmd"];
-for k = 1:numel(kwds)
-    kw = kwds(k);
-    L = strlength(kw);
-    if pos+L-1 <= n && strcmp(s(pos:pos+L-1), kw)
-        prevOK = (pos == 1 || ~isstrprop(s(pos-1), 'alphanum') && s(pos-1) ~= '_');
-        nextOK = (pos+L > n || ~isstrprop(s(pos+L), 'alphanum') && s(pos+L) ~= '_');
-        if prevOK && nextOK
-            % 索引表达式中的 end（如 A(end+1)）不应当成控制流关键字。
-            if kw == "end"
-                prevNonSpace = ' ';
-                for p = pos-1:-1:1
-                    if ~isspace(s(p))
-                        prevNonSpace = s(p);
-                        break;
-                    end
-                end
-                if ismember(prevNonSpace, ['(', '[', '{', ',', ':'])
-                    continue;
-                end
-            end
-            adv = L;
+    if isempty(succInReach)
+        % 真正图出口（无后继者）才算避开
+        if outdegree(g, u) == 0
+            tf = true;
             return;
         end
+        % 后继被阻塞（重定义等）≠ 出口，继续
+        continue;
+    end
+
+    for v = succAllowed
+        if ~seen(v)
+            seen(v) = true;
+            q(end + 1) = v; %#ok<AGROW>
+        end
     end
 end
-kw = "";
-adv = 0;
 end
 
+function [occ, firstUse] = iCountRefsOnLines(lineMap, MatchedLines)
+occ = 0;
+firstUse = 0;
+if isempty(lineMap)
+    return;
+end
 
-
-
-
-
-
-
-
+MatchedLines = unique(MatchedLines);
+for i = 1:numel(MatchedLines)
+    ln = MatchedLines(i);
+    if isKey(lineMap, ln)
+        occ = occ + lineMap(ln);
+        if firstUse == 0
+            firstUse = ln;
+        end
+    end
+end
+end
 

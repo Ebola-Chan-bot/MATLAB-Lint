@@ -1,257 +1,115 @@
 function issues = mlint_mergePatternCallChain(filePath)
-%mlint_mergePatternCallChain 连续 startsWith/contains/endsWith 调用应合并。
+%mlint_mergePatternCallChain 基于 mtree 检测连续 startsWith/contains/endsWith 的 || 链应合并。
 
 if nargin == 0
     issues = "连续的 startsWith/contains/endsWith（同函数同首参数）使用 || 时，必须合并为一次调用并用 | 连接 pattern";
     return;
 end
 
-lines = splitlines(string(fileread(filePath)));
-[stmts, stmtLines] = collectStatements(lines);
+FullTree = List(mtree(filePath, '-file'));
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
-for i = 1:numel(stmts)
-    stmt = char(stmts(i));
-    if iHasMergeablePatternCallChain(stmt)
-        issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, stmtLines(i), "mlint_mergePatternCallChain", ...
-            sprintf("检测到连续 startsWith/contains/endsWith 的 || 链。请合并为一次调用并使用 | 连接 pattern：%s", strtrim(stmt))}; %#ok<AGROW>
+six = FullTree.mtfind('Kind', 'OROR').indices;
+if isempty(six)
+    issues = table(issuesBuilder);
+    return;
+end
+
+for si = 1:numel(six)
+    nd = FullTree.select(six(si));
+    patterns = iCollectPatternCalls(nd);
+    keys = patterns.keys;
+    for ki = 1:numel(keys)
+        calls = patterns(keys{ki});
+        if numel(calls) >= 2
+            issuesBuilder(end+1, {'file','line','rule','message'}) = { ...
+                filePath, double(nd.lineno), "mlint_mergePatternCallChain", ...
+                sprintf('检测到 %d 个 %s 调用分散在 || 链中。请合并为一次调用并用 | 连接 pattern：%s', ...
+                numel(calls), iFnDisplayName(calls(1).fn), strtrim(string(nd.tree2str)))}; %#ok<AGROW>
+            break;
+        end
     end
 end
 
 issues = table(issuesBuilder);
 end
 
-function tf = iHasMergeablePatternCallChain(stmt)
-tf = false;
-    parts = MATLAB.DataTypes.ArrayBuilder();
-    startPos = 1;
-    
-    dParen = 0;
-    dBracket = 0;
-    dBrace = 0;
-    inSingle = false;
-    inDouble = false;
-    
-    i = 1;
-    n = numel(stmt);
-    while i <= n
-        ch = stmt(i);
-        if ch == '"'
-            if ~inSingle
-                if inDouble
-                    if i < n && stmt(i + 1) == '"'
-                        i = i + 2;
-                        continue;
-                    end
-                    inDouble = false;
-                else
-                    inDouble = true;
-                end
-            end
-            i = i + 1;
-            continue;
-        end
-    
-        if ch == ''''
-            if inDouble
-                i = i + 1;
-                continue;
-            end
-            if inSingle
-                if i < n && stmt(i + 1) == ''''
-                    i = i + 2;
-                    continue;
-                end
-                inSingle = false;
-            else
-                inSingle = true;
-            end
-            i = i + 1;
-            continue;
-        end
-    
-        if ~inSingle && ~inDouble
-            if ch == '('
-                dParen = dParen + 1;
-            elseif ch == ')'
-                dParen = dParen - 1;
-            elseif ch == '['
-                dBracket = dBracket + 1;
-            elseif ch == ']'
-                dBracket = dBracket - 1;
-            elseif ch == '{'
-                dBrace = dBrace + 1;
-            elseif ch == '}'
-                dBrace = dBrace - 1;
-            elseif ch == '|' && i < n && stmt(i + 1) == '|' && dParen == 0 && dBracket == 0 && dBrace == 0
-                parts.Append(string(strtrim(stmt(startPos:i-1))));
-                startPos = i + 2;
-                i = i + 2;
-                continue;
-            end
-        end
-    
-        i = i + 1;
-    end
-    
-    parts.Append(string(strtrim(stmt(startPos:end))));
-    terms = string(parts.Harvest());
-if numel(terms) < 2
+% -------------------------------------------------------------------------
+function patterns = iCollectPatternCalls(shortOrNode)
+patterns = dictionary;
+iRecurseCollect(shortOrNode, patterns);
+end
+
+function iRecurseCollect(node, patterns)
+if count(node) == 0
     return;
 end
-
-prevOk = false;
-prevFn = "";
-prevTarget = "";
-for i = 1:numel(terms)
-    [ok, fn, target] = iParsePatternCallTerm(terms(i));
-    if ok && prevOk && fn == prevFn && target == prevTarget
-        tf = true;
-        return;
-    end
-    prevOk = ok;
-    prevFn = fn;
-    prevTarget = target;
-end
-end
-
-
-function [ok, fn, target] = iParsePatternCallTerm(term)
-ok = false;
-fn = "";
-target = "";
-
-s = strtrim(string(term));
-if strlength(s) == 0
-    return;
-end
-
-changed = true;
-while changed
-    changed = false;
-    if strlength(s) < 2
-        break;
-    end
-    txt = char(s);
-    if txt(1) ~= '(' || txt(end) ~= ')'
-        break;
-    end
-    if iFindMatchingParen(txt, 1) == numel(txt)
-        s = strtrim(string(txt(2:end-1)));
-        changed = true;
-    end
-end
-ls = lower(s);
-
-if startsWith(ls, "if " | "elseif " | "while ")
-    if startsWith(ls, "if ")
-        s = strtrim(extractAfter(s, "if "));
-    elseif startsWith(ls, "elseif ")
-        s = strtrim(extractAfter(s, "elseif "));
-    else
-        s = strtrim(extractAfter(s, "while "));
-    end
-    ls = lower(s);
-end
-
-if startsWith(ls, "startswith(")
-    fn = "startsWith";
-    openPos = strlength("startsWith") + 1;
-elseif startsWith(ls, "contains(")
-    fn = "contains";
-    openPos = strlength("contains") + 1;
-elseif startsWith(ls, "endswith(")
-    fn = "endsWith";
-    openPos = strlength("endsWith") + 1;
-else
-    return;
-end
-
-txt = char(s);
-closePos = iFindMatchingParen(txt, double(openPos));
-if closePos == 0 || strlength(strtrim(string(txt(closePos+1:end)))) > 0
-    return;
-end
-
-args = splitTopLevelArgs(txt(openPos+1:closePos-1));
-if numel(args) < 2
-    return;
-end
-
-target = lower(strtrim(string(args(1))));
-target = replace(target, " ", "");
-target = replace(target, sprintf('\t'), "");
-if strlength(target) == 0
-    return;
-end
-
-ok = true;
-end
-
-
-
-function pos = iFindMatchingParen(txt, openPos)
-pos = 0;
-if openPos < 1 || openPos > numel(txt) || txt(openPos) ~= '('
-    return;
-end
-
-depth = 0;
-inSingle = false;
-inDouble = false;
-
-i = openPos;
-n = numel(txt);
-while i <= n
-    ch = txt(i);
-    if ch == '"'
-        if ~inSingle
-            if inDouble
-                if i < n && txt(i + 1) == '"'
-                    i = i + 2;
-                    continue;
-                end
-                inDouble = false;
-            else
-                inDouble = true;
-            end
-        end
-        i = i + 1;
-        continue;
-    end
-
-    if ch == ''''
-        if inDouble
-            i = i + 1;
-            continue;
-        end
-        if inSingle
-            if i < n && txt(i + 1) == ''''
-                i = i + 2;
-                continue;
-            end
-            inSingle = false;
+k = char(node.kind);
+if k == "CALL"
+    [fn, firstArg] = iExtractPatternCall(node);
+    if strlength(fn) > 0 && strlength(firstArg) > 0
+        key = char(fn + "|" + firstArg);
+        entry = struct('fn', char(fn), 'firstArg', char(firstArg));
+        if ~isKey(patterns, key)
+            patterns(key) = entry;
         else
-            inSingle = true;
-        end
-        i = i + 1;
-        continue;
-    end
-
-    if ~inSingle && ~inDouble
-        if ch == '('
-            depth = depth + 1;
-        elseif ch == ')'
-            depth = depth - 1;
-            if depth == 0
-                pos = i;
-                return;
-            end
+            prev = patterns(key);
+            prev(end+1) = entry; %#ok<AGROW>
+            patterns(key) = prev;
         end
     end
-    i = i + 1;
+    return;
+end
+% 不穿透 && 子树：仅 || 链中的调用才算"分散在 || 链中"
+if k == "ANDAND"
+    return;
+end
+if count(Left(node)) > 0
+    iRecurseCollect(Left(node), patterns);
+end
+if count(Right(node)) > 0
+    iRecurseCollect(Right(node), patterns);
+end
+if count(Arg(node)) > 0
+    iRecurseCollect(Arg(node), patterns);
 end
 end
 
+% -------------------------------------------------------------------------
+function [fn, firstArg] = iExtractPatternCall(firstChild)
+fn = "";
+firstArg = "";
+fnLower = lower(string(Left(firstChild).tree2str));
+if ~ismember(fnLower, ["startswith", "contains", "endswith"])
+    return;
+end
+fn = fnLower;
+firstChild = iFirstChild(Right(firstChild));
+if count(firstChild) == 0
+    return;
+end
+firstArg = lower(strtrim(string(firstChild.tree2str)));
+end
 
+% -------------------------------------------------------------------------
+function child = iFirstChild(node)
+child = [];
+if count(node) == 0
+    return;
+end
+if ismember(char(node.kind), ["ROW", "CELL"])
+    child = Arg(node);
+else
+    child = node;
+end
+end
 
+% -------------------------------------------------------------------------
+function name = iFnDisplayName(fn)
+switch lower(fn)
+    case "startswith", name = "startsWith";
+    case "contains",  name = "contains";
+    case "endswith",  name = "endsWith";
+    otherwise,         name = fn;
+end
+end

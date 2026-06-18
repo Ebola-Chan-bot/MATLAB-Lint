@@ -1,10 +1,10 @@
-function tf = isValidIdentifier(name)
-if strlength(string(name)) == 0
+function tf = isValidIdentifier(c)
+if strlength(string(c)) == 0
     tf = false;
     return;
 end
 
-c = char(name);
+c = char(c);
 if ~(isletter(c(1)) || c(1) == '_')
     tf = false;
     return;

@@ -30,12 +30,12 @@ end
 tf = any(ismember(fieldnames(s(1)), {'Id', 'Enabled'}));
 end
 
-function out = iGetStringField(s, name)
+function out = iGetStringField(s, v)
 out = "";
-if ~isfield(s, name)
+if ~isfield(s, v)
     return;
 end
-v = s.(name);
+v = s.(v);
 if isstring(v)
     if ~isempty(v)
         out = string(v(1));
@@ -54,18 +54,18 @@ end
 out = iToLogical(s.(name), defaultValue);
 end
 
-function out = iToLogical(v, defaultValue)
+function out = iToLogical(s, defaultValue)
 try
-    if islogical(v)
-        out = logical(v(1));
+    if islogical(s)
+        out = logical(s(1));
         return;
     end
-    if isnumeric(v)
-        out = logical(v(1) ~= 0);
+    if isnumeric(s)
+        out = logical(s(1) ~= 0);
         return;
     end
-    if isstring(v) || ischar(v)
-        s = lower(strtrim(string(v)));
+    if isstring(s) || ischar(s)
+        s = lower(strtrim(string(s)));
         if s == "true" || s == "1"
             out = true;
             return;

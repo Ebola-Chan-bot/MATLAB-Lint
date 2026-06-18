@@ -1,16 +1,16 @@
 function issues = mlint_usePatternInsteadOfRegexp(filePath)
-%mlint_usePatternInsteadOfRegexp 建议使用 pattern 取代 regexp/regexpi。
+%mlint_usePatternInsteadOfRegexp 建议使用 pattern 取代 regexp/regexpi/regexprep。
 
 if nargin == 0
-    issues = "建议用 pattern 替代 regexp 或 regexpi";
+    issues = "建议用 pattern 替代 regexp、regexpi 或 regexprep";
     return;
 end
-lines = splitlines(string(fileread(filePath)));
+AllLines = splitlines(string(fileread(filePath)));
 
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
-for i = 1:numel(lines)
-    s = char(lines(i));
+for i = 1:numel(AllLines)
+    s = char(AllLines(i));
     if isempty(strtrim(s)) || startsWith(strtrim(s), '%')
         continue;
     end
@@ -23,7 +23,7 @@ for i = 1:numel(lines)
 
     hasRegexpCall = false;
     codeStr = lower(string(code));
-    for needle = ["regexp", "regexpi"]
+    for needle = ["regexp", "regexpi", "regexprep"]
         hitPos = strfind(char(codeStr), char(needle));
         if isempty(hitPos)
             continue;

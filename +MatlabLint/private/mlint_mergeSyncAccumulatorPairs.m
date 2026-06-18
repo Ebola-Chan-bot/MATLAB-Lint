@@ -5,17 +5,17 @@ if nargin == 0
     issues = "同步追加和收割的多个 ArrayBuilder/Vector 应合并为 MATLAB.DataTypes.InsertiveTable";
     return;
 end
-lines = splitlines(string(fileread(filePath)));
+AllLines = splitlines(string(fileread(filePath)));
 
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
-funcs = splitFunctions(lines, numel(lines));
+funcs = splitFunctions(AllLines, numel(AllLines));
 
 for f = 1:numel(funcs)
     fnStart = funcs(f).start;
     fnEnd   = funcs(f).end;
     varBuilder = MATLAB.DataTypes.ArrayBuilder();
     for i = fnStart:fnEnd
-        raw = strtrim(char(lines(i)));
+        raw = strtrim(char(AllLines(i)));
         if isempty(raw) || raw(1) == '%'
             continue;
         end
@@ -37,8 +37,7 @@ for f = 1:numel(funcs)
             varBuilder.Append(string(lhs));
         end
     end
-    vars = string(varBuilder.Harvest());
-    vars = unique(vars);
+    vars = unique(string(varBuilder.Harvest()));
     if numel(vars) < 2
         continue;
     end
@@ -54,7 +53,7 @@ for f = 1:numel(funcs)
         appendRowsBuilder = MATLAB.Containers.Vector();
         varName = vars(vi);
         for scanLine = fnStart:fnEnd
-            raw = strtrim(char(lines(scanLine)));
+            raw = strtrim(char(AllLines(scanLine)));
             if isempty(raw) || raw(1) == '%'
                 continue;
             end

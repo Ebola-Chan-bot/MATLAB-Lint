@@ -1,6 +1,6 @@
-function fnName = extractFunctionName(decl)
+function fnName = extractFunctionName(s)
 fnName = "";
-s = strtrim(string(decl));
+s = strtrim(string(s));
 if ~startsWith(s, "function ")
     return;
 end

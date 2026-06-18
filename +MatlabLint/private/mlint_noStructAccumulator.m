@@ -5,10 +5,10 @@ if nargin == 0
     issues = "禁止 struct 数组累积（end+1/cat 追加 struct），应改用 MATLAB.DataTypes.InsertiveTable（每个 struct 字段一列）";
     return;
 end
-lines = splitlines(string(fileread(filePath)));
+AllLines = splitlines(string(fileread(filePath)));
 
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
-funcs = splitFunctions(lines, numel(lines));
+funcs = splitFunctions(AllLines, numel(AllLines));
 
 for f = 1:numel(funcs)
     fnStart = funcs(f).start;
@@ -17,7 +17,7 @@ for f = 1:numel(funcs)
     % 收集该函数内所有 struct 累积器变量
     varBuilder = MATLAB.DataTypes.ArrayBuilder();
     for ii = fnStart:fnEnd
-        raw = strtrim(char(lines(ii)));
+        raw = strtrim(char(AllLines(ii)));
         if isempty(raw) || raw(1) == '%'
             continue;
         end
@@ -30,21 +30,19 @@ for f = 1:numel(funcs)
             varBuilder.Append(vn);
         end
     end
-    accVars = string(varBuilder.Harvest());
-    accVars = unique(accVars);
+    accVars = unique(string(varBuilder.Harvest()));
 
     for av = 1:numel(accVars)
         vn = accVars(av);
         % 找到首次追加行
         firstAppend = 0;
         for jj = fnStart:fnEnd
-            raw = strtrim(char(lines(jj)));
+            raw = strtrim(char(AllLines(jj)));
             if isempty(raw) || raw(1) == '%'
                 continue;
             end
-            code = codeLine(raw);
-            vn2 = iExtractStructAppendVar(code);
-            if strlength(vn2) > 0 && string(vn2) == string(vn)
+            vn2 = iExtractStructAppendVar(codeLine(raw));
+            if ~isempty(vn2) && strcmp(vn2, vn)
                 firstAppend = jj;
                 break;
             end
@@ -62,22 +60,23 @@ issues = table(issuesBuilder);
 end
 
 % -------------------------------------------------------------------------
-function vn = iExtractStructAppendVar(code)
+function vn = iExtractStructAppendVar(s)
 vn = "";
-s = strrep(code, ' ', '');
+s = strrep(s, ' ', '');
 
-eqPos = strfind(s, '=');
-if isempty(eqPos)
+if ~contains(s, '=')
     return;
 end
-lhs = s(1:eqPos(1)-1);
-rhs = s(eqPos(1)+1:end);
+lhs = extractBefore(s, '=');
+rhs = extractAfter(s, '=');
 if ~startsWith(rhs, 'struct(')
     return;
 end
 
-idx = extract(lhs, lettersPattern(1) + asManyOfPattern(characterListPattern('A':'Z') | ...
-    characterListPattern('a':'z') | characterListPattern('0':'9') | "_", 0));
+idx = string(extract(lhs, lettersPattern(1) + asManyOfPattern(characterListPattern('A':'Z') | ...
+    characterListPattern('a':'z') | characterListPattern('0':'9') | "_", 0)));
+idx = idx(strlength(idx) > 0);
+idx = idx(1);  % 取第一个合法标识符
 if strlength(idx) == 0
     return;
 end

@@ -9,32 +9,31 @@ if nargin == 0
     return;
 end
 
-lines = splitlines(string(fileread(filePath)));
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
-[stmts, stmtLines] = collectStatements(lines);
-    varsVector = MATLAB.Containers.Vector();
-    for i = 1:numel(stmts)
-        found = iExtractIsEmptyVars(char(stmts(i)));
+data = collectStatements(splitlines(string(fileread(filePath))));
+    vars = MATLAB.Containers.Vector();
+    for i = 1:size(data, 1)
+        found = iExtractIsEmptyVars(char(data.stmt(i)));
         for k = 1:numel(found)
-            varsVector.PushBack(found(k));
+            vars.PushBack(found(k));
         end
     end
     
-    vars = string(varsVector.Data(:));
+    vars = string(vars.Data(:));
     if ~isempty(vars)
         vars = unique(vars);
     end
     isemptyVars = vars;
 
-for k = 1:numel(stmts)
-    stmt = strtrim(char(stmts(k)));
+for k = 1:size(data, 1)
+    stmt = strtrim(char(data.stmt(k)));
     [ok, varName, expr] = iParseAssignment(stmt);
-    isDecisionVar = ~isempty(isemptyVars) && any(isemptyVars == lower(string(varName)));
     % struct 占位由 mlint_noStructAccumulator 专门负责
-    if ~isempty(stmt) && ok && iIsAccumulatorPlaceholder(expr) && ~isDecisionVar && ...
-            iHasAccumulatorUse(stmts, stmtLines, varName, stmtLines(k))
-        issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, stmtLines(k), "mlint_noAccumulatorPlaceholder", ...
+    if ~isempty(stmt) && ok && iIsAccumulatorPlaceholder(expr) ...
+            && ~(~isempty(isemptyVars) && any(isemptyVars == lower(string(varName)))) && ...
+            iHasAccumulatorUse(data, varName, data.line(k))
+        issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, data.line(k), "mlint_noAccumulatorPlaceholder", ...
             sprintf(['避免使用累积器占位空初始化：%s。' ...
             '建议改用 MATLAB.DataTypes.InsertiveTable、MATLAB.DataTypes.ArrayBuilder 或 MATLAB.Containers.Vector。'], ...
             strtrim(stmt))}; %#ok<AGROW>
@@ -44,19 +43,19 @@ end
 issues = table(issuesBuilder);
 end
 
-function tf = iHasAccumulatorUse(stmts, stmtLines, varName, initLine)
+function tf = iHasAccumulatorUse(data, varName, initLine)
 tf = false;
 if strlength(string(varName)) == 0
     return;
 end
 
 v = iCompact(varName);
-for i = 1:numel(stmts)
-    if stmtLines(i) <= initLine
+for i = 1:size(data, 1)
+    if data.line(i) <= initLine
         continue;
     end
 
-    s = iCompact(stmts(i));
+    s = iCompact(data.stmt(i));
 
     % end+1 索引累积 / 拼接累积 / cat 累积
     if contains(s, v + "(end+1" | v + "{end+1") || ...
@@ -121,29 +120,29 @@ end
 end
 
 
-function [ok, varName, expr] = iParseAssignment(stmt)
+function [ok, varName, expr] = iParseAssignment(rhs)
 ok = false;
 varName = "";
 expr = "";
 
-eq = strfind(stmt, '=');
-if isempty(eq)
+pos = strfind(rhs, '=');
+if isempty(pos)
     return;
 end
 
-pos = eq(1);
+pos = pos(1);
 if pos > 1
-    prev = stmt(pos-1);
+    prev = rhs(pos-1);
     if prev == '=' || prev == '>' || prev == '<' || prev == '~'
         return;
     end
 end
-if pos < numel(stmt) && stmt(pos+1) == '='
+if pos < numel(rhs) && rhs(pos+1) == '='
     return;
 end
 
-lhs = strtrim(stmt(1:pos-1));
-rhs = strtrim(stmt(pos+1:end));
+lhs = strtrim(rhs(1:pos-1));
+rhs = strtrim(rhs(pos+1:end));
 
 if isempty(lhs) || isempty(rhs)
     return;
@@ -166,9 +165,11 @@ expr = string(rhs);
 end
 
 function out = iCompact(s)
-out = lower(string(s));
-out = replace(out, " ", "");
-out = replace(out, sprintf('\t'), "");
+if ismissing(string(s))
+    out = "";
+    return;
+end
+out = replace(replace(lower(string(s)), " ", ""), sprintf('\t'), "");
 end
 
 

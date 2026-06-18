@@ -7,9 +7,9 @@
 %[text] line(1,1)string
 %[text] ## 返回值
 %[text] cleaned
-function cleaned = stripStringLiterals(line)
+function cleaned = stripStringLiterals(cleaned)
 
-cleaned = string(line);
+cleaned = string(cleaned);
 % 双引号
 b = strfind(cleaned, '"');
 e = b(2:2:end);

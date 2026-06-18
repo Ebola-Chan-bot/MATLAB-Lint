@@ -5,12 +5,12 @@ if nargin == 0
     issues = "建议用 dictionary 替代 containers.Map";
     return;
 end
-lines = splitlines(string(fileread(filePath)));
+AllLines = splitlines(string(fileread(filePath)));
 
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
-for i = 1:numel(lines)
-    s = char(lines(i));
+for i = 1:numel(AllLines)
+    s = char(AllLines(i));
     if isempty(strtrim(s)) || startsWith(strtrim(s), '%')
         continue;
     end

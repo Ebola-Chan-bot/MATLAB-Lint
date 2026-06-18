@@ -6,11 +6,11 @@ if nargin == 0
     return;
 end
 
-lines = splitlines(string(fileread(filePath)));
+AllLines = splitlines(string(fileread(filePath)));
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
-for i = 1:numel(lines)
-    lineText = char(lines(i));
+for i = 1:numel(AllLines)
+    lineText = char(AllLines(i));
     ranges = iFindDescendingRanges(lineText);
     for k = 1:height(ranges)
         issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, i, "mlint_noDescendingColonRange", ...
@@ -92,9 +92,8 @@ if tokenStart > 1
     end
 end
 
-token = strtrim(s(tokenStart:pos));
-value = str2double(token);
-if isnan(value) || ~isfinite(value) || round(value) ~= value
+value = str2double(strtrim(s(tokenStart:pos)));
+if ~isfinite(value) || round(value) ~= value
     return;
 end
 ok = true;
@@ -123,17 +122,14 @@ while j <= n && isstrprop(s(j), 'digit')
     j = j + 1;
 end
 
-tokenEnd = j - 1;
-if tokenEnd < n
-    c = s(tokenEnd + 1);
-    if isstrprop(c, 'alphanum') || c == '_' || c == '.'
+value = str2double(strtrim(s(pos:j-1)));
+if j-1 < n
+    s = s(j);
+    if isstrprop(s, 'alphanum') || s == '_' || s == '.'
         return;
     end
 end
-
-token = strtrim(s(pos:tokenEnd));
-value = str2double(token);
-if isnan(value) || ~isfinite(value) || round(value) ~= value
+if ~isfinite(value) || round(value) ~= value
     return;
 end
 ok = true;

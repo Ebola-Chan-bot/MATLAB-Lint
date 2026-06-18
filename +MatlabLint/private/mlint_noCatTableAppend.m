@@ -5,14 +5,14 @@ if nargin == 0
     issues = "仅允许 MATLAB.DataTypes.InsertiveTable 的 end+1 插入；普通 table 的 end+1 以及 cat/拼接方式均禁止";
     return;
 end
-lines = splitlines(string(fileread(filePath)));
+AllLines = splitlines(string(fileread(filePath)));
 
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 tableVars = MATLAB.Containers.Vector();
 insertiveVars = MATLAB.Containers.Vector();
 
-for i = 1:numel(lines)
-    s = char(lines(i));
+for i = 1:numel(AllLines)
+    s = char(AllLines(i));
     if isempty(strtrim(s)) || startsWith(strtrim(s), '%')
         continue;
     end
@@ -41,34 +41,33 @@ end
 issues = table(issuesBuilder);
 end
 
-function tf = iHasTableAppendPattern(code, tableVars, insertiveVars)
+function tf = iHasTableAppendPattern(s, varsToCheck, insertiveVars)
 tf = false;
-s = lower(string(code));
+s = lower(string(s));
 
 % 显式 cat/vertcat/horzcat 或典型拼接追加：x = [x; table(...)]（含跨行写法）
 % 排除 cat(..., varargin{:}) 这类 cell 展开，以及 = [] 删除/清空操作
-if contains(s, "table(") && ((contains(s, "cat(") || contains(s, "vertcat(") || contains(s, "horzcat(")) || ...
-        ((contains(s, "=[") || contains(s, "= [")) && contains(s, ";"))) && ...
+if contains(s, "table(") && (contains(s, "cat(" | "vertcat(" | "horzcat(") || ...
+        (contains(s, "=[" | "= [") && contains(s, ";"))) && ...
         ~contains(s, "varargin{:" | "varargin {:" | " = [" | " =  [" | "= []" | "=  []")
     tf = true;
     return;
 end
 
-if isempty(tableVars) && isempty(insertiveVars)
+if isempty(varsToCheck) && isempty(insertiveVars)
     return;
 end
 
-varsToCheck = unique([string(tableVars(:)); string(insertiveVars(:))]);
+varsToCheck = unique([string(varsToCheck(:)); string(insertiveVars(:))]);
 for i = 1:numel(varsToCheck)
     v = lower(string(varsToCheck(i)));
     if strlength(v) == 0
         continue;
     end
     % 排除 {:} 语法（cell 展开/删除等）
-    codeStripped = regexprep(s, '\{\s*:\s*\}', '');
-    if (contains(codeStripped, v + "(end+1") || contains(codeStripped, v + "(end + 1") || ...
-            contains(codeStripped, v + " (end+1") || contains(codeStripped, v + " (end + 1")) ...
-            && (contains(codeStripped, ")=") || contains(codeStripped, ") ="))
+    codeStripped = strrep(strrep(s, '{ : }', ''), '{:}', '');
+    if contains(codeStripped, v + "(end+1" | v + "(end + 1" | v + " (end+1" | v + " (end + 1") ...
+            && contains(codeStripped, ")=" | ") =")
         if any(insertiveVars == v)
             return;
         end
@@ -78,19 +77,19 @@ for i = 1:numel(varsToCheck)
 end
 end
 
-function [ok, varName] = iGetTableDefinitionVar(code)
+function [ok, varName] = iGetTableDefinitionVar(s)
 ok = false;
 varName = "";
-s = strtrim(string(code));
+s = strtrim(string(s));
 if ~(contains(s, "=") && contains(lower(s), "table("))
     return;
 end
 
-eqPos = strfind(char(s), '=');
-if isempty(eqPos)
+lhs = strfind(char(s), '=');
+if isempty(lhs)
     return;
 end
-lhs = strtrim(extractBefore(s, eqPos(1)));
+lhs = strtrim(extractBefore(s, lhs(1)));
 if strlength(lhs) == 0
     return;
 end
@@ -101,19 +100,19 @@ if isValidIdentifier(lhs)
 end
 end
 
-function [ok, varName] = iGetInsertiveTableDefinitionVar(code)
+function [ok, varName] = iGetInsertiveTableDefinitionVar(s)
 ok = false;
 varName = "";
-s = strtrim(string(code));
+s = strtrim(string(s));
 if ~(contains(s, "=") && contains(lower(s), "matlab.datatypes.insertivetable("))
     return;
 end
 
-eqPos = strfind(char(s), '=');
-if isempty(eqPos)
+lhs = strfind(char(s), '=');
+if isempty(lhs)
     return;
 end
-lhs = strtrim(extractBefore(s, eqPos(1)));
+lhs = strtrim(extractBefore(s, lhs(1)));
 if strlength(lhs) == 0
     return;
 end

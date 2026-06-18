@@ -5,12 +5,12 @@ if nargin == 0
     issues = "禁止无算术运算场景下使用整数类型转换";
     return;
 end
-lines = splitlines(string(fileread(filePath)));
+AllLines = splitlines(string(fileread(filePath)));
 
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
-for i = 1:numel(lines)
-    s = strtrim(char(lines(i)));
+for i = 1:numel(AllLines)
+    s = strtrim(char(AllLines(i)));
     if isempty(s) || startsWith(s, '%')
         continue;
     end

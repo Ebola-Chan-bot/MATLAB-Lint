@@ -6,18 +6,16 @@ if nargin == 0
     return;
 end
 
-lines = splitlines(string(fileread(filePath)));
-[stmts, stmtLines] = collectStatements(lines);
+data = collectStatements(splitlines(string(fileread(filePath))));
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
-for i = 1:numel(stmts)
-    stmt = char(stmts(i));
-    [hasViolation, frag] = iFindZeroRepeatCall(stmt);
+for i = 1:size(data, 1)
+    [hasViolation, frag] = iFindZeroRepeatCall(char(data.stmt(i)));
     if ~hasViolation
         continue;
     end
 
-    issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, stmtLines(i), "mlint_noZeroRepeatCount", ...
+    issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, data.line(i), "mlint_noZeroRepeatCount", ...
         sprintf("检测到包含 0 重复数的调用：%s。请彻查并重构相关逻辑，移除对此需求。", frag)}; %#ok<AGROW>
 end
 
@@ -69,12 +67,12 @@ while scanPos <= strlength(string(stmt))
 end
 end
 
-function [ok, fnName, openPos] = iFindNextTargetCall(stmt, fromPos)
+function [ok, fnName, openPos] = iFindNextTargetCall(s, fromPos)
 ok = false;
 fnName = "";
 openPos = 0;
 
-s = char(stmt);
+s = char(s);
 n = numel(s);
 if fromPos < 1 || fromPos > n
     return;
@@ -135,21 +133,21 @@ end
 end
 
 
-function tf = iHasZeroNumericLiteral(expr)
+function tf = iHasZeroNumericLiteral(tokens)
 tf = false;
-if isempty(expr)
+if isempty(tokens)
     return;
 end
 
-s = lower(char(expr));
-for i = 1:numel(s)
-    ch = s(i);
+tokens = lower(char(tokens));
+for i = 1:numel(tokens)
+    ch = tokens(i);
     if ~(isstrprop(ch, 'alphanum') || ch == '_' || ch == '.' || ch == '+' || ch == '-')
-        s(i) = ' ';
+        tokens(i) = ' ';
     end
 end
 
-tokens = split(string(strtrim(s)));
+tokens = split(string(strtrim(tokens)));
 for i = 1:numel(tokens)
     t = strtrim(tokens(i));
     if strlength(t) == 0 || ~iMayBeNumericToken(t)

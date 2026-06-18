@@ -1,9 +1,8 @@
-function headerEnd = findIfHeaderEnd(startLine, endLine, lines)
+function headerEnd = findIfHeaderEnd(startLine, endLine, AllLines)
 headerEnd = startLine;
 
 for k = startLine:endLine - 1
-    code = codeLine(lines(k));
-    if endsWith(code, "...")
+    if endsWith(codeLine(AllLines(k)), "...")
         headerEnd = k;
         continue;
     end

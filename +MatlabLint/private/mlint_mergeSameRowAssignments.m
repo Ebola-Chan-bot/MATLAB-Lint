@@ -6,13 +6,13 @@ if nargin == 0
     return;
 end
 
-lines = splitlines(string(fileread(filePath)));
+AllLines = splitlines(string(fileread(filePath)));
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
-nLines = numel(lines);
+nLines = numel(AllLines);
 i = 1;
 while i <= nLines
-    s = strtrim(char(lines(i)));
+    s = strtrim(char(AllLines(i)));
     if isempty(s) || startsWith(s, '%')
         i = i + 1;
         continue;
@@ -27,7 +27,7 @@ while i <= nLines
     j = i + 1;
     mergeCount = 1;
     while j <= nLines
-        sj = strtrim(char(lines(j)));
+        sj = strtrim(char(AllLines(j)));
         if isempty(sj) || startsWith(sj, '%')
             j = j + 1;
             continue;
@@ -56,12 +56,12 @@ end
 issues = table(issuesBuilder);
 end
 
-function [ok, varName, rowToken] = iParseCellRowAssign(line)
+function [ok, varName, rowToken] = iParseCellRowAssign(s)
 ok = false;
 varName = "";
 rowToken = "";
 
-s = regexprep(line, '\s+', '');
+s = strrep(strrep(s, ' ', ''), sprintf('\t'), '');
 bracePos = strfind(s, '{');
 if isempty(bracePos) || bracePos(1) < 2
     return;
@@ -72,28 +72,23 @@ if ~isValidIdentifier(lhsVar)
     return;
 end
 
-assignPos = strfind(s, '}=');
-if isempty(assignPos)
+parts = strfind(s, '}=');
+if isempty(parts)
     return;
 end
-
-parts = split(string(s(bracePos(1)+1:assignPos(1)-1)), ',');
+parts = split(string(s(bracePos(1)+1:parts(1)-1)), ',');
 if numel(parts) < 2
     return;
 end
 
-rowPart = strtrim(parts(1));
-if rowPart == "end+1"
-    rowToken = "end+1";
-elseif rowPart == "end"
-    rowToken = "end";
-else
-    return;
+switch strtrim(parts(1))
+    case "end+1", rowToken = "end+1";
+    case "end",   rowToken = "end";
+    otherwise, return;
 end
 
-colPart = strtrim(parts(2));
-if ~((startsWith(colPart, '"') && endsWith(colPart, '"')) || ...
-     (startsWith(colPart, "'") && endsWith(colPart, "'")))
+if ~((startsWith(strtrim(parts(2)), '"') && endsWith(strtrim(parts(2)), '"')) || ...
+     (startsWith(strtrim(parts(2)), "'") && endsWith(strtrim(parts(2)), "'")))
     return;
 end
 

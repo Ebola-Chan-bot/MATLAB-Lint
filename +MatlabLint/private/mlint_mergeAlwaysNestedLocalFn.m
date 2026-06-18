@@ -5,17 +5,17 @@ if nargin == 0
     issues = "总是嵌套调用的局部函数建议合并";
     return;
 end
-lines = splitlines(string(fileread(filePath)));
+AllLines = splitlines(string(fileread(filePath)));
 
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
-nLines = numel(lines);
+nLines = numel(AllLines);
 
 % 收集所有局部函数名
 localFnNamesBuilder = MATLAB.DataTypes.ArrayBuilder();
 hasLocalFn = false;
 for i = 1:nLines
-    cs = strtrim(char(lines(i)));
+    cs = strtrim(char(AllLines(i)));
     if ~startsWith(cs, "function ") || ~contains(cs, "(")
         continue;
     end
@@ -49,7 +49,7 @@ for k = 1:numel(localFnNames)
     nestedCalls = 0;
     outerCallers = MATLAB.Containers.Vector();
     for i = 1:nLines
-        cs = strtrim(char(lines(i)));
+        cs = strtrim(char(AllLines(i)));
         if isempty(cs) || startsWith(cs, '%')
             continue;
         end
@@ -99,7 +99,7 @@ for k = 1:numel(localFnNames)
     if totalCalls >= 2 && nestedCalls == totalCalls && isscalar(uniqueOuterCallers)
         declLine = 1;
         for ii = 1:nLines
-            sDecl = strtrim(char(lines(ii)));
+            sDecl = strtrim(char(AllLines(ii)));
             if startsWith(sDecl, "function ") && contains(sDecl, fn + "(")
                 declLine = ii;
                 break;

@@ -6,11 +6,11 @@ if nargin == 0
     return;
 end
 
-lines = splitlines(string(fileread(filePath)));
-nLines = numel(lines);
+AllLines = splitlines(string(fileread(filePath)));
+nLines = numel(AllLines);
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
-funcs = splitFunctions(lines, nLines);
+funcs = splitFunctions(AllLines, nLines);
 if numel(funcs) <= 1
     issues = table(issuesBuilder);
     return;
@@ -19,7 +19,7 @@ end
 % 判断第一个函数是否为公开入口（文件第一个非注释/非空行以 function 开头）
 firstFnIsPublic = false;
 for i = 1:nLines
-    s = strtrim(char(lines(i)));
+    s = strtrim(char(AllLines(i)));
     if isempty(s) || startsWith(s, '%')
         continue;
     end
@@ -37,8 +37,7 @@ end
 
 for k = startIdx:numel(funcs)
     declLineNum = funcs(k).start;
-    decl = strtrim(char(lines(declLineNum)));
-    fnName = extractFunctionName(decl);
+    fnName = extractFunctionName(strtrim(char(AllLines(declLineNum))));
     if fnName == ""
         continue;
     end
@@ -48,7 +47,7 @@ for k = startIdx:numel(funcs)
         if i == declLineNum
             continue;
         end
-        cs = strtrim(char(lines(i)));
+        cs = strtrim(char(AllLines(i)));
         if isempty(cs) || startsWith(cs, '%')
             continue;
         end
@@ -56,14 +55,13 @@ for k = startIdx:numel(funcs)
 
         callPos = strfind(cs, char(fnName + "("));
         for p = callPos
-            wordStart = (p <= 1 || ~(isstrprop(cs(p-1), 'alphanum') || cs(p-1) == '_'));
-            if wordStart
+            if p <= 1 || ~(isstrprop(cs(p-1), 'alphanum') || cs(p-1) == '_')
                 callCount = callCount + 1;
             end
         end
     end
 
-    if callCount == 1 && ~iHasEarlyReturn(lines, declLineNum, nLines)
+    if callCount == 1 && ~iHasEarlyReturn(AllLines, declLineNum, nLines)
         issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, declLineNum, "mlint_singleCallFunction", ...
             sprintf('局部函数"%s"只有一处调用，建议内联掉', fnName)}; %#ok<AGROW>
     end
@@ -72,12 +70,12 @@ end
 issues = table(issuesBuilder);
 end
 
-function tf = iHasEarlyReturn(lines, declLineNum, nLines)
+function tf = iHasEarlyReturn(AllLines, declLineNum, nLines)
 tf = false;
 depth = 0;
 bs = ["function ","if ","for ","parfor ","while ","switch ","try","try "];
 for i = declLineNum:nLines
-    s = strtrim(char(lines(i)));
+    s = strtrim(char(AllLines(i)));
     if i == declLineNum
         depth = 1;
     else

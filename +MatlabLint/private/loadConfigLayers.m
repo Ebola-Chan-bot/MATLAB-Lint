@@ -19,12 +19,11 @@ if isfile(cwdConfig)
 end
 
 if isfolder(targetPath)
-    targetDir = char(targetPath);
+    targetConfig = fullfile(char(targetPath), '.matlablint.json');
 else
-    targetDir = fileparts(char(targetPath));
+    targetConfig = fullfile(fileparts(char(targetPath)), '.matlablint.json');
 end
 
-targetConfig = fullfile(targetDir, '.matlablint.json');
 if isfile(targetConfig)
     cfg = mergeStruct(cfg, readJsonConfig(targetConfig));
 end
