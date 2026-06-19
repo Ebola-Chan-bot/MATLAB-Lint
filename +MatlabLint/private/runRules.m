@@ -1,4 +1,4 @@
-function issues = runRules(fileList, rules)
+﻿function issues = runRules(fileList, rules)
 %RUNRULES 按历史累计耗时降序执行所有规则；文件级并行执行。
 
 nFiles = numel(fileList);
@@ -17,7 +17,7 @@ db = ruleTimingDB('load');
 if isfield(db, 'Rules') && ~isempty(db.Rules)
     timingMap = configureDictionary('string', 'double');
     for ti = 1:numel(db.Rules)
-        timingMap(char(db.Rules(ti).id)) = db.Rules(ti).totalSec;
+        timingMap(db.Rules( ti ).id) = db.Rules(ti).totalSec;
     end
 
     weights = zeros(nRules, 1);
@@ -51,8 +51,11 @@ for r = 1:nRules
             continue;
         end
         for ri = 1:height(out)
+            fileVal = iTextScalar(out.file(ri));
+            ruleVal = iTextScalar(out.rule(ri));
+            msgVal = iTextScalar(out.message(ri));
             localBuilder(end+1, {'file','line','rule','message'}) = ...
-                {char(string(out.file(ri))), out.line(ri), char(string(out.rule(ri))), char(string(out.message(ri)))};
+                {fileVal, out.line(ri), ruleVal, msgVal};
         end
     end
     allResults{r} = localBuilder;
@@ -64,8 +67,11 @@ issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 for r = 1:nRules
     tbl = allResults{r};
     for ri = 1:height(tbl)
+        fileVal = iTextScalar(tbl.file(ri));
+        ruleVal = iTextScalar(tbl.rule(ri));
+        msgVal = iTextScalar(tbl.message(ri));
         issuesBuilder(end+1, {'file','line','rule','message'}) = ...
-            {char(string(tbl.file(ri))), tbl.line(ri), char(string(tbl.rule(ri))), char(string(tbl.message(ri)))};
+            {fileVal, tbl.line(ri), ruleVal, msgVal};
     end
 end
 
@@ -77,5 +83,23 @@ for r = 1:nRules
 end
 
 issues = table(issuesBuilder);
+end
+
+% -------------------------------------------------------------------------
+function txt = iTextScalar(v)
+if iscell(v)
+    % 不先解 cell 会在 InsertiveTable 写回时复现真实错误：
+    % runRules:54 -> 无法将 string 转为 cell（RawTable 赋值失败）。
+    v = v{1};
+end
+if isstring(v)
+    % 统一到 char 标量以避免 RawTable 类型转换失败（同上错误链）。
+    txt = char(v);
+elseif ischar(v)
+    txt = v;
+else
+    % 非文本类型统一转 char，避免写回 RawTable 时再触发类型转换错误（同上错误链）。
+    txt = char(string(v));
+end
 end
 

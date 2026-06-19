@@ -1,4 +1,4 @@
-function ids = collectRhsIds(node)
+﻿function ids = collectRhsIds(node)
 %COLLECTRHSIDS 递归遍历子树，提取所有 ID 字符串。
 if count(node) == 0
     ids = strings(0, 1);
@@ -14,8 +14,8 @@ if count(nxt) == 0
     return;
 end
 
-if char(nxt.kind) == "ID"
-    acc.PushBack(string(nxt.string));
+if nxt.kind == "ID"
+    acc.PushBack(nxt.string);
     return;
 end
 
@@ -36,3 +36,4 @@ try
 catch
 end
 end
+

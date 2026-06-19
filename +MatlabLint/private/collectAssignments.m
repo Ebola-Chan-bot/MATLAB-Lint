@@ -1,4 +1,4 @@
-function assignments = collectAssignments(FullTree, fnNode, detectSelfRef)
+﻿function assignments = collectAssignments(FullTree, fnNode, detectSelfRef)
 %COLLECTASSIGNMENTS 提取函数内的简单赋值（左值为单个 ID）。
 % assignments = table(line, var, isSelfRef, eqIdx)
 % detectSelfRef=true 时递归检查 RHS 是否引用同名变量。
@@ -24,11 +24,11 @@ for i = 1:numel(ix)
     end
 
     lhs = Left(nd);
-    if count(lhs) ~= 1 || ~strcmp(char(lhs.kind), 'ID')
+    if count(lhs) ~= 1 || ~strcmp(lhs.kind, 'ID')
         continue;
     end
 
-    varName = string(lhs.string);
+    varName = lhs.string;
     if strlength(varName) == 0
         continue;
     end
@@ -42,7 +42,7 @@ for i = 1:numel(ix)
     end
 
     builder(end+1, {'line','var','isSelfRef','eqIdx'}) = ...
-        {double(nd.lineno), char(varName), isSelfRef, ix(i)};
+        {double(nd.lineno), varName, isSelfRef, ix(i)};
 end
 
 assignments = table(builder);
@@ -55,9 +55,9 @@ if count(node) == 0
     return;
 end
 
-k = char(node.kind);
+k = node.kind;
 if k == "ID"
-    tf = string(node.string) == varName;
+    tf = node.string == varName;
     return;
 end
 
@@ -137,7 +137,7 @@ function tf = iIsLoopControlFlagAssign(FullTree, p, varName)
 tf = false;
 p = Parent(p);
 while count(p) > 0
-    if char(p.kind) == "WHILE"
+    if p.kind == "WHILE"
         condIDs = List(Left(p)).mtfind('Kind', 'ID');
         if count(condIDs) == 0
             return;
@@ -154,3 +154,4 @@ while count(p) > 0
     p = Parent(p);
 end
 end
+

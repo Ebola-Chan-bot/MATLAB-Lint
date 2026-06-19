@@ -82,7 +82,7 @@ try
     if count(tp) == 0
         return;
     end
-    tf = ~strcmp(char(tp.kind), 'IFHEAD');
+    tf = ~strcmp(tp.kind, 'IFHEAD');
 catch
 end
 end
@@ -90,13 +90,13 @@ end
 function info = iAnalyzeIfSnippet(snippet)
 info = struct('topIfCount', 0, 'topOtherBlockCount', 0, 'topPlainCount', 0, 'hasTopElse', false);
 
-lines = splitlines(string(snippet));
+lines = splitlines(snippet);
 seenHeader = false;
 headerCont = false;
 depth = 0;
 
 for i = 1:numel(lines)
-    code = string(strtrim(codeLine(lines(i))));
+    code = strtrim( codeLine( lines( i ) ) );
     if strlength(code) == 0
         continue;
     end

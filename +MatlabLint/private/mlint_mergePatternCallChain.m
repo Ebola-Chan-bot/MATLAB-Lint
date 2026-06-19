@@ -166,7 +166,7 @@ if ~strcmpi(fn, "erase")
 end
 
 arg1 = iFirstChild(Right(callNode));
-if count(arg1) == 0 || ~strcmp(char(arg1.kind), 'CALL')
+if count(arg1) == 0 || ~strcmp(arg1.kind, 'CALL')
     return;
 end
 
@@ -176,5 +176,5 @@ if ~strcmpi(innerFn, "erase")
 end
 
 tf = true;
-exprText = strtrim(string(callNode.tree2str));
+exprText = strtrim(callNode.tree2str);
 end

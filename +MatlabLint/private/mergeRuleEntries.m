@@ -1,4 +1,4 @@
-function merged = mergeRuleEntries(baseRaw, overrideRaw)
+﻿function merged = mergeRuleEntries(baseRaw, overrideRaw)
 %MERGERULEENTRIES 按规则标识合并 Rules 对象数组。
 % 覆盖规则：override 中同标识条目覆盖 base。
 
@@ -44,9 +44,10 @@ end
 end
 
 function key = iEntryKey(e)
-if isfield(e, 'Id') && strlength(string(e.Id)) > 0
-    key = "id:" + string(e.Id);
+if isfield(e, 'Id') && strlength(e.Id) > 0
+    key = "id:" + e.Id;
     return;
 end
 key = "";
 end
+

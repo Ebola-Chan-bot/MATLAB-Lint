@@ -38,10 +38,10 @@ end
 v = s.(v);
 if isstring(v)
     if ~isempty(v)
-        out = string(v(1));
+        out = v( 1 );
     end
 elseif ischar(v)
-    out = string(v);
+    out = v;
 end
 out = strtrim(out);
 end
@@ -57,15 +57,15 @@ end
 function out = iToLogical(s, defaultValue)
 try
     if islogical(s)
-        out = logical(s(1));
+        out = s( 1 );
         return;
     end
     if isnumeric(s)
-        out = logical(s(1) ~= 0);
+        out = s( 1 )~=0;
         return;
     end
     if isstring(s) || ischar(s)
-        s = lower(strtrim(string(s)));
+        s = lower(strtrim(s));
         if s == "true" || s == "1"
             out = true;
             return;

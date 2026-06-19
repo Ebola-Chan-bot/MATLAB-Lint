@@ -1,6 +1,6 @@
-function fnName = extractFunctionName(s)
+﻿function fnName = extractFunctionName(s)
 fnName = "";
-s = strtrim(string(s));
+s = strtrim(s);
 if ~startsWith(s, "function ")
     return;
 end
@@ -16,3 +16,4 @@ if isValidIdentifier(s)
     fnName = s;
 end
 end
+

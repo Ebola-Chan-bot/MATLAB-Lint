@@ -1,4 +1,4 @@
-%[text] 从代码行中剔除字符串字面量，避免误判。
+﻿%[text] 从代码行中剔除字符串字面量，避免误判。
 %[text] ## 语法
 %[text] ```matlabCodeExample
 %[text] cleaned = MatlabLintstripStringLiterals(line)
@@ -9,7 +9,7 @@
 %[text] cleaned
 function cleaned = stripStringLiterals(cleaned)
 
-cleaned = string(cleaned);
+cleaned = cleaned;
 % 双引号
 b = strfind(cleaned, '"');
 e = b(2:2:end);
@@ -30,3 +30,4 @@ end
 
 %[appendix]{"version":"1.0"}
 %---
+

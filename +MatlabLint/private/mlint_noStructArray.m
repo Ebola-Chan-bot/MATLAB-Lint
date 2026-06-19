@@ -18,13 +18,13 @@ cix = FullTree.mtfind('Kind', 'CALL').indices;
 if ~isempty(cix)
     for i = 1:numel(cix)
         nd = FullTree.select(cix(i));
-        fn = string(Left(nd).tree2str);
+        fn = Left( nd ).tree2str;
         if ~strcmpi(strtrim(fn), "repmat"), continue; end
         firstArg = Arg(Right(nd));
-        if count(firstArg) > 0 && char(firstArg.kind) == "CALL" ...
-                && strcmpi(string(Left(firstArg).tree2str), "struct")
+        if count(firstArg) > 0 && firstArg.kind == "CALL" ...
+                && strcmpi(Left( firstArg ).tree2str, "struct")
             issuesBuilder(end+1, {'file','line','rule','message'}) = ...
-                {string(filePath), double(nd.lineno), "mlint_noStructArray", ...
+                {filePath, nd.lineno, "mlint_noStructArray", ...
                  "struct 数组预分配（repmat+struct），应改用 table（size 参数控制行数）"};
         end
     end
@@ -37,39 +37,40 @@ six = FullTree.mtfind('Kind', 'SUBSCR').indices;
 for i = 1:numel(six)
     nd = FullTree.select(six(i));
     left = Left(nd);
-    if count(left) == 0 || ~strcmp(char(left.kind), "DOT"), continue; end
-    method = strtrim(string(Right(left).string));
+    if count(left) == 0 || ~strcmp(left.kind, "DOT"), continue; end
+    method = strtrim(Right( left ).string);
     if ~ismember(method, ["Append", "PushBack"]), continue; end
     % struct 可能直接作为 Right(SUBSCR)（单参数）或嵌套在 ROW 内（多参数）
     args = Right(nd);
     if count(args) > 0
         hasStruct = false;
-        if char(args.kind) == "CALL" && strcmpi(strtrim(string(Left(args).tree2str)), "struct")
+        if args.kind == "CALL" && strcmpi(strtrim(Left( args ).tree2str), "struct")
             hasStruct = true;
-        elseif char(args.kind) == "ROW"
+        elseif args.kind == "ROW"
             cur = Arg(args);
             while count(cur) > 0
-                if char(cur.kind) == "CALL" && strcmpi(strtrim(string(Left(cur).tree2str)), "struct")
+                if cur.kind == "CALL" && strcmpi(strtrim(Left( cur ).tree2str), "struct")
                     hasStruct = true; break;
                 end
                 try, cur = Next(cur); catch, break; end
             end
         end
         if hasStruct
+            % 不转 string 标量会在此处复现真实错误：
+            % mlint_noStructArray:60, || 操作数必须为逻辑标量。
             varName = string(Left(left).string);
             if ismissing(varName) || strlength(varName) == 0
                 try
-                    varName = strtrim(string(Left(left).tree2str));
+                    varName = strtrim( Left( left ).tree2str );
                 catch
                     varName = "?";
                 end
             end
-            varName = varName(1);
             msg = sprintf('%s.%s(struct(...)) 应改用 MATLAB.DataTypes.InsertiveTable（struct 字段→表列）', ...
                 varName, method);
             %#ok<*AGROW>
             issuesBuilder(end+1, {'file','line','rule','message'}) = ...
-                {string(filePath), double(nd.lineno), "mlint_noStructArray", string(msg)};
+                {filePath, nd.lineno, "mlint_noStructArray", msg};
         end
     end
 end
@@ -80,10 +81,10 @@ if ~isempty(eix)
     for i = 1:numel(eix)
         nd = FullTree.select(eix(i));
         lhs = Left(nd);
-        if count(lhs) > 0 && strcmp(char(lhs.kind), 'SUBSCR') ...
-                && contains(string(lhs.tree2str), 'end') && iIsStructCall(Right(nd))
+        if count(lhs) > 0 && strcmp(lhs.kind, 'SUBSCR') ...
+                && contains(lhs.tree2str, 'end') && iIsStructCall(Right(nd))
             issuesBuilder(end+1, {'file','line','rule','message'}) = ...
-                {string(filePath), double(nd.lineno), "mlint_noStructArray", ...
+                {filePath, nd.lineno, "mlint_noStructArray", ...
                  "struct 数组动态扩容（end+1），应改用 table 收集结果"};
         end
     end
@@ -95,7 +96,7 @@ end
 function tf = iIsStructCall(node)
 tf = false;
 if count(node) == 0, return; end
-tf = strcmp(char(node.kind), "CALL") && strcmpi(strtrim(string(Left(node).tree2str)), "struct");
+tf = strcmp(node.kind, "CALL") && strcmpi(strtrim(Left( node ).tree2str), "struct");
 end
 
 

@@ -1,4 +1,4 @@
-function issues = mlint_mergeIdenticalCaseBranches(filePath)
+﻿function issues = mlint_mergeIdenticalCaseBranches(filePath)
 %mlint_mergeIdenticalCaseBranches 基于 mtree 检测 switch 中相同 case 分支应合并。
 
 if nargin == 0

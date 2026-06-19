@@ -1,9 +1,9 @@
-function inlineSingleCallHelpers(filePath, funcName)
+﻿function inlineSingleCallHelpers(filePath, funcName)
 %INLINESINGLECALLHELPERS 用 mtree 内联只有一处调用的辅助函数。
 
 original = fileread(filePath);
 try
-    iInlineOne(filePath, string(funcName));
+    iInlineOne(filePath, funcName);
 catch ME
     fid = fopen(filePath, 'w');
     if fid >= 0
@@ -178,13 +178,13 @@ end
 end
 
 function s = iStripBodyBaseIndent(rawLine, baseIndent)
-s = string(rawLine);
+s = rawLine;
 if baseIndent <= 0
     return;
 end
 if strlength(s) >= baseIndent
     prefix = extractBefore(s, baseIndent + 1);
-    if all(char(prefix) == ' ' | char(prefix) == sprintf('\t'))
+    if all(prefix == ' ' | prefix == sprintf('\t'))
         s = extractAfter(s, baseIndent);
     end
 end
@@ -248,7 +248,7 @@ catch
 end
 
 while count(cur) > 0
-    s = strtrim(string(cur.tree2str));
+    s = strtrim(cur.tree2str);
     if strlength(s) > 0
         strs.PushBack(s);
     end
@@ -284,7 +284,7 @@ if ismissing(txt)
     indent = "";
     return;
 end
-txt = char(txt);
+txt = txt;
 leadEnd = find(~isspace(txt), 1, 'first') - 1;
 if isempty(leadEnd)
     indent = "";
@@ -363,15 +363,15 @@ used = string(used.Data(:));
 v = base;
 k = 1;
 while any(used == v)
-    v = base + "_" + string(k);
+    v = base + "_" + k;
     k = k + 1;
 end
 end
 
 function newLine = iReplaceFunctionCallOnce(CurrLine, name, replacement)
 newLine = "";
-txt = char(CurrLine);
-name = char(name);
+txt = CurrLine;
+name = name;
 
 if isempty(txt) || isempty(name)
     return;
@@ -395,7 +395,7 @@ while i <= L
                 elseif c == ')'
                     depth = depth - 1;
                     if depth == 0
-                        newLine = string([txt(1:i-1) char(replacement) txt(k+1:end)]);
+                        newLine = string([txt(1:i-1) replacement txt(k+1:end)]);
                         return;
                     end
                 end

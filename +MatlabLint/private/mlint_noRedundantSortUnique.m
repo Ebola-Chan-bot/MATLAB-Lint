@@ -5,12 +5,12 @@ if nargin == 0
     issues = "禁止 sort(unique(...)) 冗余写法";
     return;
 end
-AllLines = splitlines(string(fileread(filePath)));
+AllLines = splitlines(fileread( filePath ));
 
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
 for i = 1:numel(AllLines)
-    s = strtrim(char(AllLines(i)));
+    s = strtrim(AllLines( i ));
     if isempty(s) || startsWith(s, '%')
         continue;
     end

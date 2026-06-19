@@ -1,4 +1,4 @@
-function builtinFns = builtinRuleRegistry()
+﻿function builtinFns = builtinRuleRegistry()
 %BUILTINRULEREGISTRY 内置规则注册表（规则 ID -> 规则函数句柄）。
 
 persistent cachedBuiltinFns
@@ -8,27 +8,26 @@ if ~isempty(cachedBuiltinFns) && isstruct(cachedBuiltinFns) && ...
     return;
 end
 
-ids = MATLAB.Containers.Vector();
+ids = {};
 
 % 排序保证 fieldnames 顺序稳定，避免不同文件系统顺序差异。
 names = sort({dir(fullfile(fileparts(mfilename('fullpath')), 'mlint_*.m')).name});
 for i = 1:numel(names)
-    rid = erase(string(names{i}), ".m");
+    rid = erase(names{i}, ".m");
     if ~isValidIdentifier(rid)
         continue;
     end
-    ids.PushBack(rid);
+    ids{end+1, 1} = rid; %#ok<AGROW>
 end
-
-ids = string(ids.Data(:));
 
 if isempty(ids)
     builtinFns = struct;
 else
+    fnHandles = cellfun(@str2func, ids, 'UniformOutput', false);
     builtinFns = cell2struct( ...
-        arrayfun(@(name) str2func(name), ids, 'UniformOutput', false), ...
-        cellstr(ids), 1);
+        fnHandles, ids, 1);
 end
 
 cachedBuiltinFns = builtinFns;
 end
+

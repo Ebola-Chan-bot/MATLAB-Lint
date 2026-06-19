@@ -60,7 +60,7 @@ end
 % -------------------------------------------------------------------------
 function db = iMerge(db, ruleId, elapsed)
 if ~isfield(db, 'Rules') || isempty(db.Rules)
-    db.Rules = struct('id', char(ruleId), 'totalSec', elapsed, 'runs', 1);
+    db.Rules = struct('id', ruleId, 'totalSec', elapsed, 'runs', 1);
     return;
 end
 
@@ -73,7 +73,7 @@ for i = 1:numel(db.Rules)
 end
 
 % 新规则：用结构体字面量直接赋值
-db.Rules = struct('id', {db.Rules.id, char(ruleId)}, ...
+db.Rules = struct('id', {db.Rules.id, ruleId}, ...
     'totalSec', {db.Rules.totalSec, elapsed}, ...
     'runs', {db.Rules.runs, 1});
 end

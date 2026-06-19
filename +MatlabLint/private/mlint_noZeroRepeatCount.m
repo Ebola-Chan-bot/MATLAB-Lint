@@ -6,11 +6,11 @@ if nargin == 0
     return;
 end
 
-data = collectStatements(splitlines(string(fileread(filePath))));
+data = collectStatements(splitlines(fileread( filePath )));
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
 for i = 1:size(data, 1)
-    [hasViolation, frag] = iFindZeroRepeatCall(char(data.stmt(i)));
+    [hasViolation, frag] = iFindZeroRepeatCall(data.stmt( i ));
     if ~hasViolation
         continue;
     end
@@ -27,7 +27,7 @@ hasViolation = false;
 frag = "";
 
 scanPos = 1;
-while scanPos <= strlength(string(stmt))
+while scanPos <= strlength(stmt)
     [ok, fnName, openPos] = iFindNextTargetCall(stmt, scanPos);
     if ~ok
         return;
@@ -43,7 +43,7 @@ while scanPos <= strlength(string(stmt))
     if numel(args) >= 2
         repeats = args(2:end);
         for k = 1:numel(repeats)
-            if iHasZeroNumericLiteral(char(repeats(k)))
+            if iHasZeroNumericLiteral(repeats( k ))
                 hasViolation = true;
                 callStart = openPos;
                 for startScan = openPos-1:-1:1
@@ -55,8 +55,8 @@ while scanPos <= strlength(string(stmt))
                     end
                 end
                 frag = strtrim(stmt(callStart:closePos));
-                if strlength(string(frag)) == 0
-                    frag = string(fnName) + "(...)";
+                if strlength(frag) == 0
+                    frag = fnName + "(...)";
                 end
                 return;
             end
@@ -72,7 +72,7 @@ ok = false;
 fnName = "";
 openPos = 0;
 
-s = char(s);
+s = s;
 n = numel(s);
 if fromPos < 1 || fromPos > n
     return;
@@ -100,7 +100,7 @@ for i = fromPos:n
         continue;
     end
 
-    name = lower(string(s(idStart:idEnd)));
+    name = lower(s( idStart:idEnd ));
     if name ~= "repmat" && name ~= "repelem"
         continue;
     end
@@ -139,7 +139,7 @@ if isempty(tokens)
     return;
 end
 
-tokens = lower(char(tokens));
+tokens = lower(tokens);
 for i = 1:numel(tokens)
     ch = tokens(i);
     if ~(isstrprop(ch, 'alphanum') || ch == '_' || ch == '.' || ch == '+' || ch == '-')
@@ -147,7 +147,7 @@ for i = 1:numel(tokens)
     end
 end
 
-tokens = split(string(strtrim(tokens)));
+tokens = split(strtrim( tokens ));
 for i = 1:numel(tokens)
     t = strtrim(tokens(i));
     if strlength(t) == 0 || ~iMayBeNumericToken(t)
@@ -166,7 +166,7 @@ end
 end
 
 function tf = iMayBeNumericToken(token)
-chars = char(token);
+chars = token;
 tf = true;
 for i = 1:numel(chars)
     ch = chars(i);

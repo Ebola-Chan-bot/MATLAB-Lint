@@ -1,4 +1,4 @@
-function issues = mlint_mergeSkipIfChain(filePath)
+﻿function issues = mlint_mergeSkipIfChain(filePath)
 %mlint_mergeSkipIfChain 连续内容相同且末尾跳出的 if 链应合并。
 
 if nargin == 0
@@ -98,7 +98,7 @@ try
     if count(tp) == 0
         return;
     end
-    tf = ~strcmp(char(tp.kind), 'IFHEAD');
+    tf = ~strcmp(tp.kind, 'IFHEAD');
 catch
 end
 end
@@ -108,7 +108,7 @@ ok = false;
 skipAction = "";
 bodyPrefixKey = "";
 
-lines = splitlines(string(snippet));
+lines = splitlines(snippet);
 [body, hasTopElse] = iCollectTopLevelBody(lines);
 if hasTopElse || isempty(body)
     return;
@@ -199,7 +199,7 @@ try
     if count(pa) == 0 || count(pb) == 0
         return;
     end
-    tf = strcmp(char(pa.kind), char(pb.kind)) && lefttreepos(pa) == lefttreepos(pb) && righttreepos(pa) == righttreepos(pb);
+    tf = strcmp(pa.kind, pb.kind) && lefttreepos(pa) == lefttreepos(pb) && righttreepos(pa) == righttreepos(pb);
 catch
 end
 end
@@ -210,10 +210,10 @@ if rightPos <= leftPos + 1
     return;
 end
 gap = iSliceByPos(fullText, leftPos + 1, rightPos - 1);
-gapLines = splitlines(string(gap));
+gapLines = splitlines(gap);
 for i = 1:numel(gapLines)
     code = strtrim(codeLine(gapLines(i)));
-    if strlength(string(code)) > 0
+    if strlength(code) > 0
         tf = false;
         return;
     end
@@ -247,6 +247,7 @@ for i = 1:numel(prefix)
 end
 key = strjoin(parts, "||");
 end
+
 
 
 

@@ -4,7 +4,7 @@ function result = noStructArray_True_ArrayBuilderStructAccum()
 
 builder = MATLAB.DataTypes.ArrayBuilder();
 for i = 1:10
-    builder.Append(struct('name', string(i), 'val', i * 2));
+    builder.Append(struct('name', i, 'val', i * 2));
 end
 result = builder.Harvest();
 end

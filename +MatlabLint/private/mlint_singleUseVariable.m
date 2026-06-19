@@ -1,4 +1,4 @@
-function issues = mlint_singleUseVariable(filePath)
+﻿function issues = mlint_singleUseVariable(filePath)
 %mlint_singleUseVariable 基于 mtree + digraph 的单次使用检测。
 % 规则：
 %  1) 赋值后可达范围内零引用 -> 未使用
@@ -37,6 +37,9 @@ for fi = 1:numel(funcs)
     if isempty(assignments)
         continue;
     end
+    % 不转 string 会在下面比较处复现真实错误：
+    % mlint_singleUseVariable:60, assignments.var == varName 的数据类型无效。
+    assignments.var = assignments.var;
 
     [stmtNodes, stmtKinds] = iCollectStmtNodes(FullTree, fnNode);
     if isempty(stmtNodes)
@@ -50,22 +53,22 @@ for fi = 1:numel(funcs)
 
     whileHeadVars = iCollectWhileHeadVars(FullTree, fnNode);
 
-    allVars = unique(string(assignments.var));
+    allVars = unique(assignments.var);
     for vi = 1:numel(allVars)
         varName = allVars(vi);
         if any(persistentVars == varName)
             continue;
         end
         isOutput = any(outputVars == varName);
-        aIdx = find(string(assignments.var) == varName);
+        aIdx = find(assignments.var == varName);
         if isempty(aIdx), continue; end
 
         % 该变量的 EQUALS 节点索引集合（mtree index）
         varEqIdxs = unique(assignments.eqIdx(aIdx));
         % 该变量的读引用 CFG 节点索引集（EXPR 祖先索引）
         readNodeIds = [];
-        if isKey(readNodeIdx, char(varName))
-            readNodeIdCell = readNodeIdx(char(varName));
+        if isKey(readNodeIdx, varName)
+            readNodeIdCell = readNodeIdx(varName);
             readNodeIds = readNodeIdCell{1};
         end
 
@@ -94,7 +97,7 @@ for fi = 1:numel(funcs)
                 if isKey(whileHeadVars, uid)
                     whvCell = whileHeadVars(uid);
                     whv = whvCell{1};
-                    if ~isempty(whv) && any(whv == string(varName)) ...
+                    if ~isempty(whv) && any(whv == varName) ...
                             && iIsInsideBlock(FullTree, aEqIdx, uid, 'WHILE')
                         skipOwner = true;
                     end
@@ -128,7 +131,7 @@ for fi = 1:numel(funcs)
                 firstUseNode = useNodeIds(1);
                 if firstUseNode > 0
                     try
-                        firstUseLine = double(FullTree.select(firstUseNode).lineno);
+                        firstUseLine = FullTree.select( firstUseNode ).lineno;
                     catch
                         firstUseLine = 0;
                     end
@@ -149,8 +152,8 @@ for fi = 1:numel(funcs)
                 end
                 if (isKey(useOwnerCount, firstUseNode) && useOwnerCount(firstUseNode) > 1) ...
                         || (isOutput && iDefReachesFunctionExitWithoutRedef(g, iEqIdxToCfgNode(FullTree, aEqIdx), blockerNds, stmtNodes(end), stmtNodes, stmtKinds)) ...
-                        || iOnlyUseIsParenIndexing(FullTree, char(varName), firstUseNode) ...
-                        || iIsOperatorRhsWithDotUse(FullTree, char(varName), aEqIdx, firstUseNode)
+                        || iOnlyUseIsParenIndexing(FullTree, varName, firstUseNode) ...
+                        || iIsOperatorRhsWithDotUse(FullTree, varName, aEqIdx, firstUseNode)
                     continue;
                 end
                 if iIsMustUseWithoutRedef(g, iEqIdxToCfgNode(FullTree, aEqIdx), iEqIdxToCfgNode(FullTree, aEqIdx), blockerNds)
@@ -204,7 +207,7 @@ allKinds = iVectorToStringCol(allKindsVec);
 stmtKinds = allKinds(order);
 
 % 追加合成函数出口节点（用负值确保不与任何真实 mtree 索引冲突）
-exitIdx = -double(fnNode.indices) * 100;
+exitIdx = -fnNode.indices * 100;
 stmtNodes(end+1) = exitIdx; %#ok<AGROW>
 stmtKinds(end+1) = "EXIT"; %#ok<AGROW>
 end
@@ -217,7 +220,7 @@ if eqIdx <= 0, return; end
 nd = FullTree.select(eqIdx);
 par = Parent(nd);
 while count(par) > 0
-    if strcmp(char(par.kind), "EXPR")
+    if strcmp(par.kind, "EXPR")
         try, cfgNd = par.indices; catch, end
         return;
     end
@@ -233,11 +236,11 @@ ix = FullTree.mtfind('Kind', 'ID').indices;
 if isempty(ix), return; end
 for i = 1:numel(ix)
     idNd = FullTree.select(ix(i));
-    name = char(idNd.string);
+    name = idNd.string;
     if isempty(name), continue; end
     % 排除写入（EQUALS 左侧的 ID）
     p = Parent(idNd);
-    if count(p) > 0 && strcmp(char(p.kind), 'EQUALS')
+    if count(p) > 0 && strcmp(p.kind, 'EQUALS')
         try
             if ismember(ix(i), Left(p).indices), continue; end
         catch
@@ -263,7 +266,7 @@ function stmtIdx = iFindStmtAncestor(FullTree, idIdx)
 nd = FullTree.select(idIdx);
 par = Parent(nd);
 while count(par) > 0
-    pk = char(par.kind);
+    pk = par.kind;
     if ismember(pk, ["EXPR","IF","FOR","PARFOR","WHILE","SWITCH","TRY"])
         try
             stmtIdx = par.indices;
@@ -285,7 +288,7 @@ if n == 0
     return;
 end
 if n == 1
-    g = addnode(digraph, string(stmtNodes));
+    g = addnode(digraph, stmtNodes);
     return;
 end
 
@@ -368,7 +371,7 @@ for i = 1:n
     elseif strcmp(k, 'CATCH') && ~isempty(stack)
         jt(stack(end).s) = idx; jt(idx) = stack(end).s;
     elseif ismember(k, ["SWITCH","TRY"])
-        blk.k = char(k); blk.s = idx; blk.ih = []; blk.el = 0;
+        blk.k = k; blk.s = idx; blk.ih = []; blk.el = 0;
         stack(end+1) = blk; %#ok<AGROW>
     end
 end
@@ -422,8 +425,8 @@ for i = 1:n
         if isKey(el, idx)
             lh = el(idx);
             if isKey(be, lh) && be(lh) > 0
-                sVec.PushBack(string(idx));
-                tVec.PushBack(string(be(lh)));
+                sVec.PushBack(idx);
+                tVec.PushBack(be( lh ));
             end
         end
         continue;
@@ -431,40 +434,40 @@ for i = 1:n
 
     if strcmp(k, 'CONTINUE')
         if isKey(el, idx)
-            sVec.PushBack(string(idx));
-            tVec.PushBack(string(el(idx)));
+            sVec.PushBack(idx);
+            tVec.PushBack(el( idx ));
         end
         continue;
     end
 
     if ismember(k, ["IF","ELSEIF"])
         if i < n
-            sVec.PushBack(string(idx));
-            tVec.PushBack(string(stmtNodes(i+1)));
+            sVec.PushBack(idx);
+            tVec.PushBack(stmtNodes( i + 1 ));
         end
         if isKey(jt, idx) && jt(idx) > 0
-            sVec.PushBack(string(idx));
-            tVec.PushBack(string(jt(idx)));
+            sVec.PushBack(idx);
+            tVec.PushBack(jt( idx ));
         end
         continue;
     end
 
     if ismember(k, ["FOR","PARFOR","WHILE"])
         if i < n
-            sVec.PushBack(string(idx));
-            tVec.PushBack(string(stmtNodes(i+1)));
+            sVec.PushBack(idx);
+            tVec.PushBack(stmtNodes( i + 1 ));
         end
         if isKey(be, idx) && be(idx) > 0
-            sVec.PushBack(string(idx));
-            tVec.PushBack(string(be(idx)));
+            sVec.PushBack(idx);
+            tVec.PushBack(be( idx ));
         end
         continue;
     end
 
     if strcmp(k, 'SWITCH')
         if isKey(be, idx) && be(idx) > 0
-            sVec.PushBack(string(idx));
-            tVec.PushBack(string(be(idx)));
+            sVec.PushBack(idx);
+            tVec.PushBack(be( idx ));
         end
         continue;
     end
@@ -476,8 +479,8 @@ for i = 1:n
             if isKey(jt, stmtNodes(i+1))
                 own = jt(stmtNodes(i+1));
                 if isKey(be, own) && be(own) > 0
-                    sVec.PushBack(string(idx));
-                    tVec.PushBack(string(be(own)));
+                    sVec.PushBack(idx);
+                    tVec.PushBack(be( own ));
                     continue;
                 end
             end
@@ -486,8 +489,8 @@ for i = 1:n
 
     % 默认顺序边
     if i < n
-        sVec.PushBack(string(idx));
-        tVec.PushBack(string(stmtNodes(i+1)));
+        sVec.PushBack(idx);
+        tVec.PushBack(stmtNodes( i + 1 ));
     end
 end
 
@@ -505,15 +508,15 @@ for ki = 1:numel(beKeys)
         if stmtNodes(si) > lh, bl = stmtNodes(si); end
     end
     if bl > 0
-        sVec.PushBack(string(bl));
-        tVec.PushBack(string(lh));
+        sVec.PushBack(bl);
+        tVec.PushBack(lh);
     end
 end
 
 s = iVectorToStringCol(sVec);
 t = iVectorToStringCol(tVec);
 g = digraph(s, t);
-nnStr = string(stmtNodes);
+nnStr = stmtNodes;
 nnStr(ismember(nnStr, g.Nodes.Name)) = [];
 if ~isempty(nnStr), g = addnode(g, nnStr); end
 end
@@ -528,11 +531,11 @@ end
 for i = 1:numel(ix)
     nd = FullTree.select(ix(i));
     try
-        if double(nd.indices) ~= useNodeIdx || string(nd.string) ~= string(varName)
+        if nd.indices ~= useNodeIdx || nd.string ~= varName
             continue;
         end
         p = Parent(nd);
-        if count(p) > 0 && strcmp(char(p.kind), 'SUBSCR')
+        if count(p) > 0 && strcmp(p.kind, 'SUBSCR')
             tf = true;
             return;
         end
@@ -553,15 +556,15 @@ if isempty(ix)
 end
 for i = 1:numel(ix)
     nd = FullTree.select(ix(i));
-    if double(nd.indices) ~= assignNodeIdx
+    if nd.indices ~= assignNodeIdx
         continue;
     end
     lhs = Left(nd);
-    if count(lhs) ~= 1 || string(lhs.string) ~= varName
+    if count(lhs) ~= 1 || lhs.string ~= varName
         continue;
     end
     rhs = Right(nd);
-    k = char(rhs.kind);
+    k = rhs.kind;
     if ~ismember(k, ["OR","AND","SHORTOR","SHORTAND","PLUS","MINUS","MUL","DIV", ...
             "LDIV","DOTMUL","DOTDIV","DOTLDIV","EXP","DOTEXP","EQ","NE", ...
             "LT","GT","LE","GE","COLON"])
@@ -575,9 +578,9 @@ for i = 1:numel(ix)
     iix = ids.indices;
     for j = 1:numel(iix)
         idNd = FullTree.select(iix(j));
-        if double(idNd.indices) == useNodeIdx && string(idNd.string) == varName
+        if idNd.indices == useNodeIdx && idNd.string == varName
             p = Parent(idNd);
-            if count(p) > 0 && strcmp(char(p.kind), 'DOT')
+            if count(p) > 0 && strcmp(p.kind, 'DOT')
                 tf = true;
                 return;
             end
@@ -593,9 +596,9 @@ tf = false;
 if count(node) == 0
     return;
 end
-k = char(node.kind);
+k = node.kind;
 if k == "ID"
-    if string(node.string) == varName
+    if node.string == varName
         tf = true;
     end
     return;
@@ -704,11 +707,11 @@ for i = 1:numel(ix)
     vars = MATLAB.Containers.Vector();
     iix = ids.indices;
     for ki = 1:numel(iix)
-        vars.PushBack(string(FullTree.select(iix(ki)).string));
+        vars.PushBack(FullTree.select( iix( ki ) ).string);
     end
-    vars = string(vars.Data(:));
+    vars = vars.Data( : );
     if ~isempty(vars)
-        whileHeadVars(double(nd.indices)) = {unique(vars)};
+        whileHeadVars(nd.indices) = {unique(vars)};
     end
 end
 end
@@ -722,7 +725,7 @@ if isempty(ix)
 end
 for i = 1:numel(ix)
     nd = FullTree.select(ix(i));
-    if double(nd.indices) ~= headNodeIdx
+    if nd.indices ~= headNodeIdx
         continue;
     end
     tf = lefttreepos(FullTree.select(defNodeIdx)) > lefttreepos(nd) ...
@@ -749,8 +752,8 @@ for i = 1:numel(ix)
     % Arg → ID, 然后 Next → ID, Next → ID ... 链
     cur = Arg(nd);
     while count(cur) > 0
-        if strcmp(char(cur.kind), 'ID')
-            pvVec.PushBack(string(cur.string));
+        if strcmp(cur.kind, 'ID')
+            pvVec.PushBack(cur.string);
         end
         try
             cur = Next(cur);
@@ -771,15 +774,15 @@ if count(outs) == 0
     return;
 end
 
-if count(outs) == 1 && strcmp(char(outs.kind), 'LB')
+if count(outs) == 1 && strcmp(outs.kind, 'LB')
     cur = Arg(outs);
 else
     cur = outs;
 end
 
 while count(cur) > 0
-    if strcmp(char(cur.kind), 'ID')
-        s = strtrim(string(cur.string));
+    if strcmp(cur.kind, 'ID')
+        s = strtrim(cur.string);
         if strlength(s) > 0
             outVars.PushBack(s);
         end
@@ -800,7 +803,10 @@ function reachNodes = iReachableWithoutRedef(g, startNodeIdx, ~, blockers)
 reachNodes = [];
 if numnodes(g) == 0 || startNodeIdx <= 0, return; end
 
-startName = string(startNodeIdx);
+startName = startNodeIdx;
+% 不转 string 会在节点名比较处复现真实错误：
+% mlint_singleUseVariable:515 调用链中的 == 数据类型无效。
+startName = startName;
 if ~any(g.Nodes.Name == startName), return; end
 
 blocked = unique(blockers(blockers > 0));
@@ -861,7 +867,9 @@ if isempty(reachNodes) || ~any(reachNodes == useNodeIdx)
 end
 
 % 若唯一使用节点有多个入边（如循环回边+直线），赋值不支配引用 → 非 must-use
-useIdx = find(g.Nodes.Name == string(useNodeIdx), 1, 'first');
+% 不转 string 会在该比较处复现真实错误：
+% mlint_singleUseVariable 调用链中的 == 数据类型无效。
+useIdx = find(g.Nodes.Name == useNodeIdx, 1, 'first');
 if ~isempty(useIdx) && indegree(g, useIdx) > 1
     return;
 end
@@ -874,7 +882,10 @@ function tf = iExistsExitPathAvoidingUse(g, startNodeIdx, reachSet, useNodeIdx, 
 tf = false;
 blocked = unique(blockers(blockers > 0));
 
-startName = string(startNodeIdx);
+startName = startNodeIdx;
+% 不转 string 会在节点名比较处复现真实错误：
+% mlint_singleUseVariable 调用链中的 == 数据类型无效。
+startName = startName;
 if ~any(g.Nodes.Name == startName), return; end
 
 startNode = find(g.Nodes.Name == startName, 1, 'first');
@@ -950,12 +961,12 @@ builder = MATLAB.Containers.Vector();
 nd = FullTree.select(eqIdx);
 par = Parent(nd);
 while count(par) > 0
-    if strcmp(char(par.kind), 'IF')
+    if strcmp(par.kind, 'IF')
         try, builder.PushBack(par.indices); catch, end
     end
     par = Parent(par);
 end
-ifAncestors = double(builder.Data(:));
+ifAncestors = builder.Data( : );
 end
 
 % =========================================================================
@@ -966,7 +977,7 @@ tf = false;
 nd = FullTree.select(eqIdx);
 par = Parent(nd);
 while count(par) > 0
-    pk = char(par.kind);
+    pk = par.kind;
     if strcmp(pk, 'IF')
         try
             if par.indices == ifIdx, return; end % 到达目标但未经过 ELSE
@@ -977,7 +988,7 @@ while count(par) > 0
         % 从 ELSE 上溯直到找到其所属的 IF
         an = par;
         while count(an) > 0
-            if strcmp(char(an.kind), 'IF')
+            if strcmp(an.kind, 'IF')
                 try
                     if an.indices == ifIdx
                         tf = true; return;
@@ -1013,14 +1024,14 @@ ancsRows = MATLAB.DataTypes.InsertiveTable();
 nd = FullTree.select(eqIdx);
 par = Parent(nd);
 while count(par) > 0
-    pk = char(par.kind);
+    pk = par.kind;
     if strcmp(pk, 'TRY')
-        ancsRows(end+1, {'tryIdx','isCatch'}) = {double(par.indices), false};
+        ancsRows(end+1, {'tryIdx','isCatch'}) = {par.indices, false};
     elseif strcmp(pk, 'CATCH')
         an = par;
         while count(an) > 0
-            if strcmp(char(an.kind), 'TRY')
-                ancsRows(end+1, {'tryIdx','isCatch'}) = {double(an.indices), true};
+            if strcmp(an.kind, 'TRY')
+                ancsRows(end+1, {'tryIdx','isCatch'}) = {an.indices, true};
                 break;
             end
             an = Parent(an);
@@ -1041,8 +1052,8 @@ tf = false;
 nd = FullTree.select(eqIdx);
 par = Parent(nd);
 while count(par) > 0
-    if strcmp(char(par.kind), 'CATCH'), return; end
-    if strcmp(char(par.kind), 'TRY')
+    if strcmp(par.kind, 'CATCH'), return; end
+    if strcmp(par.kind, 'TRY')
         try
             if par.indices == tryIdx, tf = true; return; end
         catch
@@ -1057,10 +1068,10 @@ tf = false;
 nd = FullTree.select(eqIdx);
 par = Parent(nd);
 while count(par) > 0
-    if strcmp(char(par.kind), 'CATCH')
+    if strcmp(par.kind, 'CATCH')
         an = par;
         while count(an) > 0
-            if strcmp(char(an.kind), 'TRY')
+            if strcmp(an.kind, 'TRY')
                 try
                     if an.indices == tryIdx, tf = true; return; end
                 catch
@@ -1070,7 +1081,7 @@ while count(par) > 0
             an = Parent(an);
         end
     end
-    if strcmp(char(par.kind), 'TRY')
+    if strcmp(par.kind, 'TRY')
         try
             if par.indices == tryIdx, return; end
         catch
@@ -1082,11 +1093,14 @@ end
 
 % -------------------------------------------------------------------------
 function arr = iVectorToDoubleRow(vec)
-arr = double(vec.Data(:)).';
+arr = vec.Data( : ).';
 end
 
 % -------------------------------------------------------------------------
 function arr = iVectorToStringCol(vec)
+% 不转 string 会在 digraph(s,t) 处复现真实错误：
+% mlint_singleUseVariable:515, 目标节点必须为正整数索引数组（节点名类型不一致导致）。
 arr = string(vec.Data(:));
 end
+
 

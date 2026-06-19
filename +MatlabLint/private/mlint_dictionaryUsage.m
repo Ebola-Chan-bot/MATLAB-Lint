@@ -1,4 +1,4 @@
-function issues = mlint_dictionaryUsage(filePath)
+﻿function issues = mlint_dictionaryUsage(filePath)
 %mlint_dictionaryUsage dictionary 使用建议。
 % 仅做简单触发检查；复杂判断放在建议文本中供手工评估。
 % 1) 键类型 string → 建议检查是否均为合法标识符，若是则改用 struct
@@ -54,8 +54,8 @@ for di = 1:size(declarations, 1)
     dKeyType = declarations.keyType(di);
     dVarName = declarations.varName(di);
     dLine = declarations.line(di);
-    d = struct('line', dLine, 'varName', char(dVarName), 'keyType', char(dKeyType), 'valueType', char(declarations.valueType(di)));
-    kt = string(dKeyType);
+    d = struct('line', dLine, 'varName', dVarName, 'keyType', dKeyType, 'valueType', char(declarations.valueType(di)));
+    kt = dKeyType;
     if ~isKey(ktGroups, kt)
         ktGroups(kt) = {{d}};
     else
@@ -97,25 +97,25 @@ eix = equations.indices;
 for i = 1:numel(eix)
     nd = FullTree.select(eix(i));
     lhs = Left(nd);
-    if count(lhs) ~= 1 || ~strcmp(char(lhs.kind), 'ID')
+    if count(lhs) ~= 1 || ~strcmp(lhs.kind, 'ID')
         continue;
     end
-    varName = string(lhs.string);
+    varName = lhs.string;
     rhs = Right(nd);
 
-    if strcmp(char(rhs.kind), 'CALL')
+    if strcmp(rhs.kind, 'CALL')
         fn = string(Left(rhs).tree2str);
         if fn == "configureDictionary"
             [kt, vt] = iParseConfigureDictArgs(Right(rhs));
             if strlength(kt) > 0
                 builder(end+1, {'line','varName','keyType','valueType'}) = ...
-                    {double(nd.lineno), varName, string(kt), string(vt)};
+                    {double(nd.lineno), varName, kt, vt};
             end
         elseif fn == "dictionary"
             [kt, vt] = iParseDictLiteralArgs(Right(rhs));
             if strlength(kt) > 0
                 builder(end+1, {'line','varName','keyType','valueType'}) = ...
-                    {double(nd.lineno), varName, string(kt), string(vt)};
+                    {double(nd.lineno), varName, kt, vt};
             end
         end
     end
@@ -145,7 +145,7 @@ function [keyType, valueType] = iParseDictLiteralArgs(args)
 keyType = ""; valueType = "";
 if count(args) == 0, return; end
 % 从第一个参数推导 key 类型
-s = char(args.kind);
+s = args.kind;
 if strcmp(s, 'CHARVECTOR') || strcmp(s, 'STRING')
     keyType = "string";
 elseif strcmp(s, 'INT') || strcmp(s, 'DOUBLE')
@@ -154,7 +154,7 @@ end
 % Next 为第一个值
 nxt = Next(args);
 if count(nxt) > 0
-    s = char(nxt.kind);
+    s = nxt.kind;
     if strcmp(s, 'CHARVECTOR') || strcmp(s, 'STRING')
         valueType = "string";
     elseif strcmp(s, 'INT') || strcmp(s, 'DOUBLE')
@@ -169,10 +169,11 @@ function s = iNodeToStr(node)
 s = "";
 if count(node) == 0, return; end
 try
-    s = string(node.tree2str);
+    s = node.tree2str;
 catch
-    s = string(node.string);
+    s = node.string;
 end
 s = strtrim(s);
 end
+
 

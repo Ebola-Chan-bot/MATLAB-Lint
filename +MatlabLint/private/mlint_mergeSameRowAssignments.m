@@ -1,4 +1,4 @@
-function issues = mlint_mergeSameRowAssignments(filePath)
+﻿function issues = mlint_mergeSameRowAssignments(filePath)
 %mlint_mergeSameRowAssignments 同一行多列赋值应合并为单行。
 
 if nargin == 0

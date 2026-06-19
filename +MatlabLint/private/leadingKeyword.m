@@ -1,4 +1,4 @@
-function kw = leadingKeyword(s, kwds)
+﻿function kw = leadingKeyword(s, kwds)
 %leadingKeyword 返回行首关键字（跳过空白和注释），词边界检测。
 %  line: string 或 char 行文本
 %  kwds (可选): 关键字列表。默认值包含常见 MATLAB 控制流关键字。
@@ -7,7 +7,7 @@ if nargin < 2
     kwds = ["function","if","elseif","else","for","parfor","while","switch",...
             "case","otherwise","try","catch","end","break","continue","return","spmd"];
 end
-s = strtrim(char(s));
+s = strtrim(s);
 if isempty(s) || s(1) == '%'
     kw = "";
     return;
@@ -23,3 +23,4 @@ for ki = 1:numel(kwds)
 end
 kw = "";
 end
+

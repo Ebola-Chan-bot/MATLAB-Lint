@@ -1,4 +1,4 @@
-function issues = mlint_noMultiColumnUnpack(filePath)
+﻿function issues = mlint_noMultiColumnUnpack(filePath)
 %mlint_noMultiColumnUnpack 基于 mtree 检测将表的多个列拆为独立变量。
 
 if nargin == 0
@@ -17,11 +17,11 @@ if ~isempty(cix)
         fn = iNodeText(Left(nd));
         if strcmpi(fn, "table2array")
             issuesBuilder(end+1, {'file','line','rule','message'}) = { ...
-                filePath, double(nd.lineno), "mlint_noMultiColumnUnpack", ...
+                filePath, nd.lineno, "mlint_noMultiColumnUnpack", ...
                 "禁止通过 table2array 拆表；必须直接返回 table，并要求上游调用方调整为按 table 使用"}; %#ok<AGROW>
         elseif strcmpi(fn, "table2struct")
             issuesBuilder(end+1, {'file','line','rule','message'}) = { ...
-                filePath, double(nd.lineno), "mlint_noMultiColumnUnpack", ...
+                filePath, nd.lineno, "mlint_noMultiColumnUnpack", ...
                 "禁止通过 table2struct 拆表；必须直接返回 table，并要求上游调用方改为按 table 使用"}; %#ok<AGROW>
         end
     end
@@ -50,10 +50,10 @@ for partKindCell = {'DOT', 'CELL', 'SUBSCR'}
     for i = 1:numel(nix)
         nd = FullTree.select(nix(i));
         leftId = Left(nd);
-        if count(leftId) == 0 || ~strcmp(char(leftId.kind), 'ID')
+        if count(leftId) == 0 || ~strcmp(leftId.kind, 'ID')
             continue;
         end
-        tblVar = string(leftId.string);
+        tblVar = leftId.string;
         if ~tblVarSet.isKey(tblVar) || (strcmp(partKind, 'DOT') && iIsInsideSubscr(nd)) ...
                 || ~iIsOnRhs(nd)
             continue;
@@ -65,7 +65,7 @@ for partKindCell = {'DOT', 'CELL', 'SUBSCR'}
         end
 
         colUnpackRows(end+1, {'tbl','line','col'}) = ...
-            {string(tblVar), double(nd.lineno), string(colName)};
+            {tblVar, nd.lineno, colName};
     end
 end
 
@@ -77,12 +77,18 @@ if height(colUnpackTable) == 0
 end
 tblKeys = unique(colUnpackTable.tbl);
 for ki = 1:numel(tblKeys)
-    rows = colUnpackTable(colUnpackTable.tbl == tblKeys(ki), :);
+    % 不转 string 会在这里复现真实错误：
+    % mlint_noMultiColumnUnpack:80, == 数据类型无效。
+    rows = colUnpackTable(colUnpackTable.tbl == string(tblKeys(ki)), :);
     if size(rows, 1) >= 2
+        % 不转 char 会在 sprintf 处复现真实错误：
+        % mlint_noMultiColumnUnpack:84, sprintf 不支持 cell 输入。
+        keyText = char(string(tblKeys(ki)));
+        colsText = char(strjoin(string(unique(rows.col)), ", "));
         issuesBuilder(end+1, {'file','line','rule','message'}) = { ...
             filePath, rows.line(1), "mlint_noMultiColumnUnpack", ...
             sprintf('不应将表 "%s" 的多个列（%s）拆分为独立变量；必须直接返回 table，并要求上游调用方调整为按 table 使用', ...
-            tblKeys(ki), strjoin(unique(rows.col), ", "))}; %#ok<AGROW>
+            keyText, colsText)}; %#ok<AGROW>
     end
 end
 
@@ -101,11 +107,11 @@ end
 for i = 1:numel(eix)
     nd = FullTree.select(eix(i));
     lhs = Left(nd);
-    if count(lhs) ~= 1 || ~strcmp(char(lhs.kind), 'ID')
+    if count(lhs) ~= 1 || ~strcmp(lhs.kind, 'ID')
         continue;
     end
     if iIsTableConstructor(Right(nd))
-        tblVarSet(char(string(lhs.string))) = true;
+        tblVarSet(lhs.string) = true;
     end
 end
 end
@@ -113,7 +119,7 @@ end
 % -------------------------------------------------------------------------
 function tf = iIsTableConstructor(node)
 tf = false;
-if strcmp(char(node.kind), 'CALL')
+if strcmp(node.kind, 'CALL')
     fn = iNodeText(Left(node));
     tf = strcmpi(fn, "table") || strcmpi(fn, "MATLAB.DataTypes.InsertiveTable");
 end
@@ -123,7 +129,7 @@ end
 function tf = iIsInsideSubscr(nd)
 tf = false;
 while count(Parent(nd)) > 0
-    if strcmp(char(Parent(nd).kind), 'SUBSCR')
+    if strcmp(Parent( nd ).kind, 'SUBSCR')
         tf = true;
         return;
     end
@@ -136,7 +142,7 @@ function tf = iIsOnRhs(nd)
 tf = false;
 p = Parent(nd);
 while count(p) > 0
-    pk = char(p.kind);
+    pk = p.kind;
     if strcmp(pk, 'EQUALS')
         % nd 必须在 EQUALS 的 Right 子树中（非 Left）
         tf = iIsDescendantOf(Right(p), nd);
@@ -162,9 +168,9 @@ if count(node) == 0
 end
 
 if strcmp(nodeKind, 'DOT')
-    nk = char(node.kind);
+    nk = node.kind;
     if strcmp(nk, 'ID') || strcmp(nk, 'FIELD')
-        col = string(node.string);
+        col = node.string;
     else
         col = iNodeText(node);
     end
@@ -173,10 +179,10 @@ end
 
 % CELL: Right 是 COLON(:)，列名在 Next(Right) 中
 if strcmp(nodeKind, 'CELL')
-    if strcmp(char(node.kind), 'COLON')
+    if strcmp(node.kind, 'COLON')
         col = Next(node);
         if count(col) > 0
-            col = char(iNodeText(col));
+            col = iNodeText( col );
             if ~isempty(col) && (col(1) == '"' || col(1) == '''')
                 col = col(2:end-1);
             end
@@ -192,7 +198,7 @@ end
 if strcmp(nodeKind, 'SUBSCR') && count(Arg(node)) > 0
     argNode = Arg(node);
     while count(argNode) > 0
-        col = char(iNodeText(argNode));
+        col = iNodeText( argNode );
         if ~isempty(col) && (col(1) == '"' || col(1) == '''')
             col = col(2:end-1);
         end
@@ -216,7 +222,7 @@ if count(node) ~= 1
     return;
 end
 try
-    txt = strtrim(string(node.tree2str));
+    txt = strtrim(node.tree2str);
 catch
     txt = "";
 end

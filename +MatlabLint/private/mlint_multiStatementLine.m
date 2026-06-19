@@ -5,12 +5,12 @@ if nargin == 0
     issues = "禁止用分号将多行代码压成一行";
     return;
 end
-AllLines = splitlines(string(fileread(filePath)));
+AllLines = splitlines(fileread( filePath ));
 
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
 for i = 1:numel(AllLines)
-    s = strtrim(char(AllLines(i)));
+    s = strtrim(AllLines( i ));
     if isempty(s) || startsWith(s, '%')
         continue;
     end

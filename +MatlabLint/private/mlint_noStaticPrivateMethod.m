@@ -5,13 +5,13 @@ if nargin == 0
     issues = "禁止 Static private 方法，应改为写在 classdef 块之后的局部函数（可直接用函数名调用）";
     return;
 end
-AllLines = splitlines(string(fileread(filePath)));
+AllLines = splitlines(fileread( filePath ));
 
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
 inClass = false;
 for i = 1:numel(AllLines)
-    s = strtrim(char(AllLines(i)));
+    s = strtrim(AllLines( i ));
     if isempty(s)
         continue;
     end

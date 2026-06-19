@@ -1,10 +1,10 @@
-function tf = isExcludedPath(filePath, cfg)
+﻿function tf = isExcludedPath(filePath, cfg)
 %ISEXCLUDEDPATH 依据简化规则判断路径是否应排除。
 
-p = replace(string(filePath), "\\", "/");
+p = replace(filePath, "\\", "/");
 tf = false;
 for i = 1:numel(cfg.Exclude)
-    pat = string(cfg.Exclude(i));
+    pat = cfg.Exclude(i);
     if endsWith(pat, "/**")
         if contains(p, extractBefore(pat, strlength(pat)-2))
             tf = true;
@@ -23,3 +23,4 @@ for i = 1:numel(cfg.Exclude)
     end
 end
 end
+

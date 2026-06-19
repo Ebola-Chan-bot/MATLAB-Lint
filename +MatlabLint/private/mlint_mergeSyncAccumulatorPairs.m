@@ -1,4 +1,4 @@
-function issues = mlint_mergeSyncAccumulatorPairs(filePath)
+﻿function issues = mlint_mergeSyncAccumulatorPairs(filePath)
 %mlint_mergeSyncAccumulatorPairs 基于 mtree 检测同步累积变量对可合并。
 % 规则：仅依赖“累积同步”，不依赖 Harvest/Data 收割。
 % 同步判定：同作用域内同构造器变量，追加次数相同且每次追加在节点序上相邻。

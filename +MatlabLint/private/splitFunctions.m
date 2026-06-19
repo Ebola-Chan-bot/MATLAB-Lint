@@ -4,7 +4,7 @@ funcRows = MATLAB.DataTypes.InsertiveTable();
 depth = 0;
 fnStart = 0;
 for i = 1:nLines
-    kw = leadingKeyword(char(AllLines(i)));
+    kw = leadingKeyword(AllLines( i ));
     if kw == "function" && depth == 0
         fnStart = i;
     end

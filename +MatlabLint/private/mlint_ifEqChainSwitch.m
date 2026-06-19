@@ -1,4 +1,4 @@
-function issues = mlint_ifEqChainSwitch(filePath)
+﻿function issues = mlint_ifEqChainSwitch(filePath)
 %mlint_ifEqChainSwitch 检测 if-elseif 链中所有条件都是同一变量 == 表达式，建议改用 switch-case-otherwise。
 
 if nargin == 0
@@ -76,7 +76,7 @@ if ~isempty(eix)
             continue;
         end
         CondNode = Left(en);
-        if count(CondNode) > 0 && char(CondNode.kind) == "PARENS"
+        if count(CondNode) > 0 && CondNode.kind == "PARENS"
             CondNode = Arg(CondNode);
         end
         vn = iGetEqVariable(CondNode);
@@ -96,12 +96,12 @@ end
 % -------------------------------------------------------------------------
 function vn = iGetEqVariable(left)
 vn = "";
-if count(left) == 0 || ~strcmp(char(left.kind), "EQ")
+if count(left) == 0 || ~strcmp(left.kind, "EQ")
     return;
 end
 left = Left(left);
-if count(left) > 0 && strcmp(char(left.kind), 'ID')
-    vn = string(left.string);
+if count(left) > 0 && strcmp(left.kind, 'ID')
+    vn = left.string;
 end
 end
 

@@ -1,4 +1,4 @@
-function data = collectStatements(AllLines)
+﻿function data = collectStatements(AllLines)
 %collectStatements 将多行代码合并为逻辑语句（处理 ... 续行），返回 table(data.stmt, data.line)。
 builder = MATLAB.DataTypes.InsertiveTable();
 
@@ -21,9 +21,9 @@ for i = 1:numel(AllLines)
     end
 
     if strlength(buf) == 0
-        buf = string(code);
+        buf = code;
     else
-        buf = buf + " " + string(code);
+        buf = buf + " " + code;
     end
 
     if hasCont
@@ -37,3 +37,4 @@ end
 
 data = table(builder);
 end
+

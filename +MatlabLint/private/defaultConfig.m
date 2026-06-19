@@ -1,4 +1,4 @@
-function cfg = defaultConfig()
+﻿function cfg = defaultConfig()
 %DEFAULTCONFIG 配置参考模板（不会被自动加载）。
 % 复制此文件到用户级或项目级 .matlablint.json 使用。
 
@@ -13,5 +13,6 @@ if isempty(ids)
     return;
 end
 
-cfg.Rules = cell2struct([cellstr(string(ids)), num2cell(true(numel(ids), 1))], {'Id', 'Enabled'}, 2);
+cfg.Rules = cell2struct([cellstr(ids), num2cell(true(numel(ids), 1))], {'Id', 'Enabled'}, 2);
 end
+

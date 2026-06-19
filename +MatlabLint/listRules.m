@@ -1,4 +1,4 @@
-%[text] 列出所有已知规则及其启用状态和生效层级。
+﻿%[text] 列出所有已知规则及其启用状态和生效层级。
 %[text] ## 语法
 %[text] ```matlabCodeExample
 %[text] out = MatlabLint.listRules();
@@ -26,7 +26,7 @@ for i = 1:numel(varargin)
         cfgOverride = v;
         hasCfgOverride = true;
     else
-        targetPath = string(v);
+        targetPath = v;
     end
 end
 
@@ -49,9 +49,9 @@ rowsBuilder = MATLAB.DataTypes.InsertiveTable();
 targetConfig = [];
 d = targetPath;
 if ~isfolder(targetPath)
-    d = fileparts(char(targetPath));
+    d = fileparts(targetPath);
 end
-pTarget = fullfile(char(d), '.matlablint.json');
+pTarget = fullfile(d, '.matlablint.json');
 if isfile(pTarget)
     targetConfig = readJsonConfig(pTarget);
 end
@@ -105,7 +105,7 @@ for i = 1:numel(builtinIds)
         desc = "";
     end
     rowsBuilder(end+1, ["rule", "description", "enabled", "source"]) = ...
-        {string(rid), desc, logical(enabled), source};
+        {rid, desc, logical(enabled), source};
 end
 
 % 自定义规则
@@ -120,9 +120,9 @@ for i = 1:numel(finalEntries)
     end
     % 获取自定义规则的描述
     try
-        spec = string(cid);
-        if contains(spec, string(filesep) | "/")
-            p = char(spec);
+        spec = cid;
+        if contains(spec, filesep | "/")
+            p = spec;
             if ~isfile(p)
                 desc = "(自定义)";
             else
@@ -165,7 +165,7 @@ function [hit, enabled] = iFindRuleEnabledById(entries, rid)
 hit = false;
 enabled = true;
 for i = 1:numel(entries)
-    if strlength(entries(i).Id) > 0 && entries(i).Id == string(rid)
+    if strlength(entries(i).Id) > 0 && entries(i).Id == rid
         hit = true;
         enabled = logical(entries(i).Enabled);
         return;
@@ -175,3 +175,4 @@ end
 
 %[appendix]{"version":"1.0"}
 %---
+

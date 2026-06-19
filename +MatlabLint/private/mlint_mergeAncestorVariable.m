@@ -1,4 +1,4 @@
-function issues = mlint_mergeAncestorVariable(filePath)
+﻿function issues = mlint_mergeAncestorVariable(filePath)
 %mlint_mergeAncestorVariable 检测可合并的祖先变量。
 % 对于 A = expr 赋值，从 expr 中某变量 B 的每个定义点沿控制流向前搜索：
 % 每条路径要么在遇到 A 之前到达函数结束，要么到达此 A = expr 赋值；若到达此赋值，则 B 此后不再出现。
@@ -51,10 +51,10 @@ for fi = 1:numel(funcs)
             continue;
         end
         lhs = Left(nd);
-        if count(lhs) ~= 1 || ~strcmp(char(lhs.kind), 'ID')
+        if count(lhs) ~= 1 || ~strcmp(lhs.kind, 'ID')
             continue;
         end
-        A = string(lhs.string);
+        A = lhs.string;
         if strlength(A) == 0
             continue;
         end
@@ -65,10 +65,10 @@ for fi = 1:numel(funcs)
 
         for vi = 1:numel(rhsVars)
             B = rhsVars(vi);
-            if ~isKey(refMap, char(B))
+            if ~isKey(refMap, B)
                 continue;
             end
-            bNodeMap = refMap(char(B));
+            bNodeMap = refMap(B);
             if ~iVarAppearsBeforeNode(bNodeMap, FullTree, eqPos)
                 continue;
             end
@@ -111,7 +111,7 @@ end
 function g = iBuildDigraphByNode(stmtNodes, stmtKinds, stmtPos)
 % 构建简化 CFG：节点为 mtree 节点索引，边表示顺序控制流。
 if numel(stmtNodes) <= 1
-    g = digraph(string(stmtNodes), strings(0,1), strings(0,1));
+    g = digraph(stmtNodes, strings(0,1), strings(0,1));
     return;
 end
 
@@ -133,7 +133,7 @@ for i = 1:numel(stmtNodes)
     end
 
     if i < numel(stmtNodes)
-        edgesBuilder(end+1, {'Source','Target'}) = {string(idx), string(stmtNodes(i+1))}; %#ok<AGROW>
+        edgesBuilder(end+1, {'Source','Target'}) = {idx, string(stmtNodes(i+1))}; %#ok<AGROW>
     end
 
     if ismember(k, ["FUNCTION","IF","FOR","PARFOR","WHILE","SWITCH","TRY"])
@@ -142,7 +142,7 @@ for i = 1:numel(stmtNodes)
     if ismember(k, ["FOR","PARFOR","WHILE"])
         endNode = ifEnds(idx);
         if endNode > 0
-            edgesBuilder(end+1, {'Source','Target'}) = {string(endNode), string(idx)}; %#ok<AGROW>
+            edgesBuilder(end+1, {'Source','Target'}) = {endNode, idx}; %#ok<AGROW>
         end
     end
 end
@@ -150,7 +150,7 @@ end
 edges = table(edgesBuilder);
 g = digraph(edges.Source, edges.Target);
 if ~isempty(stmtNodes)
-    nodes = string(stmtNodes);
+    nodes = stmtNodes;
     nodes(ismember(nodes, g.Nodes.Name)) = [];
     if ~isempty(nodes)
         g = addnode(g, nodes);
@@ -163,8 +163,8 @@ function vars = iGetInputParams(fnNode)
 vars = MATLAB.Containers.Vector();
 cur = Ins(fnNode);
 while count(cur) > 0
-    if strcmp(char(cur.kind), 'ID')
-        vars.PushBack(string(cur.string));
+    if strcmp(cur.kind, 'ID')
+        vars.PushBack(cur.string);
     end
     try
         cur = Next(cur);
@@ -185,13 +185,13 @@ end
 
 for i = 1:numel(ix)
     nd = FullTree.select(ix(i));
-    name = char(nd.string);
+    name = nd.string;
     if isempty(name)
         continue;
     end
 
     p = Parent(nd);
-    if count(p) > 0 && strcmp(char(p.kind), 'EQUALS')
+    if count(p) > 0 && strcmp(p.kind, 'EQUALS')
         try
             if any(Left(p).indices == ix(i))
                 continue;
@@ -223,7 +223,7 @@ for i = 1:numel(eqIx)
         continue;
     end
     lhs = Left(nd);
-    if count(lhs) == 1 && strcmp(char(lhs.kind), 'ID') && string(lhs.string) == varName
+    if count(lhs) == 1 && strcmp(lhs.kind, 'ID') && lhs.string == varName
         defs.PushBack(double(nd.indices));
     end
 end
@@ -247,10 +247,10 @@ end
 % -------------------------------------------------------------------------
 function tf = iVarAppearsAfterNode(refMap, FullTree, varName, afterPos, fnLeft, fnRight)
 tf = false;
-if ~isKey(refMap, char(varName))
+if ~isKey(refMap, varName)
     return;
 end
-nodeMap = refMap(char(varName));
+nodeMap = refMap(varName);
 keys = nodeMap.keys;
 for ki = 1:numel(keys)
     nodeIdx = keys(ki);
@@ -268,7 +268,7 @@ persistent memo;
 if isempty(memo)
     memo = configureDictionary('string', 'logical');
 end
-key = sprintf('%d_%d_%s_%s', startNodeIdx, targetNodeIdx, char(A), char(B));
+key = sprintf('%d_%d_%s_%s', startNodeIdx, targetNodeIdx, A, B);
 if isKey(memo, key)
     tf = memo(key);
     return;
@@ -294,7 +294,7 @@ while QHead <= numel(q)
     QHead = QHead + 1;
     nodeIdx = stmtNodes(u);
 
-    succ = successors(g, string(nodeIdx))';
+    succ = successors(g, nodeIdx)';
     if isempty(succ)
         if nodeIdx ~= targetNodeIdx
             tf = false;
@@ -341,12 +341,12 @@ if count(eqs) > 0
             continue;
         end
         lhs = Left(nd);
-        if count(lhs) == 1 && strcmp(char(lhs.kind), 'ID') && string(lhs.string) == A
+        if count(lhs) == 1 && strcmp(lhs.kind, 'ID') && lhs.string == A
             if double(nd.indices) ~= targetNodeIdx
                 builder.PushBack(double(nd.indices));
             end
         end
-        if count(lhs) == 1 && strcmp(char(lhs.kind), 'ID') && string(lhs.string) == B
+        if count(lhs) == 1 && strcmp(lhs.kind, 'ID') && lhs.string == B
             if double(nd.indices) ~= startNodeIdx && double(nd.indices) < targetNodeIdx
                 builder.PushBack(double(nd.indices));
             end
@@ -354,8 +354,8 @@ if count(eqs) > 0
     end
 end
 
-if isKey(refMap, char(A))
-    nodeMap = refMap(char(A));
+if isKey(refMap, A)
+    nodeMap = refMap(A);
     keys = nodeMap.keys;
     for ki = 1:numel(keys)
         nodeIdx = keys(ki);
@@ -405,7 +405,7 @@ function kinds = iStmtKindsForNodes(FullTree, stmtNodes, wantedKinds)
 kinds = strings(1, numel(stmtNodes));
 for i = 1:numel(stmtNodes)
     nd = FullTree.select(stmtNodes(i));
-    k = string(nd.kind);
+    k = nd.kind;
     if any(k == wantedKinds)
         kinds(i) = k;
     else
@@ -440,3 +440,4 @@ for i = 1:numel(stmtNodes)
     end
 end
 end
+

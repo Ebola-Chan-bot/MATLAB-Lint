@@ -1,0 +1,519 @@
+TOTAL=518
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|142|mlint_singleUseVariable|变量"tf"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|236|mlint_singleUseVariable|变量"strs"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\listRules.m|166|mlint_singleUseVariable|变量"enabled"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\listRules.m|165|mlint_singleUseVariable|变量"hit"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\stripStringLiterals.m|17|mlint_singleUseVariable|变量"n"赋值后仅使用一次（第 18 行），建议内联
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\findIfHeaderEnd.m|2|mlint_singleUseVariable|变量"headerEnd"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\findIfHeaderEnd.m|6|mlint_singleUseVariable|变量"headerEnd"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\findIfHeaderEnd.m|9|mlint_singleUseVariable|变量"headerEnd"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\isExcludedPath.m|5|mlint_singleUseVariable|变量"tf"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_dictionaryUsage.m|148|mlint_singleUseVariable|变量"s"赋值后仅使用一次（第 149 行），建议内联
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_dictionaryUsage.m|159|mlint_singleUseVariable|变量"valueType"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_dictionaryUsage.m|161|mlint_singleUseVariable|变量"valueType"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_ifEqChainSwitch.m|116|mlint_singleUseVariable|变量"en"赋值后仅使用一次（第 117 行），建议内联
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|239|mlint_singleUseVariable|变量"nd"赋值后仅使用一次（第 240 行），建议内联
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|235|mlint_singleUseVariable|变量"tf"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|257|mlint_singleUseVariable|变量"nd"赋值后仅使用一次（第 258 行），建议内联
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|321|mlint_singleUseVariable|变量"tf"赋值后仅使用一次（第 322 行），建议内联
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|435|mlint_singleUseVariable|变量"endNode"赋值后仅使用一次（第 437 行），建议内联
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergePatternCallChain.m|112|mlint_singleUseVariable|变量"firstArg"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergePatternCallChain.m|147|mlint_singleUseVariable|变量"name"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergePatternCallChain.m|148|mlint_singleUseVariable|变量"name"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergePatternCallChain.m|149|mlint_singleUseVariable|变量"name"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergePatternCallChain.m|150|mlint_singleUseVariable|变量"name"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSkipIfChain.m|215|mlint_singleUseVariable|变量"code"赋值后仅使用一次（第 216 行），建议内联
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSkipIfChain.m|212|mlint_singleUseVariable|变量"gap"赋值后仅使用一次（第 213 行），建议内联
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSyncAccumulatorPairs.m|168|mlint_singleUseVariable|变量"kind"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSyncAccumulatorPairs.m|248|mlint_singleUseVariable|变量"ctor"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSyncAccumulatorPairs.m|251|mlint_singleUseVariable|变量"ctor"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|136|mlint_singleUseVariable|变量"firstArg"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|190|mlint_singleUseVariable|变量"s"赋值后仅使用一次（第 191 行），建议内联
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|232|mlint_singleUseVariable|变量"tf"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|249|mlint_singleUseVariable|变量"tf"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noBuiltin.m|13|mlint_singleUseVariable|变量"s"赋值后仅使用一次（第 14 行），建议内联
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noBuiltinShadowing.m|23|mlint_singleUseVariable|变量"name"赋值后仅使用一次（第 24 行），建议内联
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noBuiltinShadowing.m|59|mlint_singleUseVariable|变量"name"赋值后仅使用一次（第 60 行），建议内联
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noBuiltinShadowing.m|62|mlint_singleUseVariable|变量"suggested"赋值后仅使用一次（第 63 行），建议内联
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noBuiltinShadowing.m|76|mlint_singleUseVariable|变量"builder"赋值后仅使用一次（第 80 行），建议内联
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noBuiltinShadowing.m|181|mlint_singleUseVariable|变量"name"赋值后仅使用一次（第 183 行），建议内联
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noMultiColumnUnpack.m|117|mlint_singleUseVariable|变量"tf"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noMultiColumnUnpack.m|204|mlint_singleUseVariable|变量"col"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noSingleLineFunction.m|39|mlint_singleUseVariable|变量"name"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noStructAccumulator.m|77|mlint_singleUseVariable|变量"idx"赋值后仅使用一次（第 78 行），建议内联
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noStructAccumulator.m|78|mlint_singleUseVariable|变量"idx"赋值后仅使用一次（第 79 行），建议内联
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noStructArray.m|59|mlint_singleUseVariable|变量"varName"赋值后仅使用一次（第 60 行），建议内联
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noZeroRepeatCount.m|144|mlint_singleUseVariable|变量"ch"赋值后仅使用一次（第 145 行），建议内联
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noZeroRepeatCount.m|172|mlint_singleUseVariable|变量"ch"赋值后仅使用一次（第 173 行），建议内联
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noZeroRepeatCount.m|170|mlint_singleUseVariable|变量"tf"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleCallFunction.m|74|mlint_singleUseVariable|变量"tf"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|88|mlint_singleUseVariable|变量"useNodeIds"赋值后仅使用一次（第 89 行），建议内联
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|804|mlint_singleUseVariable|变量"startName"赋值后仅使用一次（第 805 行），建议内联
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|879|mlint_singleUseVariable|变量"startName"赋值后仅使用一次（第 880 行），建议内联
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|1002|mlint_singleUseVariable|变量"tf"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\resolveEnabledRules.m|102|mlint_singleUseVariable|变量"entry"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\resolveEnabledRules.m|101|mlint_singleUseVariable|变量"found"已赋值但未使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSkipIfChain.m|35|mlint_mergeSkipIfChain|检测到 4 个连续 if 块内容相同且最后一步均为 break（第 35-46 行），建议用短路逻辑合并条件
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSyncAccumulatorPairs.m|222|mlint_mergeSkipIfChain|检测到 3 个连续 if 块内容相同且最后一步均为 return（第 222-230 行），建议用短路逻辑合并条件
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noBuiltinShadowing.m|32|mlint_mergeSkipIfChain|检测到 3 个连续 if 块内容相同且最后一步均为 continue（第 32-44 行），建议用短路逻辑合并条件
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|148|mlint_mergeSkipIfChain|检测到 2 个连续 if 块内容相同且最后一步均为 continue（第 148-156 行），建议用短路逻辑合并条件
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|422|mlint_mergeSkipIfChain|检测到 2 个连续 if 块内容相同且最后一步均为 continue（第 422-439 行），建议用短路逻辑合并条件
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|17|mlint_singleCallFunction|局部函数"iInlineOne"只有一处调用，建议内联掉
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|141|mlint_singleCallFunction|局部函数"iHasReturn"只有一处调用，建议内联掉
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|160|mlint_singleCallFunction|局部函数"iBodyBaseIndent"只有一处调用，建议内联掉
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|296|mlint_singleCallFunction|局部函数"iWriteIfValid"只有一处调用，建议内联掉
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|344|mlint_singleCallFunction|局部函数"iMakeUniqueTempVar"只有一处调用，建议内联掉
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|162|mlint_singleCallFunction|局部函数"iGetInputParams"只有一处调用，建议内联掉
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|218|mlint_singleCallFunction|局部函数"iCollectVarDefsNode"只有一处调用，建议内联掉
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|332|mlint_singleCallFunction|局部函数"iForbiddenNodes"只有一处调用，建议内联掉
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|373|mlint_singleCallFunction|局部函数"iCollectStmtNodesByNode"只有一处调用，建议内联掉
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|404|mlint_singleCallFunction|局部函数"iStmtKindsForNodes"只有一处调用，建议内联掉
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeIdenticalCaseBranches.m|109|mlint_singleCallFunction|局部函数"iExtractBodyBetween"只有一处调用，建议内联掉
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergePatternCallChain.m|53|mlint_singleCallFunction|局部函数"iCollectPatternCalls"只有一处调用，建议内联掉
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergePatternCallChain.m|145|mlint_singleCallFunction|局部函数"iFnDisplayName"只有一处调用，建议内联掉
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSkipIfChain.m|186|mlint_singleCallFunction|局部函数"iIsBlockStartToken"只有一处调用，建议内联掉
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSyncAccumulatorPairs.m|58|mlint_singleCallFunction|局部函数"iMakeScriptScope"只有一处调用，建议内联掉
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSyncAccumulatorPairs.m|80|mlint_singleCallFunction|局部函数"iMakeFunctionScopes"只有一处调用，建议内联掉
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSyncAccumulatorPairs.m|95|mlint_singleCallFunction|局部函数"iCollectBuilderVarsInScope"只有一处调用，建议内联掉
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSyncAccumulatorPairs.m|247|mlint_singleCallFunction|局部函数"iNormalizeCtor"只有一处调用，建议内联掉
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noBuiltinShadowing.m|57|mlint_singleCallFunction|局部函数"iSuggestedName"只有一处调用，建议内联掉
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noBuiltinShadowing.m|67|mlint_singleCallFunction|局部函数"iCollectDeclaredNames"只有一处调用，建议内联掉
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noBuiltinShadowing.m|130|mlint_singleCallFunction|局部函数"iCollectAssignmentTargetNames"只有一处调用，建议内联掉
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noMultiColumnUnpack.m|116|mlint_singleCallFunction|局部函数"iIsTableConstructor"只有一处调用，建议内联掉
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noRedundantNestedIf.m|148|mlint_singleCallFunction|局部函数"iIsBlockStartToken"只有一处调用，建议内联掉
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noSingleLineFunction.m|38|mlint_singleCallFunction|局部函数"iFunctionName"只有一处调用，建议内联掉
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\parseFunctions.m|32|mlint_noMultiColumnUnpack|不应将表 "funcTable" 的多个列（endPos, fileName, startPos, tree）拆分为独立变量；必须直接返回 table，并要求上游调用方调整为按 table 使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|151|mlint_noMultiColumnUnpack|不应将表 "edges" 的多个列（Source, Target）拆分为独立变量；必须直接返回 table，并要求上游调用方调整为按 table 使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|1038|mlint_noMultiColumnUnpack|禁止通过 table2struct 拆表；必须直接返回 table，并要求上游调用方改为按 table 使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\resolveEnabledRules.m|46|mlint_noMultiColumnUnpack|禁止通过 table2struct 拆表；必须直接返回 table，并要求上游调用方改为按 table 使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\splitFunctions.m|25|mlint_noMultiColumnUnpack|不应将表 "funcTable" 的多个列（end, start）拆分为独立变量；必须直接返回 table，并要求上游调用方调整为按 table 使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\测试用例\noMultiColumnUnpack_False_Table2Struct.m|3|mlint_noMultiColumnUnpack|禁止通过 table2struct 拆表；必须直接返回 table，并要求上游调用方改为按 table 使用
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|191|mlint_mergePatternCallChain|检测到连续 erase 调用，建议合并为单次 erase 并使用 pattern 组合：erase( erase( s, '"' ), "'" )
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSkipIfChain.m|77|mlint_noStructArray|struct 数组动态扩容（end+1），应改用 table 收集结果
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\测试用例\noStructArray_True_ArrayBuilderStructAccum.m|7|mlint_noStructArray|builder.Append(struct(...)) 应改用 MATLAB.DataTypes.InsertiveTable（struct 字段→表列）
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|377|mlint_noAccumulatorPlaceholder|避免使用累积器占位空初始化：stmtPos = zeros( 1, 0 )。建议改用 MATLAB.DataTypes.InsertiveTable、MATLAB.DataTypes.ArrayBuilder 或 MATLAB.Containers.Vector。
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSyncAccumulatorPairs.m|96|mlint_noAccumulatorPlaceholder|避免使用累积器占位空初始化：vars = strings( 0, 1 )。建议改用 MATLAB.DataTypes.InsertiveTable、MATLAB.DataTypes.ArrayBuilder 或 MATLAB.Containers.Vector。
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\testRule.m|61|mlint_multiStatementLine|一行包含多条语句："if ~isempty(d), addpath(d); end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_dictionaryUsage.m|128|mlint_multiStatementLine|一行包含多条语句："keyType = ""; valueType = "";"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_dictionaryUsage.m|129|mlint_multiStatementLine|一行包含多条语句："if count(args) == 0, return; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_dictionaryUsage.m|145|mlint_multiStatementLine|一行包含多条语句："keyType = ""; valueType = "";"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_dictionaryUsage.m|146|mlint_multiStatementLine|一行包含多条语句："if count(args) == 0, return; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_dictionaryUsage.m|170|mlint_multiStatementLine|一行包含多条语句："if count(node) == 0, return; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|59|mlint_multiStatementLine|一行包含多条语句："if isempty(cix), return; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|63|mlint_multiStatementLine|一行包含多条语句："if ~strcmpi(strtrim(fn), 'isempty'), continue; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|69|mlint_multiStatementLine|一行包含多条语句："if ~isempty(tvars), tvars = unique(tvars); end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|80|mlint_multiStatementLine|一行包含多条语句："if count(lhs) ~= 1 || ~strcmp(char(lhs.kind), 'ID'), continue; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|92|mlint_multiStatementLine|一行包含多条语句："if count(node) == 0, return; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|96|mlint_multiStatementLine|一行包含多条语句："tf = true; return;"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|102|mlint_multiStatementLine|一行包含多条语句："tf = true; return;"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|106|mlint_multiStatementLine|一行包含多条语句："tf = true; return;"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|164|mlint_multiStatementLine|一行包含多条语句："tf = true; return;"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|178|mlint_multiStatementLine|一行包含多条语句："tf = true; return;"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|199|mlint_multiStatementLine|一行包含多条语句："tf = true; return;"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|220|mlint_multiStatementLine|一行包含多条语句："if ~strcmpi(fn, 'struct'), continue; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|236|mlint_multiStatementLine|一行包含多条语句："if lefttreepos(nd) <= lefttreepos(FullTree.select(initIdx)), continue; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|238|mlint_multiStatementLine|一行包含多条语句："if count(lhs) == 0, continue; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|240|mlint_multiStatementLine|一行包含多条语句："tf = true; return;"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|255|mlint_multiStatementLine|一行包含多条语句："tf = true; return;"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|263|mlint_multiStatementLine|一行包含多条语句："if count(node) == 0, tf = false; return; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noStructArray.m|22|mlint_multiStatementLine|一行包含多条语句："if ~strcmpi(strtrim(fn), "repmat"), continue; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noStructArray.m|40|mlint_multiStatementLine|一行包含多条语句："if count(left) == 0 || ~strcmp(left.kind, "DOT"), continue; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noStructArray.m|42|mlint_multiStatementLine|一行包含多条语句："if ~ismember(method, ["Append", "PushBack"]), continue; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noStructArray.m|53|mlint_multiStatementLine|一行包含多条语句："hasStruct = true; break;"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noStructArray.m|55|mlint_multiStatementLine|一行包含多条语句："try, cur = Next(cur); catch, break; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noStructArray.m|97|mlint_multiStatementLine|一行包含多条语句："if count(node) == 0, return; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|62|mlint_multiStatementLine|一行包含多条语句："if isempty(aIdx), continue; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|82|mlint_multiStatementLine|一行包含多条语句："if iAreSiblingEqNodes(FullTree, aEqIdx, otherEqs(bi)), continue; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|116|mlint_multiStatementLine|一行包含多条语句："if assignments.isSelfRef(aIdx(ai)), continue; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|120|mlint_multiStatementLine|一行包含多条语句："if iAreSiblingEqNodes(FullTree, aEqIdx, otherEqs(bi)), continue; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|140|mlint_multiStatementLine|一行包含多条语句："if isOutput, continue; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|185|mlint_multiStatementLine|一行包含多条语句："if count(nodes) == 0, continue; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|217|mlint_multiStatementLine|一行包含多条语句："if eqIdx <= 0, return; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|234|mlint_multiStatementLine|一行包含多条语句："if isempty(ix), return; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|238|mlint_multiStatementLine|一行包含多条语句："if isempty(name), continue; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|243|mlint_multiStatementLine|一行包含多条语句："if ismember(ix(i), Left(p).indices), continue; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|249|mlint_multiStatementLine|一行包含多条语句："if isempty(stmtNd) || stmtNd <= 0, continue; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|303|mlint_multiStatementLine|一行包含多条语句："if stmtKinds(si) ~= ctrlKinds(ki), continue; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|305|mlint_multiStatementLine|一行包含多条语句："if idx < 0, continue; end % 合成节点跳过"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|312|mlint_multiStatementLine|一行包含多条语句："if snIdx < 0, continue; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|314|mlint_multiStatementLine|一行包含多条语句："aft = snIdx; break;"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|324|mlint_multiStatementLine|一行包含多条语句："idx = stmtNodes(i); k = stmtKinds(i);"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|325|mlint_multiStatementLine|一行包含多条语句："if idx < 0, continue; end % 合成 EXIT 节点跳过"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|329|mlint_multiStatementLine|一行包含多条语句："ts = stack(end).s; aft = be(ts);"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|331|mlint_multiStatementLine|一行包含多条语句："blk = stack(end); stack(end) = [];"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|353|mlint_multiStatementLine|一行包含多条语句："el(idx) = stack(si).s; break;"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|358|mlint_multiStatementLine|一行包含多条语句："blk.k = 'LOOP'; blk.s = idx; blk.ih = []; blk.el = 0;"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|361|mlint_multiStatementLine|一行包含多条语句："blk.k = 'IF'; blk.s = idx; blk.ih = idx; blk.el = 0;"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|364|mlint_multiStatementLine|一行包含多条语句："stack(end).ih(end+1) = idx; jt(idx) = stack(end).s;"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|366|mlint_multiStatementLine|一行包含多条语句："stack(end).el = idx; jt(idx) = stack(end).s;"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|370|mlint_multiStatementLine|一行包含多条语句："jt(stack(end).s) = idx; jt(idx) = stack(end).s;"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|372|mlint_multiStatementLine|一行包含多条语句："blk.k = k; blk.s = idx; blk.ih = []; blk.el = 0;"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|379|mlint_multiStatementLine|一行包含多条语句："blk = stack(end); stack(end) = [];"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|417|mlint_multiStatementLine|一行包含多条语句："idx = stmtNodes(i); k = stmtKinds(i);"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|418|mlint_multiStatementLine|一行包含多条语句："if idx < 0, continue; end % EXIT 跳过"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|420|mlint_multiStatementLine|一行包含多条语句："if strcmp(k, 'RETURN'), continue; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|499|mlint_multiStatementLine|一行包含多条语句："lhk = ''; for si = 1:n, if stmtNodes(si) == lh, lhk = stmtKinds(si); break; end; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|500|mlint_multiStatementLine|一行包含多条语句："if ~ismember(lhk, ["FOR","PARFOR","WHILE"]), continue; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|501|mlint_multiStatementLine|一行包含多条语句："aft = be(lh); if aft == 0, continue; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|505|mlint_multiStatementLine|一行包含多条语句："if stmtNodes(si) == aft, break; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|506|mlint_multiStatementLine|一行包含多条语句："if stmtNodes(si) > lh, bl = stmtNodes(si); end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|519|mlint_multiStatementLine|一行包含多条语句："if ~isempty(nnStr), g = addnode(g, nnStr); end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|802|mlint_multiStatementLine|一行包含多条语句："if numnodes(g) == 0 || startNodeIdx <= 0, return; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|806|mlint_multiStatementLine|一行包含多条语句："if ~any(g.Nodes.Name == startName), return; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|830|mlint_multiStatementLine|一行包含多条语句："if ~seen(v), seen(v) = true; q(end + 1) = v; end %#ok<AGROW>"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|840|mlint_multiStatementLine|一行包含多条语句："if startNodeIdx <= 0, return; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|842|mlint_multiStatementLine|一行包含多条语句："if isempty(reachNodes), return; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|847|mlint_multiStatementLine|一行包含多条语句："tf = true; return;"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|851|mlint_multiStatementLine|一行包含多条语句："tf = true; return;"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|859|mlint_multiStatementLine|一行包含多条语句："if startNodeIdx <= 0 || useNodeIdx <= 0, return; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|881|mlint_multiStatementLine|一行包含多条语句："if ~any(g.Nodes.Name == startName), return; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|912|mlint_multiStatementLine|一行包含多条语句："tf = true; return;"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|930|mlint_multiStatementLine|一行包含多条语句："if eqIdx1 <= 0 || eqIdx2 <= 0, return; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|931|mlint_multiStatementLine|一行包含多条语句："if eqIdx1 == eqIdx2, return; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|936|mlint_multiStatementLine|一行包含多条语句："tf = true; return;"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|943|mlint_multiStatementLine|一行包含多条语句："tf = true; return;"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|975|mlint_multiStatementLine|一行包含多条语句："if par.indices == ifIdx, return; end % 到达目标但未经过 ELSE"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|986|mlint_multiStatementLine|一行包含多条语句："tf = true; return;"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|1006|mlint_multiStatementLine|一行包含多条语句："tf = true; return;"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|1009|mlint_multiStatementLine|一行包含多条语句："tf = true; return;"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|1047|mlint_multiStatementLine|一行包含多条语句："if strcmp(par.kind, 'CATCH'), return; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|1050|mlint_multiStatementLine|一行包含多条语句："if par.indices == tryIdx, tf = true; return; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|1068|mlint_multiStatementLine|一行包含多条语句："if an.indices == tryIdx, tf = true; return; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|1078|mlint_multiStatementLine|一行包含多条语句："if par.indices == tryIdx, return; end"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|426|mlint_mergeSyncAccumulatorPairs|变量 "sVec" 和 "tVec" 的追加在节点序上逐次相邻（各 10 次，PushBack），应合并为单个 MATLAB.DataTypes.InsertiveTable
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noRedundantNestedIf.m|156|mlint_mergeAlwaysNestedLocalFn|局部函数"iSliceByPos"被调用 2 次，且始终嵌套在"iAnalyzeIfSnippet"中，建议合并这两个函数
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSkipIfChain.m|77|mlint_noStructAccumulator|变量 "meta" 为 struct 数组累积器，应改用 MATLAB.DataTypes.InsertiveTable（每个 struct 字段一列）
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSkipIfChain.m|132|mlint_noBuiltinShadowing|标识符 "lines" 与 MATLAB 函数 "C:\Program Files\MATLAB\R2026a\toolbox\matlab\graphics\graphics\color\lines.m" 重名，建议为 "Lines"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noRedundantNestedIf.m|90|mlint_noBuiltinShadowing|标识符 "info" 与 MATLAB 函数 "C:\Program Files\MATLAB\R2026a\toolbox\matlab\helptools\info.m" 重名，建议为 "Info"
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\collectReadRefs.m|5|mlint_dictionaryUsage|dictionary "refMap" 键类型为 string, 建议检查实际键是否均为合法标识符; 若是则改用 struct
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_dictionaryUsage.m|52|mlint_dictionaryUsage|dictionary "ktGroups" 键类型为 string, 建议检查实际键是否均为合法标识符; 若是则改用 struct
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_dictionaryUsage.m|52|mlint_dictionaryUsage|dictionary "ktGroups" 值类型为 cell, 建议检查实际值是否均为同类型标量; 若是则去掉 cell 包装
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|120|mlint_dictionaryUsage|dictionary "ifEnds" 键类型为浮点数 (double), 建议检查实际键是否均为整数; 若是则改用整数键类型
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|180|mlint_dictionaryUsage|dictionary "refMap" 键类型为 string, 建议检查实际键是否均为合法标识符; 若是则改用 struct
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|269|mlint_dictionaryUsage|dictionary "memo" 键类型为 string, 建议检查实际键是否均为合法标识符; 若是则改用 struct
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergePatternCallChain.m|54|mlint_dictionaryUsage|dictionary "patterns" 键类型为 string, 建议检查实际键是否均为合法标识符; 若是则改用 struct
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergePatternCallChain.m|54|mlint_dictionaryUsage|dictionary "patterns" 值类型为 cell, 建议检查实际值是否均为同类型标量; 若是则去掉 cell 包装
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSyncAccumulatorPairs.m|97|mlint_dictionaryUsage|dictionary "constructorMap" 键类型为 string, 建议检查实际键是否均为合法标识符; 若是则改用 struct
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSyncAccumulatorPairs.m|128|mlint_dictionaryUsage|dictionary "varSet" 键类型为 string, 建议检查实际键是否均为合法标识符; 若是则改用 struct
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noBuiltinShadowing.m|20|mlint_dictionaryUsage|dictionary "reported" 键类型为 string, 建议检查实际键是否均为合法标识符; 若是则改用 struct
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noBuiltinShadowing.m|177|mlint_dictionaryUsage|dictionary "cache" 键类型为 string, 建议检查实际键是否均为合法标识符; 若是则改用 struct
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noMultiColumnUnpack.m|96|mlint_dictionaryUsage|dictionary "tblVarSet" 键类型为 string, 建议检查实际键是否均为合法标识符; 若是则改用 struct
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|73|mlint_dictionaryUsage|dictionary "useOwnerCount" 键类型为浮点数 (double), 建议检查实际键是否均为整数; 若是则改用整数键类型
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|232|mlint_dictionaryUsage|dictionary "readIdx" 键类型为 string, 建议检查实际键是否均为合法标识符; 若是则改用 struct
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|232|mlint_dictionaryUsage|dictionary "readIdx" 值类型为 cell, 建议检查实际值是否均为同类型标量; 若是则去掉 cell 包装
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|295|mlint_dictionaryUsage|dictionary "be" 键类型为浮点数 (double), 建议检查实际键是否均为整数; 若是则改用整数键类型
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|296|mlint_dictionaryUsage|dictionary "jt" 键类型为浮点数 (double), 建议检查实际键是否均为整数; 若是则改用整数键类型
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|297|mlint_dictionaryUsage|dictionary "el" 键类型为浮点数 (double), 建议检查实际键是否均为整数; 若是则改用整数键类型
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|688|mlint_dictionaryUsage|dictionary "whileHeadVars" 值类型为 cell, 建议检查实际值是否均为同类型标量; 若是则去掉 cell 包装
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|688|mlint_dictionaryUsage|dictionary "whileHeadVars" 键类型为浮点数 (double), 建议检查实际键是否均为整数; 若是则改用整数键类型
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|73|mlint_dictionaryUsage|同一文件内有 5 个键类型均为 "double" 的 dictionary（useOwnerCount, be, jt, el, whileHeadVars）, 建议检查是否滥用并考虑合并
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\runRules.m|18|mlint_dictionaryUsage|dictionary "timingMap" 键类型为 string, 建议检查实际键是否均为合法标识符; 若是则改用 struct
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noBuiltin.m|5|mlint_noBuiltin|避免使用 builtin(...)，请直接调用目标函数：issues = "禁止 builtin(...) 调用";
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noBuiltin.m|18|mlint_noBuiltin|避免使用 builtin(...)，请直接调用目标函数：if contains(s, "builtin(")
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noBuiltin.m|20|mlint_noBuiltin|避免使用 builtin(...)，请直接调用目标函数：sprintf('避免使用 builtin(...)，请直接调用目标函数：%s', char(s))}; %#ok<AGROW>
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\addRule.m|23|mlint_noPrimitiveTypeConversion|通常没有必要做 logical(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\addRule.m|25|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\addRule.m|60|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\addRule.m|61|mlint_noPrimitiveTypeConversion|通常没有必要做 logical(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\addRule.m|82|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\addRule.m|87|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\addRule.m|89|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\addRule.m|93|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\addRule.m|95|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\addRule.m|98|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\addRule.m|124|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|6|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|29|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|71|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|73|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|90|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|90|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|107|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|110|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|128|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|143|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|153|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|163|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|163|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|181|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|187|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|187|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|212|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|225|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|226|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|251|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|261|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|287|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|292|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|310|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|352|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|361|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|366|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|373|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|374|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|398|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\inlineSingleCallHelpers.m|398|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\listRules.m|29|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\listRules.m|52|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\listRules.m|54|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\listRules.m|103|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\listRules.m|108|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\listRules.m|108|mlint_noPrimitiveTypeConversion|通常没有必要做 logical(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\listRules.m|123|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\listRules.m|124|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\listRules.m|125|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\listRules.m|134|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\listRules.m|141|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\listRules.m|150|mlint_noPrimitiveTypeConversion|通常没有必要做 logical(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\listRules.m|168|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\listRules.m|170|mlint_noPrimitiveTypeConversion|通常没有必要做 logical(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\parseFunctions.m|28|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\removeTypeConversion.m|44|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\removeTypeConversion.m|67|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\removeTypeConversion.m|83|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\removeTypeConversion.m|119|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\removeTypeConversion.m|134|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\removeTypeConversion.m|138|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\removeTypeConversion.m|146|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\stripStringLiterals.m|12|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\testRule.m|35|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\testRule.m|60|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\testRule.m|73|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\testRule.m|78|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\testRule.m|90|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\testRule.m|95|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\testRule.m|98|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\builtinRuleRegistry.m|16|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\builtinRuleRegistry.m|23|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\codeLine.m|9|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\codeLine.m|9|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\codeLine.m|9|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\collectAssignments.m|27|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\collectAssignments.m|31|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\collectAssignments.m|45|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\collectAssignments.m|45|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\collectAssignments.m|58|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\collectAssignments.m|60|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\collectAssignments.m|140|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\collectAssignments.m|147|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\collectReadRefs.m|13|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\collectReadRefs.m|18|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\collectReadRefs.m|36|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\collectRhsIds.m|9|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\collectRhsIds.m|17|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\collectRhsIds.m|18|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\collectStatements.m|24|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\collectStatements.m|26|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\collectStmtLines.m|13|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\collectStmtLines.m|21|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\collectStmtLines.m|32|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\collectStmtLines.m|52|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\collectStmtLines.m|68|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\defaultConfig.m|16|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\discoverFiles.m|8|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\discoverFiles.m|13|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\discoverFiles.m|15|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\extractFunctionName.m|3|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\getUserConfigPath.m|20|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\isExcludedPath.m|4|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\isExcludedPath.m|7|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\isValidIdentifier.m|2|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\isValidIdentifier.m|7|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\leadingKeyword.m|10|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\loadConfigLayers.m|22|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\loadConfigLayers.m|24|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mergeRuleEntries.m|47|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mergeRuleEntries.m|48|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_dictionaryUsage.m|57|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_dictionaryUsage.m|57|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_dictionaryUsage.m|57|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_dictionaryUsage.m|58|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_dictionaryUsage.m|100|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_dictionaryUsage.m|103|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_dictionaryUsage.m|106|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_dictionaryUsage.m|107|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_dictionaryUsage.m|112|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_dictionaryUsage.m|112|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_dictionaryUsage.m|112|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_dictionaryUsage.m|118|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_dictionaryUsage.m|118|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_dictionaryUsage.m|118|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_dictionaryUsage.m|148|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_dictionaryUsage.m|157|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_dictionaryUsage.m|172|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_dictionaryUsage.m|174|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_ifEqChainSwitch.m|35|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_ifEqChainSwitch.m|79|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_ifEqChainSwitch.m|99|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_ifEqChainSwitch.m|103|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_ifEqChainSwitch.m|104|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAlwaysNestedLocalFn.m|8|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAlwaysNestedLocalFn.m|18|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAlwaysNestedLocalFn.m|24|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAlwaysNestedLocalFn.m|29|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAlwaysNestedLocalFn.m|35|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAlwaysNestedLocalFn.m|41|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAlwaysNestedLocalFn.m|43|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAlwaysNestedLocalFn.m|52|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAlwaysNestedLocalFn.m|61|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAlwaysNestedLocalFn.m|76|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAlwaysNestedLocalFn.m|98|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAlwaysNestedLocalFn.m|102|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAlwaysNestedLocalFn.m|111|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAlwaysNestedLocalFn.m|111|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|54|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|57|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|68|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|71|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|79|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|88|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|98|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|102|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|114|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|136|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|136|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|145|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|145|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|153|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|166|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|167|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|175|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|188|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|194|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|203|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|226|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|226|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|227|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|230|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|250|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|253|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|271|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|271|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|297|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|344|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|344|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|345|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|346|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|349|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|349|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|350|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|350|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|351|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|357|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|358|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|363|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|364|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|369|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeAncestorVariable.m|408|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeIdenticalCaseBranches.m|45|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeIdenticalCaseBranches.m|68|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeIdenticalCaseBranches.m|68|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeIdenticalCaseBranches.m|103|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeIdenticalCaseBranches.m|117|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeIdenticalCaseBranches.m|126|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeIdenticalCaseBranches.m|126|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeIdenticalCaseBranches.m|126|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeIdenticalCaseBranches.m|131|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeIdenticalCaseBranches.m|131|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergePatternCallChain.m|28|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergePatternCallChain.m|30|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergePatternCallChain.m|45|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergePatternCallChain.m|62|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergePatternCallChain.m|66|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergePatternCallChain.m|67|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergePatternCallChain.m|67|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergePatternCallChain.m|98|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergePatternCallChain.m|112|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergePatternCallChain.m|122|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergePatternCallChain.m|137|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergePatternCallChain.m|159|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergePatternCallChain.m|163|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergePatternCallChain.m|169|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergePatternCallChain.m|173|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergePatternCallChain.m|179|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSameRowAssignments.m|9|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSameRowAssignments.m|15|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSameRowAssignments.m|30|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSameRowAssignments.m|48|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSameRowAssignments.m|70|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSameRowAssignments.m|79|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSkipIfChain.m|54|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSkipIfChain.m|101|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSkipIfChain.m|111|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSkipIfChain.m|141|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSkipIfChain.m|202|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSkipIfChain.m|202|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSkipIfChain.m|213|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSkipIfChain.m|216|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSkipIfChain.m|242|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSyncAccumulatorPairs.m|87|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSyncAccumulatorPairs.m|107|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSyncAccumulatorPairs.m|115|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSyncAccumulatorPairs.m|116|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSyncAccumulatorPairs.m|121|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSyncAccumulatorPairs.m|130|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSyncAccumulatorPairs.m|151|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSyncAccumulatorPairs.m|157|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSyncAccumulatorPairs.m|161|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSyncAccumulatorPairs.m|162|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSyncAccumulatorPairs.m|177|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSyncAccumulatorPairs.m|186|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSyncAccumulatorPairs.m|187|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSyncAccumulatorPairs.m|206|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSyncAccumulatorPairs.m|207|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSyncAccumulatorPairs.m|249|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSyncAccumulatorPairs.m|264|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_mergeSyncAccumulatorPairs.m|267|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_multiStatementLine.m|8|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_multiStatementLine.m|13|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|25|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|37|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|49|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|65|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|80|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|83|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|93|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|105|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|144|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|195|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|224|mlint_noPrimitiveTypeConversion|通常没有必要做 double(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|250|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noAccumulatorPlaceholder.m|264|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noBuiltin.m|13|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noBuiltin.m|20|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noBuiltinShadowing.m|23|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noBuiltinShadowing.m|25|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noBuiltinShadowing.m|59|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noBuiltinShadowing.m|183|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noBuiltinShadowing.m|185|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noCatTableAppend.m|26|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noCatTableAppend.m|27|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noCatTableAppend.m|32|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noCatTableAppend.m|33|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noCatTableAppend.m|37|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noCatTableAppend.m|37|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noCatTableAppend.m|49|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noCatTableAppend.m|50|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noMultiColumnUnpack.m|80|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noMultiColumnUnpack.m|80|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noMultiColumnUnpack.m|82|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noMultiColumnUnpack.m|82|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noMultiColumnUnpack.m|83|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noMultiColumnUnpack.m|83|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noStructAccumulator.m|51|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noStructAccumulator.m|51|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noStructArray.m|59|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noStructArray.m|63|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noStructArray.m|69|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_noStructArray.m|69|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|40|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|517|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|794|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|805|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|866|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|880|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\mlint_singleUseVariable.m|1093|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\runRules.m|94|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\runRules.m|98|mlint_noPrimitiveTypeConversion|通常没有必要做 char(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\+MatlabLint\private\runRules.m|98|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留
+C:\Users\vhtmf\Documents\MATLAB\MATLAB-Lint\测试用例\noStructArray_True_ArrayBuilderStructAccum.m|7|mlint_noPrimitiveTypeConversion|通常没有必要做 string(...) 基础类型转换，建议省去；如确有旧接口兼容要求可保留

@@ -1,4 +1,4 @@
-function cfg = loadConfigLayers(targetPath)
+﻿function cfg = loadConfigLayers(targetPath)
 %LOADCONFIGLAYERS 按四级覆盖加载配置。
 % 覆盖顺序（低 -> 高）:
 % 1) 用户级配置
@@ -19,12 +19,13 @@ if isfile(cwdConfig)
 end
 
 if isfolder(targetPath)
-    targetConfig = fullfile(char(targetPath), '.matlablint.json');
+    targetConfig = fullfile(targetPath, '.matlablint.json');
 else
-    targetConfig = fullfile(fileparts(char(targetPath)), '.matlablint.json');
+    targetConfig = fullfile(fileparts(targetPath), '.matlablint.json');
 end
 
 if isfile(targetConfig)
     cfg = mergeStruct(cfg, readJsonConfig(targetConfig));
 end
 end
+

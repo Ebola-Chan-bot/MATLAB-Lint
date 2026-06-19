@@ -5,12 +5,14 @@ if nargin == 0
     issues = "禁止 builtin(...) 调用";
     return;
 end
-AllLines = splitlines(string(fileread(filePath)));
+AllLines = splitlines(fileread( filePath ));
 
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
 for i = 1:numel(AllLines)
-    s = strtrim(char(AllLines(i)));
+    % 不转 string 标量会在此处对应的输出构造链路复现真实错误：
+    % mlint_noBuiltin:19, sprintf 不支持 cell 输入。
+    s = strtrim(AllLines( i ));
     if isempty(s) || startsWith(s, '%')
         continue;
     end

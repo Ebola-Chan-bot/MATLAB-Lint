@@ -1,4 +1,4 @@
-function issues = mlint_mergeAlwaysNestedLocalFn(filePath)
+﻿function issues = mlint_mergeAlwaysNestedLocalFn(filePath)
 %mlint_mergeAlwaysNestedLocalFn 文件内函数若总是嵌套调用，建议合并。
 
 if nargin == 0
@@ -21,18 +21,18 @@ for i = 1:nLines
     end
     fnName = "";
     if contains(cs, "=")
-        leftPart = strtrim(extractBetween(string(cs), "=", "("));
+        leftPart = strtrim(extractBetween(cs, "=", "("));
         if ~isempty(leftPart)
             fnName = strtrim(leftPart(1));
         end
     else
-        leftPart = strtrim(extractBetween(string(cs), "function ", "("));
+        leftPart = strtrim(extractBetween(cs, "function ", "("));
         if ~isempty(leftPart)
             fnName = strtrim(leftPart(1));
         end
     end
     if fnName ~= ""
-        localFnNamesBuilder.Append(string(fnName));
+        localFnNamesBuilder.Append(fnName);
         hasLocalFn = true;
     end
 end
@@ -108,12 +108,13 @@ for k = 1:numel(localFnNames)
         issuesBuilder(end+1, {'file','line','rule','message'}) = { ...
             filePath, declLine, "mlint_mergeAlwaysNestedLocalFn", ...
             sprintf('局部函数"%s"被调用 %d 次，且始终嵌套在"%s"中，建议合并这两个函数', ...
-            char(fn), totalCalls, char(uniqueOuterCallers))}; %#ok<AGROW>
+            fn, totalCalls, uniqueOuterCallers)}; %#ok<AGROW>
     end
 end
 
 issues = table(issuesBuilder);
 end
+
 
 
 

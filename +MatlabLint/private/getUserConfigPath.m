@@ -17,6 +17,6 @@ else
     p = getenv('HOME');
 end
 if isempty(p)
-    p = char(java.lang.System.getProperty('user.home'));
+    p = java.lang.System.getProperty( 'user.home' );
 end
 end

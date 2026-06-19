@@ -3,7 +3,7 @@ ids = MATLAB.Containers.Vector();
 for i = 1:numel(ruleIds)
     ids.PushBack(ruleIds(i));
 end
-ids = string(ids.Data(:));
+ids = ids.Data( : );
 if isempty(ids)
     result = struct;
 else

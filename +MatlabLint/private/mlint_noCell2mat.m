@@ -5,12 +5,12 @@ if nargin == 0
     issues = "不应使用 cell2mat；建议根据目标形状选用 vertcat、horzcat 或 cat";
     return;
 end
-AllLines = splitlines(string(fileread(filePath)));
+AllLines = splitlines(fileread( filePath ));
 
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
 for i = 1:numel(AllLines)
-    s = char(AllLines(i));
+    s = AllLines( i );
     stripped = strtrim(s);
     if isempty(stripped) || startsWith(stripped, '%')
         continue;
@@ -21,7 +21,7 @@ for i = 1:numel(AllLines)
         continue;
     end
 
-    txt = char(lower(string(code)));
+    txt = lower( code );
     hitPos = strfind(txt, 'cell2mat');
     if isempty(hitPos)
         continue;

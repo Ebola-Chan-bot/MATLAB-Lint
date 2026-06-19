@@ -5,12 +5,12 @@ if nargin == 0
     issues = "建议用 pattern 替代 regexp、regexpi 或 regexprep";
     return;
 end
-AllLines = splitlines(string(fileread(filePath)));
+AllLines = splitlines(fileread( filePath ));
 
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
 for i = 1:numel(AllLines)
-    s = char(AllLines(i));
+    s = AllLines( i );
     if isempty(strtrim(s)) || startsWith(strtrim(s), '%')
         continue;
     end
@@ -22,13 +22,13 @@ for i = 1:numel(AllLines)
     end
 
     hasRegexpCall = false;
-    codeStr = lower(string(code));
+    codeStr = lower(code);
     for needle = ["regexp", "regexpi", "regexprep"]
-        hitPos = strfind(char(codeStr), char(needle));
+        hitPos = strfind(codeStr, needle);
         if isempty(hitPos)
             continue;
         end
-        txt = char(codeStr);
+        txt = codeStr;
         n = length(txt);
         for k = 1:numel(hitPos)
             p = hitPos(k);

@@ -1,4 +1,4 @@
-function funcs = parseFunctions(filePath)
+﻿function funcs = parseFunctions(filePath)
 %PARSEFUNCTIONS 从文件中逐个提取每个函数的 mtree。
 % funcs = MatlabLint.parseFunctions(filePath)
 %
@@ -25,7 +25,7 @@ for i = 1:nFuncs
     endPos = righttreepos(nd);
 
     funcRows(end+1, {'startPos','endPos','tree','fileName'}) = ...
-        {startPos, endPos, nd, string(filePath)};
+        {startPos, endPos, nd, filePath};
 end
 
 funcTable = table(funcRows);
@@ -35,3 +35,4 @@ funcs = struct('startPos', num2cell(funcTable.startPos), ...
     'tree', treeCells, ...
     'fileName', cellstr(funcTable.fileName));
 end
+

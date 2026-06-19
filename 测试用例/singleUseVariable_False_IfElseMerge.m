@@ -14,5 +14,5 @@ if strlength(configPathOrDir) == 0
 else
     p = '/etc/c.json';
 end
-result = string(p);
+result = p;
 end

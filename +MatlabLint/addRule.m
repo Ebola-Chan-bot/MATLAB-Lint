@@ -1,4 +1,4 @@
-%[text] 将规则开关写入用户级或指定路径配置文件。
+﻿%[text] 将规则开关写入用户级或指定路径配置文件。
 %[text] ## 语法
 %[text] ```matlabCodeExample
 %[text] configPath = MatlabLint.addRule(ruleId);
@@ -22,7 +22,7 @@ for i = 1:numel(varargin)
     if islogical(v)
         enabled = logical(v);
     else
-        configPathOrDir = string(v);
+        configPathOrDir = v;
     end
 end
 
@@ -57,7 +57,7 @@ end
     if strlength(spec) == 0
         error('MatlabLint:EmptyRuleId', 'ruleId 不能为空。');
     end
-    entry = struct('Id', string(spec), ...
+    entry = struct('Id', spec, ...
         'Enabled', logical(enabled));
 if ~isfield(cfg, 'Rules') || ~isstruct(cfg.Rules) || isempty(cfg.Rules)
     cfg.Rules = entry;
@@ -79,23 +79,23 @@ end
 fwrite(fid, raw, 'char');
 fclose(fid);
 
-configPath = string(p);
+configPath = p;
 end
 
 
 function p = iNormalizeConfigPath(t)
-t = string(t);
+t = t;
 if isfolder(t)
-    p = fullfile(char(t), '.matlablint.json');
+    p = fullfile(t, '.matlablint.json');
     return;
 end
 
-[folderPart, namePart, extPart] = fileparts(char(t));
+[folderPart, namePart, extPart] = fileparts(t);
 if strcmpi(extPart, '.json') || strcmpi(namePart, '.matlablint')
-    p = char(t);
+    p = t;
 else
     % 若不是已存在目录且看起来像普通路径，则按目录处理。
-    p = fullfile(char(t), '.matlablint.json');
+    p = fullfile(t, '.matlablint.json');
 end
 
 if isempty(folderPart)
@@ -127,5 +127,6 @@ end
 
 %[appendix]{"version":"1.0"}
 %---
+
 
 

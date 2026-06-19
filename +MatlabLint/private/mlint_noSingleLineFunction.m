@@ -25,7 +25,7 @@ for fi = 1:numel(funcs)
 
     stmtNodes = iCollectExecutableStmtNodes(FullTree, fnNode);
     if numel(stmtNodes) == 1
-        issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, double(fnNode.lineno), ...
+        issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, fnNode.lineno, ...
             "mlint_noSingleLineFunction", ...
             sprintf('函数"%s"只有一行有效代码，建议内联', iFunctionName(fnNode))}; %#ok<AGROW>
     end
@@ -38,7 +38,7 @@ end
 function name = iFunctionName(fnNode)
 name = "函数";
 try
-    name = string(Fname(fnNode).tree2str);
+    name = Fname( fnNode ).tree2str;
 catch
 end
 end
@@ -48,7 +48,7 @@ function tf = iIsInsideClassdef(fnNode)
 tf = false;
 par = Parent(fnNode);
 while count(par) > 0
-    if strcmp(char(par.kind), 'CLASSDEF')
+    if strcmp(par.kind, 'CLASSDEF')
         tf = true;
         return;
     end

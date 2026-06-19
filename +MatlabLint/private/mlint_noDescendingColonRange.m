@@ -6,11 +6,11 @@ if nargin == 0
     return;
 end
 
-AllLines = splitlines(string(fileread(filePath)));
+AllLines = splitlines(fileread( filePath ));
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
 for i = 1:numel(AllLines)
-    lineText = char(AllLines(i));
+    lineText = AllLines( i );
     ranges = iFindDescendingRanges(lineText);
     for k = 1:height(ranges)
         issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, i, "mlint_noDescendingColonRange", ...

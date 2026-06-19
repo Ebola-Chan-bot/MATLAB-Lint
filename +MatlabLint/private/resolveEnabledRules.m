@@ -16,17 +16,17 @@ for i = 1:numel(builtinIds)
     enabled = true;  % 默认启用
     [found, entry] = iFindById(entries, rid);
     if found
-        enabled = logical(entry.Enabled);
+        enabled = entry.Enabled;
     end
     if enabled
-        rulesBuilder(end+1, {'id','fn'}) = {string(rid), builtinFns.(rid)};
+        rulesBuilder(end+1, {'id','fn'}) = {rid, builtinFns.(rid)};
     end
 end
 
 % --- 自定义规则（Rules 对象数组中不属于内置 ID 的条目） ---
 for i = 1:numel(entries)
     entry = entries(i);
-    if ~logical(entry.Enabled) || (strlength(entry.Id) > 0 && any(strcmp(entry.Id, builtinIds)))
+    if ~entry.Enabled || (strlength(entry.Id) > 0 && any(strcmp(entry.Id, builtinIds)))
         continue;
     end
 
@@ -40,7 +40,7 @@ for i = 1:numel(entries)
         continue;
     end
 
-    rulesBuilder(end+1, {'id','fn'}) = {string(entry.Id), fh};
+    rulesBuilder(end+1, {'id','fn'}) = {entry.Id, fh};
 end
 
 rules = table2struct(table(rulesBuilder), 'ToScalar', false);
@@ -54,10 +54,10 @@ ruleId = '';
 if isempty(spec) || ~ischar(spec) && ~isstring(spec)
     return;
 end
-spec = string(spec);
-if contains(spec, string(filesep) | "/")
+spec = spec;
+if contains(spec, filesep | "/")
     % 文件路径：按路径加载
-    p = char(spec);
+    p = spec;
     if ~isfile(p)
         warning('MatlabLint:CustomRuleNotFound', '自定义规则文件不存在: %s', p);
         return;
@@ -75,7 +75,7 @@ if contains(spec, string(filesep) | "/")
 else
     % 函数名
     ruleId = spec;
-    if isempty(which(char(ruleId)))
+    if isempty(which(ruleId))
         warning('MatlabLint:CustomRuleResolveFailed', '无法解析函数句柄: %s (请确保函数在 MATLAB 路径中)', ruleId);
         fh = [];
         return;
@@ -101,7 +101,7 @@ function [found, entry] = iFindById(entries, rid)
 found = false;
 entry = struct('Id', "", 'Enabled', true);
 for i = 1:numel(entries)
-    if strlength(entries(i).Id) > 0 && entries(i).Id == string(rid)
+    if strlength(entries(i).Id) > 0 && entries(i).Id == rid
         found = true;
         entry = entries(i);
         return;

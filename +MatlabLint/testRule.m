@@ -1,4 +1,4 @@
-function issues = testRule(ruleId, targetPath)
+﻿function issues = testRule(ruleId, targetPath)
 %TESTRULE 测试单条规则。
 %
 % 语法:
@@ -32,7 +32,7 @@ allIssues = table;
 for fi = 1:numel(fileList)
     fp = fileList(fi);
     try
-        r = ruleFn(char(fp));
+        r = ruleFn(fp);
         if istable(r) && size(r, 1) > 0
             allIssues = [allIssues; r]; %#ok<AGROW>
         end
@@ -57,7 +57,7 @@ end
 % -------------------------------------------------------------------------
 function ruleFn = iResolveRuleFn(ruleId)
 if isfile(ruleId)
-    [d, f, ~] = fileparts(char(ruleId));
+    [d, f, ~] = fileparts(ruleId);
     if ~isempty(d), addpath(d); end
     ruleFn = str2func(f);
     return;
@@ -70,12 +70,12 @@ end
 
 % 尝试作为相对路径在 private 目录中查找
 privateDir = fullfile(fileparts(mfilename('fullpath')), 'private');
-candidate = fullfile(privateDir, char(ruleId));
+candidate = fullfile(privateDir, ruleId);
 if isfile(candidate)
     ruleFn = str2func(extractBefore(ruleId, '.'));
     return;
 end
-candidate = fullfile(privateDir, char(ruleId + ".m"));
+candidate = fullfile(privateDir, ruleId + ".m");
 if isfile(candidate)
     ruleFn = str2func(ruleId);
     return;
@@ -87,12 +87,12 @@ end
 % -------------------------------------------------------------------------
 function fileList = iDiscoverTestFiles(targetPath)
 if isfile(targetPath)
-    fileList = string(targetPath);
+    fileList = targetPath;
     return;
 end
 
 % 目录：收集所有 .m 文件
-d = dir(fullfile(char(targetPath), '*.m'));
+d = dir(fullfile(targetPath, '*.m'));
 fileList = strings(numel(d), 1);
 for i = 1:numel(d)
     fileList(i) = string(fullfile(d(i).folder, d(i).name));
@@ -101,3 +101,4 @@ if isempty(fileList)
     error('MatlabLint:TestRuleNoFiles', '目录中无 .m 文件: %s', targetPath);
 end
 end
+

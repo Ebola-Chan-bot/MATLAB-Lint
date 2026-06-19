@@ -1,4 +1,4 @@
-function issues = mlint_noAccumulatorPlaceholder(filePath)
+﻿function issues = mlint_noAccumulatorPlaceholder(filePath)
 %mlint_noAccumulatorPlaceholder 基于 mtree 检测累积器类占位初始化。
 % 豁免：
 % 1) 简单空表初始化 table()
@@ -27,14 +27,14 @@ for pi = 1:size(placeholderVars, 1)
     initStmt = placeholderVars.stmt(pi);
     initIdx = placeholderVars.eqIdx(pi);
     
-    if ~isempty(isemptyVars) && any(isemptyVars == lower(string(vn)))
+    if ~isempty(isemptyVars) && any(isemptyVars == lower(vn))
         continue;
     end
     if iHasAccumulatorUse(FullTree, vn, initIdx)
         issuesBuilder(end+1, {'file','line','rule','message'}) = { ...
             filePath, initLine, "mlint_noAccumulatorPlaceholder", ...
             sprintf('避免使用累积器占位空初始化：%s。建议改用 MATLAB.DataTypes.InsertiveTable、MATLAB.DataTypes.ArrayBuilder 或 MATLAB.Containers.Vector。', ...
-            strtrim(char(initStmt)))}; %#ok<AGROW>
+            strtrim(initStmt))}; %#ok<AGROW>
     end
 end
 
@@ -46,7 +46,7 @@ for pi = 1:size(structPlaceholders, 1)
     issuesBuilder(end+1, {'file','line','rule','message'}) = { ...
         filePath, initLine, "mlint_noAccumulatorPlaceholder", ...
         sprintf('避免使用累积器占位空初始化：%s。建议改用 MATLAB.DataTypes.InsertiveTable（每个 struct 字段一列）。', ...
-        strtrim(char(initStmt)))}; %#ok<AGROW>
+        strtrim(initStmt))}; %#ok<AGROW>
 end
 
 issues = table(issuesBuilder);
@@ -59,11 +59,11 @@ cix = FullTree.mtfind('Kind', 'CALL').indices;
 if isempty(cix), return; end
 for i = 1:numel(cix)
     nd = FullTree.select(cix(i));
-    fn = string(Left(nd).tree2str);
+    fn = Left( nd ).tree2str;
     if ~strcmpi(strtrim(fn), 'isempty'), continue; end
     child = Right(nd);
-    if count(child) == 1 && strcmp(char(child.kind), 'ID')
-        tvars(end+1) = lower(string(child.string)); %#ok<AGROW>
+    if count(child) == 1 && strcmp(child.kind, 'ID')
+        tvars(end+1) = lower(child.string); %#ok<AGROW>
     end
 end
 if ~isempty(tvars), tvars = unique(tvars); end
@@ -77,10 +77,10 @@ eix = FullTree.mtfind('Kind', 'EQUALS').indices;
 for i = 1:numel(eix)
     nd = FullTree.select(eix(i));
     lhs = Left(nd);
-    if count(lhs) ~= 1 || ~strcmp(char(lhs.kind), 'ID'), continue; end
+    if count(lhs) ~= 1 || ~strcmp(lhs.kind, 'ID'), continue; end
     if iIsPlaceholder(Right(nd))
         builder(end+1, {'var','line','stmt','eqIdx'}) = { ...
-            string(lhs.string), double(nd.lineno), string(nd.tree2str), eix(i)}; %#ok<AGROW>
+            lhs.string, double(nd.lineno), nd.tree2str, eix(i)}; %#ok<AGROW>
     end
 end
 result = table(builder);
@@ -90,7 +90,7 @@ end
 function tf = iIsPlaceholder(node)
 tf = false;
 if count(node) == 0, return; end
-k = char(node.kind);
+k = node.kind;
 
 if strcmp(k, 'EMPTY')
     tf = true; return;
@@ -102,7 +102,7 @@ if strcmp(k, 'CELL')
         tf = true; return;
     end
     child = Arg(node);
-    if count(child) == 1 && strcmp(char(child.kind), 'CELL') && count(child) == 0
+    if count(child) == 1 && strcmp(child.kind, 'CELL') && count(child) == 0
         tf = true; return;
     end
     return;
@@ -116,7 +116,7 @@ end
 if strcmp(k, 'DOT')
     % ClassName.empty（无括号调用）
     try
-        if strcmpi(string(Right(node).tree2str), 'empty')
+        if strcmpi(Right( node ).tree2str, 'empty')
             tf = true;
         end
     catch
@@ -129,7 +129,7 @@ end
 function tf = iIsPlaceholderCall(node)
 tf = false;
 try
-    fn = lower(strtrim(string(Left(node).tree2str)));
+    fn = lower(strtrim(Left( node ).tree2str));
 catch
     return;
 end
@@ -141,7 +141,7 @@ switch fn
         tf = iAnyArgIsZero(firstArg);
         return;
     case 'repmat'
-        if strcmp(char(firstArg.kind), 'EMPTY')
+        if strcmp(firstArg.kind, 'EMPTY')
             tf = true;
         end
         return;
@@ -160,7 +160,7 @@ function tf = iAnyArgIsZero(node)
 tf = false;
 cur = node;
 while count(cur) > 0
-    if strcmp(strtrim(string(cur.tree2str)), '0')
+    if strcmp(strtrim(cur.tree2str), '0')
         tf = true; return;
     end
     cur = Next(cur);
@@ -187,15 +187,15 @@ function tf = iTableHasZeroSize(node)
 tf = false;
 cur = node;
 while count(cur) > 0
-    s = lower(strtrim(string(cur.tree2str)));
+    s = lower(strtrim(cur.tree2str));
     s = erase(erase(s, '"'), "'");
     if strcmp(s, 'size') || strcmp(s, 'sizes')
         nxt = Next(cur);
         if count(nxt) > 0
-            nxtKind = char(nxt.kind);
+            nxtKind = nxt.kind;
             if strcmp(nxtKind, 'ROW') || strcmp(nxtKind, 'COL')
                 child = Arg(nxt);
-                if count(child) > 0 && strcmp(strtrim(string(child.tree2str)), '0')
+                if count(child) > 0 && strcmp(strtrim(child.tree2str), '0')
                     tf = true; return;
                 end
             end
@@ -213,7 +213,7 @@ cix = FullTree.mtfind('Kind', 'CALL').indices;
 for i = 1:numel(cix)
     nd = FullTree.select(cix(i));
     try
-        fn = strtrim(string(Left(nd).tree2str));
+        fn = strtrim(Left( nd ).tree2str);
     catch
         continue;
     end
@@ -221,7 +221,7 @@ for i = 1:numel(cix)
     firstArg = Right(nd);
     if iStructHasPlaceholderField(firstArg)
         builder(end+1, {'line','stmt'}) = { ...
-            double(nd.lineno), string(nd.tree2str)}; %#ok<AGROW>
+            double(nd.lineno), nd.tree2str}; %#ok<AGROW>
     end
 end
 result = table(builder);
@@ -247,11 +247,11 @@ function tf = iLhsHasEndIndexOnVar(lhs, varName)
 % 检查 LHS 是否是对 varName 的 end+1 型累积写入
 % 支持: v(end+1), v.field(end+1), v{end+1}, v.field{end+1}
 tf = false;
-k = char(lhs.kind);
+k = lhs.kind;
 
 if strcmp(k, 'SUBSCR') || strcmp(k, 'CELL')
     if iLeftResolvesToVar(Left(lhs), varName) ...
-            && contains(strtrim(string(Right(lhs).tree2str)), 'end')
+            && contains(strtrim(Right( lhs ).tree2str), 'end')
         tf = true; return;
     end
 end
@@ -261,9 +261,9 @@ end
 function tf = iLeftResolvesToVar(node, varName)
 % 沿 Left 链穿过 DOT/SUBSCR/CELL 直到 ID，检查是否等于 varName
 if count(node) == 0, tf = false; return; end
-k = char(node.kind);
+k = node.kind;
 if strcmp(k, 'ID')
-    tf = strcmp(string(node.string), varName);
+    tf = strcmp(node.string, varName);
     return;
 end
 if ismember(k, {'DOT', 'SUBSCR', 'CELL', 'PARENS'})
@@ -272,3 +272,4 @@ if ismember(k, {'DOT', 'SUBSCR', 'CELL', 'PARENS'})
 end
 tf = false;
 end
+

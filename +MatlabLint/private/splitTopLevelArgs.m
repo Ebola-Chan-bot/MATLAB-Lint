@@ -62,7 +62,7 @@ while i <= n
                 dBrace = dBrace - 1;
             case ','
                 if dParen == 0 && dBracket == 0 && dBrace == 0
-                    parts.Append(string(strtrim(ArgText(startPos:i-1))));
+                    parts.Append(strtrim( ArgText( startPos:i - 1 ) ));
                     startPos = i + 1;
                 end
         end
@@ -71,6 +71,6 @@ while i <= n
     i = i + 1;
 end
 
-parts.Append(string(strtrim(ArgText(startPos:end))));
-args = string(parts.Harvest());
+parts.Append(strtrim( ArgText( startPos:end ) ));
+args = parts.Harvest();
 end

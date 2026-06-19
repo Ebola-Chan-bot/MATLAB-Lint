@@ -6,7 +6,7 @@ if nargin == 0
     return;
 end
 
-AllLines = splitlines(string(fileread(filePath)));
+AllLines = splitlines(fileread( filePath ));
 nLines = numel(AllLines);
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
@@ -19,7 +19,7 @@ end
 % 判断第一个函数是否为公开入口（文件第一个非注释/非空行以 function 开头）
 firstFnIsPublic = false;
 for i = 1:nLines
-    s = strtrim(char(AllLines(i)));
+    s = strtrim(AllLines( i ));
     if isempty(s) || startsWith(s, '%')
         continue;
     end
@@ -37,7 +37,7 @@ end
 
 for k = startIdx:numel(funcs)
     declLineNum = funcs(k).start;
-    fnName = extractFunctionName(strtrim(char(AllLines(declLineNum))));
+    fnName = extractFunctionName(strtrim(AllLines( declLineNum )));
     if fnName == ""
         continue;
     end
@@ -47,13 +47,13 @@ for k = startIdx:numel(funcs)
         if i == declLineNum
             continue;
         end
-        cs = strtrim(char(AllLines(i)));
+        cs = strtrim(AllLines( i ));
         if isempty(cs) || startsWith(cs, '%')
             continue;
         end
         cs = codeLine(cs);
 
-        callPos = strfind(cs, char(fnName + "("));
+        callPos = strfind(cs, fnName + "(");
         for p = callPos
             if p <= 1 || ~(isstrprop(cs(p-1), 'alphanum') || cs(p-1) == '_')
                 callCount = callCount + 1;
@@ -75,7 +75,7 @@ tf = false;
 depth = 0;
 bs = ["function ","if ","for ","parfor ","while ","switch ","try","try "];
 for i = declLineNum:nLines
-    s = strtrim(char(AllLines(i)));
+    s = strtrim(AllLines( i ));
     if i == declLineNum
         depth = 1;
     else
