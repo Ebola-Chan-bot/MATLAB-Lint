@@ -7,7 +7,7 @@ function rules = resolveEnabledRules(cfg)
 builtinFns = builtinRuleRegistry();
 
 builtinIds = fieldnames(builtinFns);
-rulesBuilder = MATLAB.DataTypes.ArrayBuilder();
+rulesBuilder = MATLAB.DataTypes.InsertiveTable();
 entries = iGetRuleEntries(cfg);
 
 % --- 内置规则启停 ---
@@ -19,7 +19,7 @@ for i = 1:numel(builtinIds)
         enabled = logical(entry.Enabled);
     end
     if enabled
-        rulesBuilder.Append(struct("id", string(rid), "fn", builtinFns.(rid)));
+        rulesBuilder(end+1, {'id','fn'}) = {string(rid), builtinFns.(rid)};
     end
 end
 
@@ -40,10 +40,10 @@ for i = 1:numel(entries)
         continue;
     end
 
-    rulesBuilder.Append(struct("id", string(entry.Id), "fn", fh));
+    rulesBuilder(end+1, {'id','fn'}) = {string(entry.Id), fh};
 end
 
-rules = rulesBuilder.Harvest();
+rules = table2struct(table(rulesBuilder), 'ToScalar', false);
 end
 
 % -------------------------------------------------------------------------

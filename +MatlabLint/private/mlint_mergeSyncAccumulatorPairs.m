@@ -1,109 +1,51 @@
 function issues = mlint_mergeSyncAccumulatorPairs(filePath)
-%mlint_mergeSyncAccumulatorPairs 同步累积的 ArrayBuilder/Vector 对应合并为 InsertiveTable。
+%mlint_mergeSyncAccumulatorPairs 基于 mtree 检测同步累积变量对可合并。
+% 规则：仅依赖“累积同步”，不依赖 Harvest/Data 收割。
+% 同步判定：同作用域内同构造器变量，追加次数相同且每次追加在节点序上相邻。
 
 if nargin == 0
-    issues = "同步追加和收割的多个 ArrayBuilder/Vector 应合并为 MATLAB.DataTypes.InsertiveTable";
+    issues = "同步追加的多个 ArrayBuilder/Vector 应合并为 MATLAB.DataTypes.InsertiveTable（不依赖收割判断）";
     return;
 end
-AllLines = splitlines(string(fileread(filePath)));
 
+Tree = List(mtree(filePath, '-file'));
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
-funcs = splitFunctions(AllLines, numel(AllLines));
 
-for f = 1:numel(funcs)
-    fnStart = funcs(f).start;
-    fnEnd   = funcs(f).end;
-    varBuilder = MATLAB.DataTypes.ArrayBuilder();
-    for i = fnStart:fnEnd
-        raw = strtrim(char(AllLines(i)));
-        if isempty(raw) || raw(1) == '%'
-            continue;
-        end
-        code = codeLine(raw);
-        if isempty(code)
-            continue;
-        end
-        % 匹配 varName = MATLAB.DataTypes.ArrayBuilder(); 或 Vector()
-        eqPos = strfind(code, '=');
-        if isempty(eqPos)
-            continue;
-        end
-        lhs = strtrim(code(1:eqPos(1)-1));
-        rhs = strtrim(code(eqPos(1)+1:end));
-        if isempty(lhs) || ~isstrprop(lhs(1), 'alpha')
-            continue;
-        end
-        if startsWith(rhs, "MATLAB.DataTypes.ArrayBuilder(" | "MATLAB.Containers.Vector(")
-            varBuilder.Append(string(lhs));
-        end
-    end
-    vars = unique(string(varBuilder.Harvest()));
+fnNodes = Tree.mtfind('Kind', 'FUNCTION');
+if count(fnNodes) == 0
+    scopes = iMakeScriptScope(Tree);
+else
+    scopes = iMakeFunctionScopes(Tree, fnNodes.indices);
+end
+
+for si = 1:numel(scopes)
+    sc = scopes(si);
+
+    vars = iCollectBuilderVarsInScope(Tree, sc);
     if numel(vars) < 2
         continue;
     end
 
-    % 计算每个变量在该函数内的追加/收割特征
-    appendCounts = zeros(numel(vars), 1);
-    harvestLines = zeros(numel(vars), 1);
-    firstAppendLines = zeros(numel(vars), 1);
-    appendLines = cell(numel(vars), 1);
-    appendKinds = strings(numel(vars), 1);
-    harvestKinds = strings(numel(vars), 1);
-    for vi = 1:numel(vars)
-        appendRowsBuilder = MATLAB.Containers.Vector();
-        varName = vars(vi);
-        for scanLine = fnStart:fnEnd
-            raw = strtrim(char(AllLines(scanLine)));
-            if isempty(raw) || raw(1) == '%'
-                continue;
-            end
-            code = string(codeLine(raw));
-            if strlength(code) == 0
-                continue;
-            end
-
-            hasAppend = contains(code, varName + ".Append(");
-            hasPushBack = contains(code, varName + ".PushBack(");
-            if hasAppend || hasPushBack
-                appendCounts(vi) = appendCounts(vi) + 1;
-                appendRowsBuilder.PushBack(scanLine);
-                if firstAppendLines(vi) == 0
-                    firstAppendLines(vi) = scanLine;
-                end
-                if hasAppend && ~hasPushBack
-                    appendKinds(vi) = iPickKind(appendKinds(vi), "Append");
-                elseif hasPushBack && ~hasAppend
-                    appendKinds(vi) = iPickKind(appendKinds(vi), "PushBack");
-                else
-                    appendKinds(vi) = iPickKind(appendKinds(vi), "Mixed");
-                end
-            end
-
-            hasHarvest = contains(code, varName + ".Harvest()");
-            hasData = contains(code, varName + ".Data");
-            if hasHarvest || hasData
-                harvestLines(vi) = scanLine;
-                if hasHarvest && ~hasData
-                    harvestKinds(vi) = iPickKind(harvestKinds(vi), "Harvest");
-                elseif hasData && ~hasHarvest
-                    harvestKinds(vi) = iPickKind(harvestKinds(vi), "Data");
-                else
-                    harvestKinds(vi) = iPickKind(harvestKinds(vi), "Mixed");
-                end
-            end
-        end
-        appendLines{vi} = double(appendRowsBuilder.Data(:));
+    events = iCollectAppendEventsInScope(Tree, sc, vars);
+    if isempty(events)
+        continue;
     end
 
-    % 查找“真正同步”的配对：同构造器、同追加方式、追加次数>=2、逐次追加邻近、同收割方式且收割邻近
+    [~, order] = sort([events.pos]);
+    events = events(order);
+
+    for ei = 1:numel(events)
+        events(ei).eventOrder = ei;
+    end
+
     for vi = 1:numel(vars)-1
         for vj = vi+1:numel(vars)
-            if iIsSynchronousPair(appendCounts(vi), harvestLines(vi), appendLines{vi}, appendKinds(vi), harvestKinds(vi), ...
-                    appendCounts(vj), harvestLines(vj), appendLines{vj}, appendKinds(vj), harvestKinds(vj))
-                issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, min(firstAppendLines(vi), firstAppendLines(vj)), ...
-                    "mlint_mergeSyncAccumulatorPairs", ...
-                    sprintf('变量 "%s" 和 "%s" 始终同步累积和收割（各 %d 次追加），应合并为单个 MATLAB.DataTypes.InsertiveTable', ...
-                    vars(vi), vars(vj), appendCounts(vi))}; %#ok<AGROW>
+            pair = iBuildPair(events, vars(vi), vars(vj));
+            if iIsSynchronousPair(pair)
+                issuesBuilder(end+1, {'file','line','rule','message'}) = { ...
+                    filePath, pair.firstLine, "mlint_mergeSyncAccumulatorPairs", ...
+                    sprintf('变量 "%s" 和 "%s" 的追加在节点序上逐次相邻（各 %d 次，%s），应合并为单个 MATLAB.DataTypes.InsertiveTable', ...
+                    pair.varA, pair.varB, pair.count, pair.appendKind)}; %#ok<AGROW>
             end
         end
     end
@@ -112,31 +54,219 @@ end
 issues = table(issuesBuilder);
 end
 
-function tf = iIsSynchronousPair(aCount, aHarvestLine, aAppendRows, aAppendKind, aHarvestKind, ...
-        bCount, bHarvestLine, bAppendRows, bAppendKind, bHarvestKind)
-tf = false;
+% -------------------------------------------------------------------------
+function scopes = iMakeScriptScope(Tree)
+rootPosL = 1;
+rootPosR = inf;
+try
+    % 以全树范围作为脚本作用域
+    allIds = Tree.mtfind('Kind', 'ID').indices;
+    if ~isempty(allIds)
+        firstNode = Tree.select(allIds(1));
+        rootPosL = lefttreepos(firstNode);
+        rootPosR = righttreepos(firstNode);
+        for i = 2:numel(allIds)
+            nd = Tree.select(allIds(i));
+            rootPosL = min(rootPosL, lefttreepos(nd));
+            rootPosR = max(rootPosR, righttreepos(nd));
+        end
+    end
+catch
+end
+scopes = struct('leftPos', rootPosL, 'rightPos', rootPosR, 'name', "<script>");
+end
 
-if aCount >= 2 && aCount == bCount && ...
-        aHarvestLine > 0 && bHarvestLine > 0 && abs(aHarvestLine - bHarvestLine) <= 3 && ...
-        strlength(aAppendKind) > 0 && strlength(bAppendKind) > 0 && aAppendKind == bAppendKind && ...
-        strlength(aHarvestKind) > 0 && strlength(bHarvestKind) > 0 && aHarvestKind == bHarvestKind && ...
-        numel(aAppendRows) == numel(bAppendRows) && ...
-        ~any(abs(aAppendRows - bAppendRows) > 3)
-    tf = true;
+% -------------------------------------------------------------------------
+function scopes = iMakeFunctionScopes(Tree, fnIdx)
+scopes = repmat(struct('leftPos', 0, 'rightPos', 0, 'name', ""), numel(fnIdx), 1);
+for i = 1:numel(fnIdx)
+    nd = Tree.select(fnIdx(i));
+    scopes(i).leftPos = lefttreepos(nd);
+    scopes(i).rightPos = righttreepos(nd);
+    try
+        scopes(i).name = string(nd.Fname.string);
+    catch
+        scopes(i).name = "<function>";
+    end
+end
+end
+
+% -------------------------------------------------------------------------
+function vars = iCollectBuilderVarsInScope(Tree, scope)
+vars = strings(0, 1);
+constructorMap = configureDictionary('string', 'string');
+
+ix = Tree.mtfind('Kind', 'EQUALS').indices;
+for i = 1:numel(ix)
+    nd = Tree.select(ix(i));
+    if ~iInScope(nd, scope)
+        continue;
+    end
+    lhs = Left(nd);
+    rhs = Right(nd);
+    if count(lhs) ~= 1 || ~strcmp(char(lhs.kind), 'ID')
+        continue;
+    end
+    ctor = iNormalizeCtor(iNodeText(rhs));
+    if strlength(ctor) == 0
+        continue;
+    end
+
+    v = string(lhs.string);
+    constructorMap(char(v)) = ctor;
+end
+
+ks = constructorMap.keys;
+for k = 1:numel(ks)
+    vars(end+1, 1) = string(ks(k)); %#ok<AGROW>
+end
+end
+
+% -------------------------------------------------------------------------
+function events = iCollectAppendEventsInScope(Tree, scope, vars)
+events = repmat(struct('var', "", 'appendKind', "", 'line', 0, 'pos', 0, 'eventOrder', 0), 0, 1);
+varSet = configureDictionary('string', 'logical');
+for i = 1:numel(vars)
+    varSet(char(vars(i))) = true;
+end
+
+ix = Tree.mtfind('Kind', 'SUBSCR').indices;
+if isempty(ix)
     return;
 end
+
+pos = zeros(numel(ix), 1);
+for i = 1:numel(ix)
+    pos(i) = lefttreepos(Tree.select(ix(i)));
+end
+[~, order] = sort(pos);
+
+for oi = 1:numel(order)
+    nd = Tree.select(ix(order(oi)));
+    if ~iInScope(nd, scope)
+        continue;
+    end
+
+    lhs = Left(nd);
+    if count(lhs) ~= 1 || ~strcmp(char(lhs.kind), 'DOT')
+        continue;
+    end
+
+    obj = Left(lhs);
+    meth = Right(lhs);
+    if count(obj) ~= 1 || ~strcmp(char(obj.kind), 'ID')
+        continue;
+    end
+
+    varName = string(obj.string);
+    if ~isKey(varSet, char(varName))
+        continue;
+    end
+
+    method = iNodeText(meth);
+    if strcmpi(method, "Append")
+        kind = "Append";
+    elseif strcmpi(method, "PushBack")
+        kind = "PushBack";
+    else
+        continue;
+    end
+
+    e.var = varName;
+    e.appendKind = kind;
+    e.line = double(nd.lineno);
+    e.pos = lefttreepos(nd);
+    e.eventOrder = 0;
+    events(end+1) = e; %#ok<AGROW>
+end
 end
 
-function out = iPickKind(curr, next)
-if strlength(curr) == 0
-    out = next;
-elseif curr == next
-    out = curr;
+% -------------------------------------------------------------------------
+function pair = iBuildPair(events, varA, varB)
+rowsA = events(strcmp(string({events.var}), varA));
+rowsB = events(strcmp(string({events.var}), varB));
+
+pair.varA = varA;
+pair.varB = varB;
+pair.count = min(numel(rowsA), numel(rowsB));
+pair.firstLine = 0;
+pair.appendKind = "";
+pair.ordersA = zeros(0, 1);
+pair.ordersB = zeros(0, 1);
+pair.kindsA = strings(0, 1);
+pair.kindsB = strings(0, 1);
+
+if isempty(rowsA) || isempty(rowsB)
+    return;
+end
+
+pair.firstLine = min([rowsA(1).line, rowsB(1).line]);
+pair.ordersA = [rowsA.eventOrder].';
+pair.ordersB = [rowsB.eventOrder].';
+pair.kindsA = string({rowsA.appendKind}).';
+pair.kindsB = string({rowsB.appendKind}).';
+
+if all(pair.kindsA == "Append") && all(pair.kindsB == "Append")
+    pair.appendKind = "Append";
+elseif all(pair.kindsA == "PushBack") && all(pair.kindsB == "PushBack")
+    pair.appendKind = "PushBack";
 else
-    out = "Mixed";
+    pair.appendKind = "Mixed";
 end
 end
 
+% -------------------------------------------------------------------------
+function tf = iIsSynchronousPair(pair)
+tf = false;
 
+if pair.count < 2
+    return;
+end
+if numel(pair.ordersA) ~= numel(pair.ordersB)
+    return;
+end
+if strlength(pair.appendKind) == 0 || pair.appendKind == "Mixed"
+    return;
+end
 
+for i = 1:numel(pair.ordersA)
+    if abs(pair.ordersA(i) - pair.ordersB(i)) ~= 1
+        return;
+    end
+end
 
+tf = true;
+end
+
+% -------------------------------------------------------------------------
+function tf = iInScope(node, scope)
+tf = lefttreepos(node) >= scope.leftPos && righttreepos(node) <= scope.rightPos;
+end
+
+% -------------------------------------------------------------------------
+function ctor = iNormalizeCtor(fnText)
+ctor = "";
+t = lower(strtrim(string(fnText)));
+     if contains(t, "matlab.datatypes.arraybuilder(")
+    ctor = "ArrayBuilder";
+     elseif contains(t, "matlab.containers.vector(")
+    ctor = "Vector";
+end
+end
+
+% -------------------------------------------------------------------------
+function s = iNodeText(node)
+s = "";
+if count(node) == 0
+    return;
+end
+try
+    s = strtrim(string(node.tree2str));
+catch
+    try
+        s = strtrim(string(node.string));
+    catch
+        s = "";
+    end
+end
+end

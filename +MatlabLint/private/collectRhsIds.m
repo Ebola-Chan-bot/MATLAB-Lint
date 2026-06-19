@@ -4,32 +4,34 @@ if count(node) == 0
     ids = strings(0, 1);
     return;
 end
-ids = iCollectRecursive(node, strings(0, 1));
+acc = MATLAB.Containers.Vector();
+iCollectRecursive(node, acc);
+ids = string(acc.Data(:));
 end
 
-function ids = iCollectRecursive(nxt, ids)
+function iCollectRecursive(nxt, acc)
 if count(nxt) == 0
     return;
 end
 
 if char(nxt.kind) == "ID"
-    ids(end + 1) = string(nxt.string); %#ok<AGROW>
+    acc.PushBack(string(nxt.string));
     return;
 end
 
 if count(Left(nxt)) > 0
-    ids = iCollectRecursive(Left(nxt), ids);
+    iCollectRecursive(Left(nxt), acc);
 end
 if count(Right(nxt)) > 0
-    ids = iCollectRecursive(Right(nxt), ids);
+    iCollectRecursive(Right(nxt), acc);
 end
 if count(Arg(nxt)) > 0
-    ids = iCollectRecursive(Arg(nxt), ids);
+    iCollectRecursive(Arg(nxt), acc);
 end
 try
     nxt = Next(nxt);
     if count(nxt) > 0
-        ids = iCollectRecursive(nxt, ids);
+        iCollectRecursive(nxt, acc);
     end
 catch
 end

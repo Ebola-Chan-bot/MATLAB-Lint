@@ -6,88 +6,133 @@ if nargin == 0
     return;
 end
 
-AllLines = splitlines(string(fileread(filePath)));
+fullText = fileread(filePath);
+tree = List(mtree(filePath, '-file'));
+ifNodes = tree.mtfind('Kind', 'IF');
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
-nLines = numel(AllLines);
-i = 1;
-while i <= nLines
-    s = strtrim(char(AllLines(i)));
-    if isempty(s) || startsWith(s, '%')
-        i = i + 1;
+if count(ifNodes) == 0
+    issues = table(issuesBuilder);
+    return;
+end
+
+ix = ifNodes.indices;
+for i = 1:numel(ix)
+    outer = tree.select(ix(i));
+    if ~iIsExecutableIfNode(outer)
         continue;
     end
 
-    [ok, endLine] = iParseIfBlock(i, AllLines, nLines);
-    if ~ok
-        i = i + 1;
+    [outerStartLine, ~] = pos2lc(outer, lefttreepos(outer));
+    [outerEndLine, ~] = pos2lc(outer, righttreepos(outer));
+
+    outerInfo = iAnalyzeIfSnippet(iSliceByPos(fullText, lefttreepos(outer), righttreepos(outer)));
+    if outerInfo.hasTopElse || outerInfo.topPlainCount ~= 0 || outerInfo.topIfCount ~= 1 || outerInfo.topOtherBlockCount ~= 0
         continue;
     end
 
-    tf = false;
-    [innerIfStart, topPlainCount, hasTopElse] = iTopLevelBodySummary(i, endLine, AllLines);
-    if ~hasTopElse && topPlainCount == 0 && innerIfStart > 0
-        [okInner, innerEnd] = iParseIfBlock(innerIfStart, AllLines, endLine - 1);
-        if okInner
-            [innerNestedIfStart, innerTopPlainCount, innerHasTopElse] = iTopLevelBodySummary(innerIfStart, innerEnd, AllLines);
-            if ~innerHasTopElse && innerNestedIfStart == 0 && innerTopPlainCount > 0
-                tf = true;
-            end
-        end
+    inner = iFindDirectInnerIf(tree, outer);
+    if isempty(inner)
+        continue;
     end
 
-    if tf
-        issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, i, "mlint_noRedundantNestedIf", ...
-            sprintf('检测到仅包裹单个 if 的外层 if（第 %d-%d 行）。建议合并为单层 if 条件。', i, endLine)}; %#ok<AGROW>
+    innerInfo = iAnalyzeIfSnippet(iSliceByPos(fullText, lefttreepos(inner), righttreepos(inner)));
+    if ~innerInfo.hasTopElse && innerInfo.topIfCount == 0 && innerInfo.topPlainCount > 0
+        issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, outerStartLine, "mlint_noRedundantNestedIf", ...
+            sprintf('检测到仅包裹单个 if 的外层 if（第 %d-%d 行）。建议合并为单层 if 条件。', outerStartLine, outerEndLine)}; %#ok<AGROW>
     end
-
-    % 不跳过整个 if 块，避免漏检块内的嵌套冗余 if。
-    i = i + 1;
 end
 
 issues = table(issuesBuilder);
 end
 
-function [firstIfStart, topPlainCount, hasTopElse] = iTopLevelBodySummary(headerEnd, endLine, AllLines)
-firstIfStart = 0;
-topPlainCount = 0;
-hasTopElse = false;
+function nd = iFindDirectInnerIf(tree, outer)
+nd = [];
 
+ifs = tree.mtfind('Kind', 'IF');
+if count(ifs) == 0
+    return;
+end
+ix = ifs.indices;
+hits = MATLAB.Containers.Vector();
+
+for i = 1:numel(ix)
+    cand = tree.select(ix(i));
+    if ~iIsExecutableIfNode(cand)
+        continue;
+    end
+    tp = trueparent(cand);
+    if count(tp) == 0
+        continue;
+    end
+    if lefttreepos(tp) == lefttreepos(outer) && righttreepos(tp) == righttreepos(outer)
+        hits.PushBack(ix(i));
+    end
+end
+
+if hits.Size == 1
+    nd = tree.select(hits.Data(1));
+end
+end
+
+function tf = iIsExecutableIfNode(nd)
+tf = false;
+try
+    tp = trueparent(nd);
+    if count(tp) == 0
+        return;
+    end
+    tf = ~strcmp(char(tp.kind), 'IFHEAD');
+catch
+end
+end
+
+function info = iAnalyzeIfSnippet(snippet)
+info = struct('topIfCount', 0, 'topOtherBlockCount', 0, 'topPlainCount', 0, 'hasTopElse', false);
+
+lines = splitlines(string(snippet));
+seenHeader = false;
+headerCont = false;
 depth = 0;
-headerEnd = findIfHeaderEnd(headerEnd, endLine, AllLines);
-for k = headerEnd + 1:endLine - 1
-    sk = strtrim(char(AllLines(k)));
-    if isempty(sk) || startsWith(sk, '%')
+
+for i = 1:numel(lines)
+    code = string(strtrim(codeLine(lines(i))));
+    if strlength(code) == 0
         continue;
     end
 
-    sk = string(codeLine(sk));
-    if strlength(sk) == 0
-        continue;
-    end
-
-    if strcmp(sk, "end")
-        if depth > 0
-            depth = depth - 1;
+    if ~seenHeader
+        if startsWith(code, "if ")
+            seenHeader = true;
+            headerCont = endsWith(code, "...");
         end
         continue;
     end
 
-    if depth == 0 && (startsWith(sk, "elseif ") || strcmp(sk, "else"))
-        hasTopElse = true;
+    if headerCont
+        headerCont = endsWith(code, "...");
+        continue;
+    end
+
+    if code == "end"
+        if depth == 0
+            break;
+        end
+        depth = depth - 1;
+        continue;
+    end
+
+    if depth == 0 && (startsWith(code, "elseif ") || code == "else")
+        info.hasTopElse = true;
         return;
     end
 
-    if isBlockStartLine(sk)
+    if iIsBlockStartToken(code)
         if depth == 0
-            if startsWith(sk, "if ")
-                if firstIfStart == 0
-                    firstIfStart = k;
-                else
-                    topPlainCount = topPlainCount + 1;
-                end
+            if startsWith(code, "if ")
+                info.topIfCount = info.topIfCount + 1;
             else
-                topPlainCount = topPlainCount + 1;
+                info.topOtherBlockCount = info.topOtherBlockCount + 1;
             end
         end
         depth = depth + 1;
@@ -95,45 +140,28 @@ for k = headerEnd + 1:endLine - 1
     end
 
     if depth == 0
-        topPlainCount = topPlainCount + 1;
+        info.topPlainCount = info.topPlainCount + 1;
     end
 end
 end
 
-function [ok, endLine] = iParseIfBlock(startLine, AllLines, nLines)
-ok = false;
-endLine = 0;
+function tf = iIsBlockStartToken(code)
+tf = startsWith(code, "if ") || startsWith(code, "for ") || startsWith(code, "parfor ") || ...
+    startsWith(code, "while ") || startsWith(code, "switch ") || startsWith(code, "classdef ") || ...
+    startsWith(code, "try ") || startsWith(code, "methods ") || startsWith(code, "properties ") || ...
+    startsWith(code, "events ") || startsWith(code, "enumeration ") || code == "spmd" || ...
+    code == "try" || code == "methods" || code == "properties" || code == "events" || code == "enumeration";
+end
 
-if startLine < 1 || startLine > nLines || ~startsWith(string(codeLine(strtrim(char(AllLines(startLine))))), "if ")
+function out = iSliceByPos(fullText, startPos, endPos)
+if endPos < startPos
+    out = '';
     return;
 end
-
-depth = 0;
-for k = startLine:nLines
-    sk = strtrim(char(AllLines(k)));
-    if isempty(sk) || startsWith(sk, '%')
-        continue;
-    end
-
-    sk = string(codeLine(sk));
-    if strlength(sk) == 0
-        continue;
-    end
-
-    if isBlockStartLine(sk)
-        depth = depth + 1;
-        continue;
-    end
-
-    if strcmp(sk, "end")
-        depth = depth - 1;
-        if depth == 0
-            ok = true;
-            endLine = k;
-            return;
-        end
-    end
-end
+n = numel(fullText);
+startPos = max(1, min(n, startPos));
+endPos = max(1, min(n, endPos));
+out = fullText(startPos:endPos);
 end
 
 

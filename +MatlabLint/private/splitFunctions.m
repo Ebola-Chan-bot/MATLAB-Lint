@@ -1,6 +1,6 @@
 function funcs = splitFunctions(AllLines, nLines)
 %splitFunctions 将 MATLAB 文件按函数定义拆分为起止行对。
-funcsBuilder = MATLAB.DataTypes.ArrayBuilder();
+funcRows = MATLAB.DataTypes.InsertiveTable();
 depth = 0;
 fnStart = 0;
 for i = 1:nLines
@@ -13,14 +13,15 @@ for i = 1:nLines
     elseif kw == "end"
         depth = depth - 1;
         if depth == 0 && fnStart > 0
-            funcsBuilder.Append(struct('start', fnStart, 'end', i));
+            funcRows(end+1, {'start','end'}) = {fnStart, i};
             fnStart = 0;
         end
     end
 end
-if isempty(funcsBuilder.Harvest())
+funcTable = table(funcRows);
+if isempty(funcTable)
     funcs = struct('start', {}, 'end', {});
 else
-    funcs = funcsBuilder.Harvest();
+    funcs = struct('start', num2cell(funcTable.start), 'end', num2cell(funcTable.end));
 end
 end

@@ -130,13 +130,15 @@ for i = 1:numel(finalEntries)
                 if ~isempty(d)
                     addpath(d);
                 end
-                desc = string(str2func(f)());
+                tmp = str2func(f);
+                desc = string(tmp());
                 if strlength(desc) == 0
                     desc = "(自定义)";
                 end
             end
         else
-            desc = string(str2func(spec)());
+            tmp = str2func(spec);
+            desc = string(tmp());
             if strlength(desc) == 0
                 desc = "(自定义)";
             end

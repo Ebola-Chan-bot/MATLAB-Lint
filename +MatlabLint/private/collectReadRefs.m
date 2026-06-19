@@ -1,8 +1,8 @@
 function refMap = collectReadRefs(FullTree)
-%COLLECTREADREFS 收集全文变量读引用 — key: varName, value: dictionary(line→count)。
+%COLLECTREADREFS 收集全文变量读引用 — key: varName, value: dictionary(nodeIdx→count)。
 % 排除等号左侧的写入 ID。
 
-refMap = dictionary;
+refMap = configureDictionary('string', 'dictionary');
 ix = FullTree.mtfind('Kind', 'ID').indices;
 if isempty(ix)
     return;
@@ -15,17 +15,17 @@ for i = 1:numel(ix)
         continue;
     end
 
-    ln = double(nd.lineno);
+    nodeIdx = double(nd.indices);
     if ~isKey(refMap, name)
-        refMap(name) = dictionary;
+        refMap(name) = configureDictionary('double', 'double');
     end
-    lineMap = refMap(name);
-    if isKey(lineMap, ln)
-        lineMap(ln) = lineMap(ln) + 1;
+    nodeMap = refMap(name);
+    if isKey(nodeMap, nodeIdx)
+        nodeMap(nodeIdx) = nodeMap(nodeIdx) + 1;
     else
-        lineMap(ln) = 1;
+        nodeMap(nodeIdx) = 1;
     end
-    refMap(name) = lineMap;
+    refMap(name) = nodeMap;
 end
 end
 

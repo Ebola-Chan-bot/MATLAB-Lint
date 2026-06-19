@@ -1,23 +1,25 @@
-function assignments = collectAssignments(FullTree, fStart, fEnd, detectSelfRef)
+function assignments = collectAssignments(FullTree, fnNode, detectSelfRef)
 %COLLECTASSIGNMENTS 提取函数内的简单赋值（左值为单个 ID）。
-% assignments = struct('line', {}, 'var', {}, 'isSelfRef', {})
+% assignments = table(line, var, isSelfRef, eqIdx)
 % detectSelfRef=true 时递归检查 RHS 是否引用同名变量。
 
 if nargin < 4
     detectSelfRef = false;
 end
 
-builder = MATLAB.DataTypes.ArrayBuilder();
+builder = MATLAB.DataTypes.InsertiveTable();
 ix = FullTree.mtfind('Kind', 'EQUALS').indices;
 if isempty(ix)
-    assignments = struct('line', {}, 'var', {}, 'isSelfRef', {});
+    assignments = table(builder);
     return;
 end
 
+fnLeft = lefttreepos(fnNode);
+fnRight = righttreepos(fnNode);
+
 for i = 1:numel(ix)
     nd = FullTree.select(ix(i));
-    ln = double(nd.lineno);
-    if ln < fStart || ln > fEnd
+    if lefttreepos(nd) < fnLeft || righttreepos(nd) > fnRight
         continue;
     end
 
@@ -39,14 +41,11 @@ for i = 1:numel(ix)
         end
     end
 
-    builder.Append(struct('line', ln, 'var', char(varName), 'isSelfRef', isSelfRef));
+    builder(end+1, {'line','var','isSelfRef','eqIdx'}) = ...
+        {double(nd.lineno), char(varName), isSelfRef, ix(i)};
 end
 
-if isempty(builder.Harvest())
-    assignments = struct('line', {}, 'var', {}, 'isSelfRef', {});
-else
-    assignments = builder.Harvest();
-end
+assignments = table(builder);
 end
 
 % -------------------------------------------------------------------------

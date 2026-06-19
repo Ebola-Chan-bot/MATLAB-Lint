@@ -35,10 +35,10 @@ if isempty(targetNode)
     error('MatlabLint:InlineFuncNotFound', '找不到函数 %s', funcName);
 end
 
-target = struct('startLine', double(targetNode.lineno), 'endLine', double(targetNode.lineno), 'tree', targetNode);
+target = struct('startPos', lefttreepos(targetNode), 'endPos', righttreepos(targetNode), 'tree', targetNode);
 for i = 1:numel(funcs)
-    if funcs(i).startLine == target.startLine
-        target.endLine = funcs(i).endLine;
+    if funcs(i).startPos == target.startPos
+        target.endPos = funcs(i).endPos;
         break;
     end
 end
@@ -51,7 +51,7 @@ callNode = [];
 callCallCount = 0;
 for i = 1:numel(callIdx)
     nd = fileTree.select(callIdx(i));
-    if iIsTargetCall(nd, funcName, target.startLine, target.endLine)
+    if iIsTargetCall(nd, funcName, target.startPos, target.endPos)
         callCallCount = callCallCount + 1;
         callNode = nd;
     end
@@ -97,10 +97,10 @@ if numel(callArgs) < numel(inputs)
     error('MatlabLint:InlineArgMismatch', '调用实参数量不足');
 end
 
-inlineLines = strings(0, 1);
+inlineLines = MATLAB.Containers.Vector();
 for i = 1:numel(inputs)
     if inputs(i) ~= callArgs(i)
-        inlineLines(end + 1) = indent + inputs(i) + " = " + callArgs(i) + ";";
+        inlineLines.PushBack(indent + inputs(i) + " = " + callArgs(i) + ";");
     end
 end
 
@@ -112,23 +112,23 @@ for i = 1:numel(bodyLines)
     if strlength(s) == 0 || startsWith(s, ["function ", "return"])
         continue;
     end
-    inlineLines(end + 1) = indent + iStripBodyBaseIndent(raw, bodyBaseIndent);
+    inlineLines.PushBack(indent + iStripBodyBaseIndent(raw, bodyBaseIndent));
 end
 
 for i = 1:min(numel(outputs), numel(callLhs))
     if callLhs(i) ~= outputs(i)
-        inlineLines(end + 1) = indent + callLhs(i) + " = " + outputs(i) + ";";
+        inlineLines.PushBack(indent + callLhs(i) + " = " + outputs(i) + ";");
     end
 end
 
 if strlength(rewrittenLine) > 0
-    inlineLines(end + 1) = rewrittenLine;
+    inlineLines.PushBack(rewrittenLine);
 end
 
-inlineLines = inlineLines(:);
+inlineLines = string(inlineLines.Data(:));
 newLines = [allLines(1:callLine - 1); inlineLines; allLines(callLine + 1:end)];
-fnStart = target.startLine;
-fnEnd = target.endLine;
+fnStart = iPosToLine(target.startPos, allLines);
+fnEnd = iPosToLine(target.endPos, allLines);
 if callLine < fnStart
     fnStart = fnStart + numel(inlineLines) - 1;
     fnEnd = fnEnd + numel(inlineLines) - 1;
@@ -141,15 +141,16 @@ end
 function tf = iHasReturn(node)
 tf = false;
 bodyLines = splitlines(string(Body(node).tree2str));
-meaningful = strings(0, 1);
+meaningful = MATLAB.Containers.Vector();
 for i = 1:numel(bodyLines)
     s = strtrim(bodyLines(i));
     if strlength(s) == 0 || strcmp(s, "end")
         continue;
     end
-    meaningful(end + 1) = s; %#ok<AGROW>
+    meaningful.PushBack(s);
 end
 
+meaningful = string(meaningful.Data(:));
 retPos = find(meaningful == "return" | meaningful == "return;", 1, 'first');
 if ~isempty(retPos) && retPos < numel(meaningful)
     tf = true;
@@ -202,10 +203,10 @@ else
 end
 end
 
-function tf = iIsTargetCall(node, funcName, exclStart, exclEnd)
+function tf = iIsTargetCall(node, funcName, exclStartPos, exclEndPos)
 tf = false;
 try
-    if double(node.lineno) >= exclStart && double(node.lineno) <= exclEnd
+    if lefttreepos(node) >= exclStartPos && righttreepos(node) <= exclEndPos
         return;
     end
     tf = string(Left(node).tree2str) == funcName;
@@ -213,9 +214,28 @@ catch
 end
 end
 
+function ln = iPosToLine(pos, AllLines)
+ln = 1;
+if pos <= 1
+    return;
+end
+cum = 0;
+for i = 1:numel(AllLines)
+    % +1 for newline separator when splitlines recreated line boundaries
+    lineLen = strlength(string(AllLines(i))) + 1;
+    cum = cum + double(lineLen);
+    if cum >= pos
+        ln = i;
+        return;
+    end
+end
+ln = numel(AllLines);
+end
+
 function strs = iNodeListToStrings(nodes)
-strs = strings(0, 1);
+strs = MATLAB.Containers.Vector();
 if count(nodes) == 0
+    strs = strings(0, 1);
     return;
 end
 
@@ -223,13 +243,14 @@ try
     ix = nodes.indices;
     cur = nodes.select(ix(1));
 catch
+    strs = strings(0, 1);
     return;
 end
 
 while count(cur) > 0
     s = strtrim(string(cur.tree2str));
     if strlength(s) > 0
-        strs(end + 1) = s; %#ok<AGROW>
+        strs.PushBack(s);
     end
     try
         cur = Next(cur);
@@ -237,6 +258,7 @@ while count(cur) > 0
         break;
     end
 end
+strs = string(strs.Data(:));
 end
 
 function outs = iGetCallOutputs(lhs)
@@ -321,7 +343,7 @@ end
 
 function v = iMakeUniqueTempVar(ids, funcName)
 base = "inl_" + matlab.lang.makeValidName(funcName) + "_ret1";
-used = strings(0, 1);
+used = MATLAB.Containers.Vector();
 ids = ids.mtfind('Kind', 'ID');
 if count(ids) > 0
     ix = ids.indices;
@@ -329,12 +351,14 @@ if count(ids) > 0
         try
             s = strtrim(string(ids.select(ix(i)).tree2str));
             if strlength(s) > 0
-                used(end + 1) = s; %#ok<AGROW>
+                used.PushBack(s);
             end
         catch
         end
     end
 end
+
+used = string(used.Data(:));
 
 v = base;
 k = 1;

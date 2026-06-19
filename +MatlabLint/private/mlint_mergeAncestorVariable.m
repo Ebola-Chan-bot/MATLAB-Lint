@@ -16,25 +16,26 @@ if isempty(funcs)
     return;
 end
 
-fnIdx = FullTree.mtfind('Kind', 'FUNCTION').indices;
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
-% ---- 预收集全局读引用 Map ----
-refMap = collectReadRefs(FullTree);
+% ---- 预收集全局读引用 Map（stmt node idx -> count） ----
+refMap = iCollectReadRefNodes(FullTree);
 
 for fi = 1:numel(funcs)
-    fStart = funcs(fi).startLine;
-    fEnd = funcs(fi).endLine;
+    fnNode = funcs(fi).tree;
 
     % ---- CFG ----
-    stmts = collectStmtLines(FullTree, fStart, fEnd);
-    if isempty(stmts)
+    [stmtNodes, stmtKinds, stmtPos] = iCollectStmtNodesByNode(FullTree, fnNode);
+    if isempty(stmtNodes)
         continue;
     end
-    g = iBuildDigraph(stmts, FullTree);
+    g = iBuildDigraphByNode(stmtNodes, stmtKinds, stmtPos);
 
     % ---- 输入参数 ----
-    inputVars = iGetInputParams(FullTree, fStart, fnIdx);
+    inputVars = iGetInputParams(fnNode);
+
+    fnLeft = lefttreepos(fnNode);
+    fnRight = righttreepos(fnNode);
 
     % ---- 收集所有简单赋值 A = expr ----
     eqs = FullTree.mtfind('Kind', 'EQUALS');
@@ -45,8 +46,8 @@ for fi = 1:numel(funcs)
 
     for ei = 1:numel(eqIx)
         nd = FullTree.select(eqIx(ei));
-        ln = double(nd.lineno);
-        if ln < fStart || ln > fEnd
+        eqPos = lefttreepos(nd);
+        if eqPos < fnLeft || righttreepos(nd) > fnRight
             continue;
         end
         lhs = Left(nd);
@@ -67,25 +68,24 @@ for fi = 1:numel(funcs)
             if ~isKey(refMap, char(B))
                 continue;
             end
-            % 检查本行是否真的有 B 的读引用
-            bLineMap = refMap(char(B));
-            if ~isKey(bLineMap, ln)
+            bNodeMap = refMap(char(B));
+            if ~iVarAppearsBeforeNode(bNodeMap, FullTree, eqPos)
                 continue;
             end
 
             % ---- 收集 B 的赋值点（包括输入参数） ----
-            bDefs = iCollectVarDefs(FullTree, eqIx, B, fStart, fEnd);
+            bDefs = iCollectVarDefsNode(FullTree, eqIx, B, fnLeft, fnRight);
             if any(inputVars == B)
-                bDefs(end + 1) = fStart; % 输入参数以函数入口为虚拟定义
+                bDefs(end + 1) = double(fnNode.indices); % 输入参数以函数入口节点作为虚拟定义
             end
-            if isempty(bDefs) || iVarAppearsAfter(bLineMap, ln, fEnd, g)
+            if isempty(bDefs) || iVarAppearsAfterNode(refMap, FullTree, B, eqPos, fnLeft, fnRight)
                 continue;
             end
 
             % ---- 条件2：B 的每个赋值点都满足祖先变量控制流条件 ----
             allDominate = true;
             for di = 1:numel(bDefs)
-                if ~iAllPathsReachTarget(g, stmts, FullTree, bDefs(di), ln, A, B, fEnd, refMap)
+                if ~iAllPathsReachTargetNode(g, stmtNodes, FullTree, bDefs(di), double(nd.indices), A, B, fnLeft, fnRight, refMap)
                     allDominate = false;
                     break;
                 end
@@ -95,10 +95,11 @@ for fi = 1:numel(funcs)
             end
 
             % ---- 报告 ----
+            ln = double(nd.lineno);
             issuesBuilder(end+1, {'file','line','rule','message'}) = {filePath, ln, ...
                 "mlint_mergeAncestorVariable", ...
                 sprintf('变量"%s"的全部定义路径要么在未遇到"%s"前结束，要么到达"%s"（第 %d 行）且此后不再出现，建议合并为一个变量', ...
-                B, A, A, ln)}; %#ok<AGROW>
+                B, A, A, double(nd.lineno))}; %#ok<AGROW>
         end
     end
 end
@@ -107,218 +108,183 @@ issues = table(issuesBuilder);
 end
 
 % -------------------------------------------------------------------------
-function g = iBuildDigraph(MissingNodes, FullTree)
-% 构建简化 CFG：节点为行号，边表示顺序控制流。
-if numel(MissingNodes) <= 1
-    g = digraph(string(MissingNodes), strings(0,1), strings(0,1));
+function g = iBuildDigraphByNode(stmtNodes, stmtKinds, stmtPos)
+% 构建简化 CFG：节点为 mtree 节点索引，边表示顺序控制流。
+if numel(stmtNodes) <= 1
+    g = digraph(string(stmtNodes), strings(0,1), strings(0,1));
     return;
 end
-n = numel(MissingNodes);
-s = strings(0,1);
-t = strings(0,1);
 
-% 连续行顺序边
-for i = 1:n-1
-    s(end+1) = string(MissingNodes(i));  %#ok<AGROW>
-    t(end+1) = string(MissingNodes(i+1)); %#ok<AGROW>
-end
+edgesBuilder = MATLAB.DataTypes.InsertiveTable();
+stack = struct('k', {}, 's', {}, 'ih', {}, 'el', {});
+ifEnds = configureDictionary('double', 'double');
+for i = 1:numel(stmtNodes)
+    idx = stmtNodes(i);
+    k = stmtKinds(i);
 
-% 分支跳转：IF/ELSEIF → 下一个 elseif/else/endif 之后
-ifKeys = dictionary;
-stack = [];
-for i = 1:n
-    ln = MissingNodes(i);
-    k = iKindFromAst(FullTree, ln);
-    if ismember(k, ["IF","FOR","PARFOR","WHILE","SWITCH","TRY"])
-        stack(end+1) = ln; %#ok<AGROW>
-        endL = iFindEnd(FullTree, ln);
-        ifKeys(ln) = endL;
-        % 循环：回边 + 假出口边
-        if ismember(k, ["FOR","PARFOR","WHILE"])
-            s(end+1) = string(endL); %#ok<AGROW>
-            t(end+1) = string(ln); %#ok<AGROW>
-            % 假出口：跳过整个循环体
-            afterIdx = find(MissingNodes > endL, 1, 'first');
-            if ~isempty(afterIdx)
-                s(end+1) = string(ln); %#ok<AGROW>
-                t(end+1) = string(MissingNodes(afterIdx)); %#ok<AGROW>
-            end
-        end
-    elseif ismember(k, ["ELSEIF","ELSE","CASE","OTHERWISE","CATCH"])
-        % 跳到对应 if/switch/try 的 end
-        if ~isempty(stack)
-            owner = stack(end);
-            s(end+1) = string(ln); %#ok<AGROW>
-            t(end+1) = string(ifKeys(owner)); %#ok<AGROW>
-        end
-    elseif k == "END"
-        if ~isempty(stack) && ifKeys(stack(end)) == ln
+    while ~isempty(stack)
+        top = stack(end);
+        aft = iFindNextAfterNode(stmtPos, stmtNodes, ifEnds, top.s);
+        if aft > 0 && stmtPos(i) >= stmtPos(aft)
             stack(end) = [];
+        else
+            break;
+        end
+    end
+
+    if i < numel(stmtNodes)
+        edgesBuilder(end+1, {'Source','Target'}) = {string(idx), string(stmtNodes(i+1))}; %#ok<AGROW>
+    end
+
+    if ismember(k, ["FUNCTION","IF","FOR","PARFOR","WHILE","SWITCH","TRY"])
+        ifEnds(idx) = iFindBlockEndNode(stmtNodes, i);
+    end
+    if ismember(k, ["FOR","PARFOR","WHILE"])
+        endNode = ifEnds(idx);
+        if endNode > 0
+            edgesBuilder(end+1, {'Source','Target'}) = {string(endNode), string(idx)}; %#ok<AGROW>
         end
     end
 end
 
-g = digraph(s, t);
-if ~isempty(MissingNodes)
-    MissingNodes = string(MissingNodes);
-    MissingNodes(ismember(MissingNodes, g.Nodes.Name)) = [];
-    if ~isempty(MissingNodes)
-        g = addnode(g, MissingNodes);
+edges = table(edgesBuilder);
+g = digraph(edges.Source, edges.Target);
+if ~isempty(stmtNodes)
+    nodes = string(stmtNodes);
+    nodes(ismember(nodes, g.Nodes.Name)) = [];
+    if ~isempty(nodes)
+        g = addnode(g, nodes);
     end
 end
 end
 
 % -------------------------------------------------------------------------
-function endL = iFindEnd(FullTree, ln)
-ix = FullTree.mtfind('Kind', 'IF') | FullTree.mtfind('Kind', 'FOR') | FullTree.mtfind('Kind', 'PARFOR') ...
-    | FullTree.mtfind('Kind', 'WHILE') | FullTree.mtfind('Kind', 'SWITCH') | FullTree.mtfind('Kind', 'TRY');
-ix = ix.indices;
+function vars = iGetInputParams(fnNode)
+vars = MATLAB.Containers.Vector();
+cur = Ins(fnNode);
+while count(cur) > 0
+    if strcmp(char(cur.kind), 'ID')
+        vars.PushBack(string(cur.string));
+    end
+    try
+        cur = Next(cur);
+    catch
+        break;
+    end
+end
+vars = string(vars.Data(:));
+end
+
+% -------------------------------------------------------------------------
+function refMap = iCollectReadRefNodes(FullTree)
+refMap = configureDictionary('string', 'dictionary');
+ix = FullTree.mtfind('Kind', 'ID').indices;
 if isempty(ix)
-    endL = ln;
     return;
 end
+
 for i = 1:numel(ix)
     nd = FullTree.select(ix(i));
-    if double(nd.lineno) == ln
-        [endL, ~] = pos2lc(nd, righttreepos(nd));
-        return;
+    name = char(nd.string);
+    if isempty(name)
+        continue;
     end
-end
-endL = ln;
-end
 
-% -------------------------------------------------------------------------
-function k = iKindFromAst(FullTree, ln)
-ix = FullTree.mtfind('Kind', 'IF');
-for kind = ["ELSEIF", "ELSE", "FOR", "PARFOR", "WHILE", "SWITCH", ...
-        "CASE", "OTHERWISE", "TRY", "CATCH", "RETURN", "BREAK", "CONTINUE"]
-    ix = ix | FullTree.mtfind('Kind', kind);
-end
-ix = ix.indices;
-if isempty(ix)
-    k = "";
-    return;
-end
-for i = 1:numel(ix)
-    nd = FullTree.select(ix(i));
-    if double(nd.lineno) == ln
-        k = char(nd.kind);
-        return;
-    end
-end
-k = "";
-end
-
-% -------------------------------------------------------------------------
-function vars = iGetInputParams(FullTree, fStart, fnIdx)
-vars = strings(0,1);
-for k = 1:numel(fnIdx)
-    nd = FullTree.select(fnIdx(k));
-    if double(nd.lineno) == fStart
-        cur = Ins(nd);
-        while count(cur) > 0
-            if strcmp(char(cur.kind), 'ID')
-                vars(end+1) = string(cur.string); %#ok<AGROW>
+    p = Parent(nd);
+    if count(p) > 0 && strcmp(char(p.kind), 'EQUALS')
+        try
+            if any(Left(p).indices == ix(i))
+                continue;
             end
-            try
-                cur = Next(cur);
-            catch
-                break;
-            end
+        catch
         end
-        return;
     end
+
+    nodeIdx = double(nd.indices);
+    if ~isKey(refMap, name)
+        refMap(name) = configureDictionary('double', 'double');
+    end
+    nodeMap = refMap(name);
+    if isKey(nodeMap, nodeIdx)
+        nodeMap(nodeIdx) = nodeMap(nodeIdx) + 1;
+    else
+        nodeMap(nodeIdx) = 1;
+    end
+    refMap(name) = nodeMap;
 end
 end
 
 % -------------------------------------------------------------------------
-function defs = iCollectVarDefs(FullTree, eqIx, varName, fStart, fEnd)
-defs = zeros(1,0);
+function defs = iCollectVarDefsNode(FullTree, eqIx, varName, fnLeft, fnRight)
+defs = MATLAB.Containers.Vector();
 for i = 1:numel(eqIx)
     nd = FullTree.select(eqIx(i));
-    ln = double(nd.lineno);
-    if ln < fStart || ln > fEnd
+    if lefttreepos(nd) < fnLeft || righttreepos(nd) > fnRight
         continue;
     end
     lhs = Left(nd);
     if count(lhs) == 1 && strcmp(char(lhs.kind), 'ID') && string(lhs.string) == varName
-        defs(end+1) = ln; %#ok<AGROW>
+        defs.PushBack(double(nd.indices));
     end
 end
+defs = double(defs.Data(:)');
 end
 
 % -------------------------------------------------------------------------
-function tf = iVarAppearsAfter(lineMap, afterLine, fEnd, g)
-% 检查从 afterLine 沿 CFG 向前（含循环回边）是否还会读到该变量。
+function tf = iVarAppearsBeforeNode(nodeMap, FullTree, afterPos)
 tf = false;
-if numnodes(g) == 0
-    return;
-end
-
-startName = string(afterLine);
-if ~any(g.Nodes.Name == startName)
-    % 节点不在图中，回退到行号判断
-    keys = lineMap.keys;
-    for ki = 1:numel(keys)
-        ln = keys{ki};
-        if ln > afterLine && ln <= fEnd && lineMap(ln) > 0
-            tf = true;
-            return;
-        end
-    end
-    return;
-end
-
-startNode = find(g.Nodes.Name == startName, 1, 'first');
-seen = false(1, numnodes(g));
-q = startNode;
-seen(startNode) = true;
-
-QHead = 1;
-while QHead <= numel(q)
-    u = q(QHead);
-    QHead = QHead + 1;
-    ln = str2double(g.Nodes.Name(u));
-    if ln ~= afterLine && ln <= fEnd && isKey(lineMap, ln) && lineMap(ln) > 0
+keys = nodeMap.keys;
+for ki = 1:numel(keys)
+    nodeIdx = keys(ki);
+    nd = FullTree.select(nodeIdx);
+    if lefttreepos(nd) > afterPos && nodeMap(nodeIdx) > 0
         tf = true;
         return;
     end
-    nbr = successors(g, u)';
-    for v = nbr
-        if ~seen(v)
-            seen(v) = true;
-            q(end+1) = v; %#ok<AGROW>
-        end
+end
+end
+
+% -------------------------------------------------------------------------
+function tf = iVarAppearsAfterNode(refMap, FullTree, varName, afterPos, fnLeft, fnRight)
+tf = false;
+if ~isKey(refMap, char(varName))
+    return;
+end
+nodeMap = refMap(char(varName));
+keys = nodeMap.keys;
+for ki = 1:numel(keys)
+    nodeIdx = keys(ki);
+    nd = FullTree.select(nodeIdx);
+    if lefttreepos(nd) > afterPos && lefttreepos(nd) >= fnLeft && righttreepos(nd) <= fnRight && nodeMap(nodeIdx) > 0
+        tf = true;
+        return;
     end
 end
 end
 
 % -------------------------------------------------------------------------
-function tf = iAllPathsReachTarget(g, stmts, FullTree, start, targetLine, A, B, fEnd, refMap)
-% 检查从 defLine 出发的所有 CFG 路径是否最终都能到达 targetLine，
-% 且途中不遇到 A 的定义或 B 的另一个定义。
+function tf = iAllPathsReachTargetNode(g, stmtNodes, FullTree, startNodeIdx, targetNodeIdx, A, B, fnLeft, fnRight, refMap)
 persistent memo;
 if isempty(memo)
-    memo = dictionary;
+    memo = configureDictionary('string', 'logical');
 end
-key = sprintf('%d_%d_%s_%s', start, targetLine, char(A), char(B));
+key = sprintf('%d_%d_%s_%s', startNodeIdx, targetNodeIdx, char(A), char(B));
 if isKey(memo, key)
     tf = memo(key);
     return;
 end
 
-% 收集途中禁止出现的行：A 的任何读或写，B 的另一个定义（非 defLine 的 B 写）
-forbidden = iForbiddenLines(FullTree, A, B, start, targetLine, fEnd, refMap);
+forbidden = iForbiddenNodes(FullTree, refMap, A, B, startNodeIdx, targetNodeIdx, fnLeft, fnRight);
 
-% 从 defLine 出发做有界 BFS，targetLine 必须在所有叶子可达集中
-start = find(stmts == start, 1, 'first');
-if isempty(start) || isempty(find(stmts == targetLine, 1, 'first'))
+start = find(stmtNodes == startNodeIdx, 1, 'first');
+targetPos = find(stmtNodes == targetNodeIdx, 1, 'first');
+if isempty(start) || isempty(targetPos)
     tf = false;
     memo(key) = tf;
     return;
 end
 
-seen = false(1, numel(stmts));
+seen = false(1, numel(stmtNodes));
 q = start;
 seen(start) = true;
 
@@ -326,12 +292,11 @@ QHead = 1;
 while QHead <= numel(q)
     u = q(QHead);
     QHead = QHead + 1;
-    lnU = stmts(u);
+    nodeIdx = stmtNodes(u);
 
-    succ = successors(g, u)';
+    succ = successors(g, string(nodeIdx))';
     if isempty(succ)
-        % 叶子节点：必须是 target
-        if lnU ~= targetLine
+        if nodeIdx ~= targetNodeIdx
             tf = false;
             memo(key) = tf;
             return;
@@ -341,76 +306,137 @@ while QHead <= numel(q)
 
     anyProceed = false;
     for v = succ
-        if any(forbidden == stmts(v))
+        succIdx = str2double(v);
+        if any(forbidden == succIdx)
             continue;
         end
         anyProceed = true;
-        if ~seen(v)
-            seen(v) = true;
-            q(end+1) = v; %#ok<AGROW>
+        vPos = find(stmtNodes == succIdx, 1, 'first');
+        if ~isempty(vPos) && ~seen(vPos)
+            seen(vPos) = true;
+            q(end+1) = vPos; %#ok<AGROW>
         end
     end
-    if ~anyProceed && lnU ~= targetLine
+    if ~anyProceed && nodeIdx ~= targetNodeIdx
         tf = false;
         memo(key) = tf;
         return;
     end
 end
 
-% 所有可达叶子都是 targetLine
 tf = true;
 memo(key) = tf;
 end
 
 % -------------------------------------------------------------------------
-function forbidden = iForbiddenLines(FullTree, ak, B, defLine, targetLine, fEnd, refMap)
-forbidden = zeros(1,0);
+function forbidden = iForbiddenNodes(FullTree, refMap, A, B, startNodeIdx, targetNodeIdx, fnLeft, fnRight)
+builder = MATLAB.Containers.Vector();
 
-% A 在任何地方出现（读或写）——除了 targetLine 的 RHS
-% 收集 A 的所有赋值行
 eqs = FullTree.mtfind('Kind', 'EQUALS');
-forbiddenA = zeros(1,0);
 if count(eqs) > 0
     ix = eqs.indices;
     for i = 1:numel(ix)
         nd = FullTree.select(ix(i));
-        ln = double(nd.lineno);
-        if ln == targetLine
+        if lefttreepos(nd) < fnLeft || righttreepos(nd) > fnRight
             continue;
         end
         lhs = Left(nd);
-        if count(lhs) == 1 && strcmp(char(lhs.kind), 'ID') && string(lhs.string) == ak
-            forbiddenA(end+1) = ln; %#ok<AGROW>
+        if count(lhs) == 1 && strcmp(char(lhs.kind), 'ID') && string(lhs.string) == A
+            if double(nd.indices) ~= targetNodeIdx
+                builder.PushBack(double(nd.indices));
+            end
         end
-    end
-end
-% A 的读引用行（排除 targetLine）
-if isKey(refMap, char(ak))
-    ak = refMap(char(ak)).keys;
-    for ki = 1:numel(ak)
-        ln = ak{ki};
-        if ln ~= targetLine && ln > defLine && ln <= fEnd
-            forbiddenA(end+1) = ln; %#ok<AGROW>
-        end
-    end
-end
-forbidden = [forbidden, unique(forbiddenA)];
-
-% B 的另一个定义行（排除 defLine）
-forbiddenB = zeros(1,0);
-if count(eqs) > 0
-    ix = eqs.indices;
-    for i = 1:numel(ix)
-        nd = FullTree.select(ix(i));
-        ln = double(nd.lineno);
-        if ln == defLine || ln > targetLine
-            continue;
-        end
-        lhs = Left(nd);
         if count(lhs) == 1 && strcmp(char(lhs.kind), 'ID') && string(lhs.string) == B
-            forbiddenB(end+1) = ln; %#ok<AGROW>
+            if double(nd.indices) ~= startNodeIdx && double(nd.indices) < targetNodeIdx
+                builder.PushBack(double(nd.indices));
+            end
         end
     end
 end
-forbidden = unique([forbidden, forbiddenB]);
+
+if isKey(refMap, char(A))
+    nodeMap = refMap(char(A));
+    keys = nodeMap.keys;
+    for ki = 1:numel(keys)
+        nodeIdx = keys(ki);
+        nd = FullTree.select(nodeIdx);
+        if lefttreepos(nd) > lefttreepos(FullTree.select(startNodeIdx)) && double(nodeIdx) ~= targetNodeIdx
+            builder.PushBack(double(nodeIdx));
+        end
+    end
+end
+
+forbidden = unique(double(builder.Data(:))');
+end
+
+% -------------------------------------------------------------------------
+function [stmtNodes, stmtKinds, stmtPos] = iCollectStmtNodesByNode(FullTree, fnNode)
+stmtKinds = ["FUNCTION","EQUALS","EXPR","IF","ELSEIF","ELSE","FOR","PARFOR","WHILE","SWITCH", ...
+    "CASE","OTHERWISE","TRY","CATCH","RETURN","BREAK","CONTINUE"];
+stmtNodes = zeros(1, 0);
+stmtPos = zeros(1, 0);
+fnLeft = lefttreepos(fnNode);
+fnRight = righttreepos(fnNode);
+
+for ki = 1:numel(stmtKinds)
+    nodes = FullTree.mtfind('Kind', stmtKinds(ki));
+    if count(nodes) == 0
+        continue;
+    end
+    ix = nodes.indices;
+    for i = 1:numel(ix)
+        nd = FullTree.select(ix(i));
+        if lefttreepos(nd) >= fnLeft && righttreepos(nd) <= fnRight
+            stmtNodes(end+1) = ix(i); %#ok<AGROW>
+            stmtPos(end+1) = lefttreepos(nd); %#ok<AGROW>
+        end
+    end
+end
+
+[stmtPos, order] = sort(stmtPos);
+stmtNodes = stmtNodes(order);
+stmtKinds = iStmtKindsForNodes(FullTree, stmtNodes, stmtKinds);
+stmtNodes = unique(stmtNodes, 'stable');
+stmtPos = stmtPos(1:numel(stmtNodes));
+end
+
+% -------------------------------------------------------------------------
+function kinds = iStmtKindsForNodes(FullTree, stmtNodes, wantedKinds)
+kinds = strings(1, numel(stmtNodes));
+for i = 1:numel(stmtNodes)
+    nd = FullTree.select(stmtNodes(i));
+    k = string(nd.kind);
+    if any(k == wantedKinds)
+        kinds(i) = k;
+    else
+        kinds(i) = "EXPR";
+    end
+end
+end
+
+% -------------------------------------------------------------------------
+function endNode = iFindBlockEndNode(stmtNodes, ownerPos)
+endNode = 0;
+ownerIdx = find(stmtNodes == ownerPos, 1, 'first');
+if isempty(ownerIdx)
+    return;
+end
+if ownerIdx < numel(stmtNodes)
+    endNode = stmtNodes(ownerIdx + 1);
+end
+end
+
+% -------------------------------------------------------------------------
+function nextNode = iFindNextAfterNode(stmtPos, stmtNodes, ifEnds, ownerNodeIdx)
+nextNode = 0;
+if ~isKey(ifEnds, ownerNodeIdx)
+    return;
+end
+endNode = ifEnds(ownerNodeIdx);
+for i = 1:numel(stmtNodes)
+    if stmtPos(i) > stmtPos(find(stmtNodes == endNode, 1, 'first'))
+        nextNode = stmtNodes(i);
+        return;
+    end
+end
 end

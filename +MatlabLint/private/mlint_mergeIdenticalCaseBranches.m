@@ -17,32 +17,32 @@ end
 
 for si = 1:numel(six)
     sw = FullTree.select(six(si));
-    swStartLn = double(sw.lineno);
-    [swEndLn, ~] = pos2lc(sw, righttreepos(sw));
+    swStartPos = lefttreepos(sw);
+    swEndPos = righttreepos(sw);
 
     % 收集该 SWITCH 范围内的 CASE/OTHERWISE 分支
-    branches = iCollectBranchesInRange(FullTree, swStartLn, swEndLn);
-    if numel(branches) < 2
+    branches = iCollectBranchesInRange(FullTree, swStartPos, swEndPos);
+    if size(branches, 1) < 2
         continue;
     end
 
     % 扫描连续相同体
     bIdx = 1;
-    while bIdx <= numel(branches)
+    while bIdx <= size(branches, 1)
         chainStart = bIdx;
-        chainKey = branches(bIdx).body;
+        chainKey = branches.body(bIdx);
         bIdx = bIdx + 1;
-        while bIdx <= numel(branches) && strcmp(branches(bIdx).body, chainKey)
+        while bIdx <= size(branches, 1) && strcmp(branches.body(bIdx), chainKey)
             bIdx = bIdx + 1;
         end
         chainLen = bIdx - chainStart;
         if chainLen >= 2
             vals = strings(1, chainLen);
             for ci = 1:chainLen
-                vals(ci) = branches(chainStart + ci - 1).value;
+                vals(ci) = branches.value(chainStart + ci - 1);
             end
             issuesBuilder(end+1, {'file','line','rule','message'}) = { ...
-                filePath, swStartLn, "mlint_mergeIdenticalCaseBranches", ...
+                filePath, double(sw.lineno), "mlint_mergeIdenticalCaseBranches", ...
                 sprintf('switch 中 %d 个连续 case 分支内容相同，应合并为 case {%s}', ...
                 chainLen, strjoin(vals, " "))}; %#ok<AGROW>
         end
@@ -53,20 +53,19 @@ issues = table(issuesBuilder);
 end
 
 % -------------------------------------------------------------------------
-function branches = iCollectBranchesInRange(FullTree, swStart, swEnd)
-allBranches = MATLAB.DataTypes.ArrayBuilder();
+function branches = iCollectBranchesInRange(FullTree, swStartPos, swEndPos)
+allBranches = MATLAB.DataTypes.InsertiveTable();
 
-% 找到范围内所有 CASE 和 OTHERWISE 节点（按行号排序）
+% 找到范围内所有 CASE 和 OTHERWISE 节点（按节点位置排序）
 
 % 收集 CASE
 cix = FullTree.mtfind('Kind', 'CASE').indices;
 if ~isempty(cix)
     for i = 1:numel(cix)
         cn = FullTree.select(cix(i));
-        cln = double(cn.lineno);
-        if cln >= swStart && cln <= swEnd
-            allBranches.Append(struct('line', cln, 'value', ...
-                char(strtrim(string(Left(cn).tree2str))), 'isOtherwise', false));
+        if lefttreepos(cn) >= swStartPos && righttreepos(cn) <= swEndPos
+            allBranches(end+1, {'pos','node','value','isOtherwise'}) = ...
+                {lefttreepos(cn), cn.indices, string(strtrim(string(Left(cn).tree2str))), false};
         end
     end
 end
@@ -75,60 +74,61 @@ end
 oix = FullTree.mtfind('Kind', 'OTHERWISE').indices;
 if ~isempty(oix)
     for i = 1:numel(oix)
-        oln = double(FullTree.select(oix(i)).lineno);
-        if oln >= swStart && oln <= swEnd
-            allBranches.Append(struct('line', oln, 'value', "otherwise", 'isOtherwise', true));
+        on = FullTree.select(oix(i));
+        if lefttreepos(on) >= swStartPos && righttreepos(on) <= swEndPos
+            allBranches(end+1, {'pos','node','value','isOtherwise'}) = {lefttreepos(on), on.indices, "otherwise", true};
         end
     end
 end
 
-allBranches = allBranches.Harvest();
+allBranches = table(allBranches);
 if isempty(allBranches)
-    branches = struct('value', {}, 'body', {});
+    branches = table('Size', [0 2], 'VariableTypes', {'string','string'}, ...
+        'VariableNames', {'value','body'});
     return;
 end
 
-% 按行号排序
-[~, order] = sort([allBranches.line]);
-allBranches = allBranches(order);
+% 按节点位置排序
+[~, order] = sort(allBranches.pos);
+allBranches = allBranches(order, :);
 
 % 为每个分支提取体签名
-branches = MATLAB.DataTypes.ArrayBuilder();
-for bi = 1:numel(allBranches)
-    toLine = swEnd;
-    if bi < numel(allBranches)
-        toLine = allBranches(bi + 1).line;
+branchRows = MATLAB.DataTypes.InsertiveTable();
+for bi = 1:size(allBranches, 1)
+    toPos = swEndPos;
+    if bi < size(allBranches, 1)
+        toPos = allBranches.pos(bi + 1);
     end
-    branches.Append(struct('value', allBranches(bi).value, ...
-        'body', iExtractBodyBetween(FullTree, allBranches(bi).line, toLine)));
+    branchRows(end+1, {'value','body'}) = ...
+        {allBranches.value(bi), string(iExtractBodyBetween(FullTree, allBranches.node(bi), toPos, swEndPos))};
 end
-branches = branches.Harvest();
+branches = table(branchRows);
 end
 
 % -------------------------------------------------------------------------
-function sig = iExtractBodyBetween(FullTree, fromLine, toLine)
-% 提取两行之间的所有有效语句作为规范化签名。
-stmts = strings(0, 1);
+function sig = iExtractBodyBetween(FullTree, fromNodeIdx, toPos, swEndPos)
+% 提取两个分支节点之间的所有有效语句作为规范化签名。
+stmts = MATLAB.Containers.Vector();
+fromNode = FullTree.select(fromNodeIdx);
 
 % EQUALS and EXPR nodes are the key statement types to compare
 kinds = ["EQUALS", "EXPR", "CALL", "IF", "FOR", "PARFOR", "WHILE", "SWITCH", "TRY", "RETURN"];
 for ki = 1:numel(kinds)
-    nodes = FullTree.mtfind('Kind', kinds(ki));
+    nodes = FullTree.mtfind('Kind', char(kinds(ki)));
     if count(nodes) == 0
         continue;
     end
     nix = nodes.indices;
     for ni = 1:numel(nix)
         nd = FullTree.select(nix(ni));
-        ln = double(nd.lineno);
-        % 体语句可能和 case/otherwise 同行（逗号分隔写法），用 >= 而非 >
-        if ln >= fromLine && ln < toLine
-            stmts(end+1) = string(join(split(char(strtrim(lower(string(nd.tree2str))))))); %#ok<AGROW>
+        if lefttreepos(nd) > lefttreepos(fromNode) && lefttreepos(nd) < toPos ...
+                && righttreepos(nd) <= swEndPos
+            stmts.PushBack(string(join(split(char(strtrim(lower(string(nd.tree2str))))))));
         end
     end
 end
 
-sig = char(strjoin(stmts, "||"));
+sig = char(strjoin(string(stmts.Data(:)), "||"));
 end
 
 

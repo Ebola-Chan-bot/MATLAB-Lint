@@ -17,22 +17,22 @@ end
 
 for ii = 1:numel(iix)
     nd = FullTree.select(iix(ii));
-    startLn = double(nd.lineno);
-    [endLn, ~] = pos2lc(nd, righttreepos(nd));
+    startPos = lefttreepos(nd);
+    endPos = righttreepos(nd);
 
-    [varName, branchCount] = iCheckEqPattern(FullTree, startLn, endLn);
+    [varName, branchCount] = iCheckEqPattern(FullTree, startPos, endPos);
     if strlength(varName) == 0 || branchCount < 2
         continue;
     end
 
-    if iHasElseInBlock(FullTree, startLn, endLn)
+    if iHasElseInBlock(FullTree, startPos, endPos)
         elseMsg = "（含 else）";
     else
         elseMsg = "";
     end
 
     issuesBuilder(end+1, {'file','line','rule','message'}) = { ...
-        filePath, startLn, "mlint_ifEqChainSwitch", ...
+        filePath, double(nd.lineno), "mlint_ifEqChainSwitch", ...
         sprintf(['检测到 %d 个 if-elseif 分支全部为同一变量 "%s" == 表达式的选择判断', ...
         '%s。建议改用 switch %s / case ... / otherwise 结构'], ...
         branchCount, varName, elseMsg, varName)}; %#ok<AGROW>
@@ -42,7 +42,7 @@ issues = table(issuesBuilder);
 end
 
 % -------------------------------------------------------------------------
-function [varName, branchCount] = iCheckEqPattern(FullTree, startLn, endLn)
+function [varName, branchCount] = iCheckEqPattern(FullTree, startPos, endPos)
 varName = "";
 branchCount = 0;
 
@@ -51,19 +51,19 @@ hix = FullTree.mtfind('Kind', 'IFHEAD').indices;
 if ~isempty(hix)
     for hi = 1:numel(hix)
         h = FullTree.select(hix(hi));
-        hl = double(h.lineno);
-        if hl >= startLn && hl <= endLn
-            vn = iGetEqVariable(Left(h));
-            if strlength(vn) == 0
-                return;
-            end
-            if strlength(varName) == 0
-                varName = vn;
-            elseif lower(vn) ~= lower(varName)
-                return;
-            end
-            branchCount = branchCount + 1;
+        if lefttreepos(h) < startPos || righttreepos(h) > endPos
+            continue;
         end
+        vn = iGetEqVariable(Left(h));
+        if strlength(vn) == 0
+            return;
+        end
+        if strlength(varName) == 0
+            varName = vn;
+        elseif lower(vn) ~= lower(varName)
+            return;
+        end
+        branchCount = branchCount + 1;
     end
 end
 
@@ -72,23 +72,23 @@ eix = FullTree.mtfind('Kind', 'ELSEIF').indices;
 if ~isempty(eix)
     for ei = 1:numel(eix)
         en = FullTree.select(eix(ei));
-        el = double(en.lineno);
-        if el >= startLn && el <= endLn
-            CondNode = Left(en);
-            if count(CondNode) > 0 && char(CondNode.kind) == "PARENS"
-                CondNode = Arg(CondNode);
-            end
-            vn = iGetEqVariable(CondNode);
-            if strlength(vn) == 0
-                return;
-            end
-            if strlength(varName) == 0
-                varName = vn;
-            elseif lower(vn) ~= lower(varName)
-                return;
-            end
-            branchCount = branchCount + 1;
+        if lefttreepos(en) < startPos || righttreepos(en) > endPos
+            continue;
         end
+        CondNode = Left(en);
+        if count(CondNode) > 0 && char(CondNode.kind) == "PARENS"
+            CondNode = Arg(CondNode);
+        end
+        vn = iGetEqVariable(CondNode);
+        if strlength(vn) == 0
+            return;
+        end
+        if strlength(varName) == 0
+            varName = vn;
+        elseif lower(vn) ~= lower(varName)
+            return;
+        end
+        branchCount = branchCount + 1;
     end
 end
 end
@@ -106,7 +106,7 @@ end
 end
 
 % -------------------------------------------------------------------------
-function tf = iHasElseInBlock(FullTree, startLn, endLn)
+function tf = iHasElseInBlock(FullTree, startPos, endPos)
 tf = false;
 eix = FullTree.mtfind('Kind', 'ELSE').indices;
 if isempty(eix)
@@ -114,7 +114,7 @@ if isempty(eix)
 end
 for ei = 1:numel(eix)
     en = FullTree.select(eix(ei));
-    if double(en.lineno) >= startLn && double(en.lineno) <= endLn
+    if lefttreepos(en) >= startPos && righttreepos(en) <= endPos
         tf = true;
         return;
     end

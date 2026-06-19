@@ -9,15 +9,20 @@ end
 FullTree = List(mtree(filePath, '-file'));
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
-% ---- 规则1：table2array 拆表 ----
+% ---- 规则1：table2array / table2struct 拆表 ----
 cix = FullTree.mtfind('Kind', 'CALL').indices;
 if ~isempty(cix)
     for i = 1:numel(cix)
         nd = FullTree.select(cix(i));
-        if strcmpi(string(Left(nd).tree2str), "table2array")
+        fn = iNodeText(Left(nd));
+        if strcmpi(fn, "table2array")
             issuesBuilder(end+1, {'file','line','rule','message'}) = { ...
                 filePath, double(nd.lineno), "mlint_noMultiColumnUnpack", ...
                 "禁止通过 table2array 拆表；必须直接返回 table，并要求上游调用方调整为按 table 使用"}; %#ok<AGROW>
+        elseif strcmpi(fn, "table2struct")
+            issuesBuilder(end+1, {'file','line','rule','message'}) = { ...
+                filePath, double(nd.lineno), "mlint_noMultiColumnUnpack", ...
+                "禁止通过 table2struct 拆表；必须直接返回 table，并要求上游调用方改为按 table 使用"}; %#ok<AGROW>
         end
     end
 end
@@ -32,11 +37,11 @@ end
 
 % ---- 规则2：对每个表变量，检测是否有多个列被拆到独立变量 ----
 % 支持 DOT（tbl.col）、CELL（tbl{:, 'col'}）、SUBSCR（tbl(:, 'col')）三种语法
-% key=表变量名, value=struct('lines',[],'cols',cell(1,0))
-colUnpackLines = dictionary;
+colUnpackRows = MATLAB.DataTypes.InsertiveTable();
 
 % 统一处理 DOT / CELL / SUBSCR 三种列访问语法
-for partKind = ["DOT", "CELL", "SUBSCR"]
+for partKindCell = {'DOT', 'CELL', 'SUBSCR'}
+    partKind = partKindCell{1};
     nodes = FullTree.mtfind('Kind', partKind);
     if count(nodes) == 0
         continue;
@@ -49,7 +54,7 @@ for partKind = ["DOT", "CELL", "SUBSCR"]
             continue;
         end
         tblVar = string(leftId.string);
-        if ~tblVarSet.isKey(tblVar) || (partKind == "DOT" && iIsInsideSubscr(nd)) ...
+        if ~tblVarSet.isKey(tblVar) || (strcmp(partKind, 'DOT') && iIsInsideSubscr(nd)) ...
                 || ~iIsOnRhs(nd)
             continue;
         end
@@ -59,26 +64,25 @@ for partKind = ["DOT", "CELL", "SUBSCR"]
             continue;
         end
 
-        tblKey = char(tblVar);
-        if ~isKey(colUnpackLines, tblKey)
-            colUnpackLines(tblKey) = struct('lines', zeros(1,0), 'cols', {{}});
-        end
-        acc = colUnpackLines(tblKey);
-        acc.lines(end+1) = double(nd.lineno);
-        acc.cols{end+1} = char(colName);
-        colUnpackLines(tblKey) = acc;
+        colUnpackRows(end+1, {'tbl','line','col'}) = ...
+            {string(tblVar), double(nd.lineno), string(colName)};
     end
 end
 
 % 每个表变量若有 ≥2 列被拆，报在第一行
-tblKeys = colUnpackLines.keys;
+colUnpackTable = table(colUnpackRows);
+if height(colUnpackTable) == 0
+    issues = table(issuesBuilder);
+    return;
+end
+tblKeys = unique(colUnpackTable.tbl);
 for ki = 1:numel(tblKeys)
-    acc = colUnpackLines(tblKeys{ki});
-    if numel(acc.lines) >= 2
+    rows = colUnpackTable(colUnpackTable.tbl == tblKeys(ki), :);
+    if size(rows, 1) >= 2
         issuesBuilder(end+1, {'file','line','rule','message'}) = { ...
-            filePath, acc.lines(1), "mlint_noMultiColumnUnpack", ...
+            filePath, rows.line(1), "mlint_noMultiColumnUnpack", ...
             sprintf('不应将表 "%s" 的多个列（%s）拆分为独立变量；必须直接返回 table，并要求上游调用方调整为按 table 使用', ...
-            tblKeys{ki}, strjoin(unique(string(acc.cols)), ", "))}; %#ok<AGROW>
+            tblKeys(ki), strjoin(unique(rows.col), ", "))}; %#ok<AGROW>
     end
 end
 
@@ -87,7 +91,7 @@ end
 
 % -------------------------------------------------------------------------
 function tblVarSet = iCollectTableVars(FullTree)
-tblVarSet = dictionary;
+tblVarSet = configureDictionary('string', 'logical');
 
 eix = FullTree.mtfind('Kind', 'EQUALS').indices;
 if isempty(eix)
@@ -109,9 +113,9 @@ end
 % -------------------------------------------------------------------------
 function tf = iIsTableConstructor(node)
 tf = false;
-if char(node.kind) == "CALL"
-    tf = strcmpi(string(Left(node).tree2str), "table") ...
-      || strcmpi(string(Left(node).tree2str), "MATLAB.DataTypes.InsertiveTable");
+if strcmp(char(node.kind), 'CALL')
+    fn = iNodeText(Left(node));
+    tf = strcmpi(fn, "table") || strcmpi(fn, "MATLAB.DataTypes.InsertiveTable");
 end
 end
 
@@ -133,12 +137,12 @@ tf = false;
 p = Parent(nd);
 while count(p) > 0
     pk = char(p.kind);
-    if pk == "EQUALS"
+    if strcmp(pk, 'EQUALS')
         % nd 必须在 EQUALS 的 Right 子树中（非 Left）
         tf = iIsDescendantOf(Right(p), nd);
         return;
     end
-    if pk == "FUNCTION"
+    if strcmp(pk, 'FUNCTION')
         return;
     end
     p = Parent(p);
@@ -157,17 +161,22 @@ if count(node) == 0
     return;
 end
 
-if nodeKind == "DOT"
-    col = string(node.tree2str);
+if strcmp(nodeKind, 'DOT')
+    nk = char(node.kind);
+    if strcmp(nk, 'ID') || strcmp(nk, 'FIELD')
+        col = string(node.string);
+    else
+        col = iNodeText(node);
+    end
     return;
 end
 
 % CELL: Right 是 COLON(:)，列名在 Next(Right) 中
-if nodeKind == "CELL"
-    if char(node.kind) == "COLON"
+if strcmp(nodeKind, 'CELL')
+    if strcmp(char(node.kind), 'COLON')
         col = Next(node);
         if count(col) > 0
-            col = char(strtrim(string(col.tree2str)));
+            col = char(iNodeText(col));
             if ~isempty(col) && (col(1) == '"' || col(1) == '''')
                 col = col(2:end-1);
             end
@@ -180,10 +189,10 @@ if nodeKind == "CELL"
 end
 
 % SUBSCR: 圆括号索引，如 tbl(:, 'colname')
-if nodeKind == "SUBSCR" && count(Arg(node)) > 0
-    col = Arg(node);
-    while count(col) > 0
-        col = char(strtrim(string(col.tree2str)));
+if strcmp(nodeKind, 'SUBSCR') && count(Arg(node)) > 0
+    argNode = Arg(node);
+    while count(argNode) > 0
+        col = char(iNodeText(argNode));
         if ~isempty(col) && (col(1) == '"' || col(1) == '''')
             col = col(2:end-1);
         end
@@ -192,11 +201,24 @@ if nodeKind == "SUBSCR" && count(Arg(node)) > 0
         end
         col = "";
         try
-            col = Next(col);
+            argNode = Next(argNode);
         catch
             break;
         end
     end
+end
+end
+
+% -------------------------------------------------------------------------
+function txt = iNodeText(node)
+txt = "";
+if count(node) ~= 1
+    return;
+end
+try
+    txt = strtrim(string(node.tree2str));
+catch
+    txt = "";
 end
 end
 

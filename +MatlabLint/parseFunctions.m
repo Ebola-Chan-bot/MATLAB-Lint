@@ -3,8 +3,8 @@ function funcs = parseFunctions(filePath)
 % funcs = MatlabLint.parseFunctions(filePath)
 %
 % 返回 struct 数组，字段：
-%   startLine — 函数在原始文件中的起始行号
-%   endLine   — 函数在原始文件中的结束行号
+%   startPos  — 函数节点在源码中的起始树位置（lefttreepos）
+%   endPos    — 函数节点在源码中的结束树位置（righttreepos）
 %   tree      — 该函数的 mtree 子树（行号保留原文件坐标）
 %   fileName  — 源文件路径
 
@@ -14,26 +14,24 @@ nFuncs = count(fns);
 fnIdx = fns.indices;
 
 if nFuncs == 0
-    funcs = struct('startLine', {}, 'endLine', {}, 'tree', {}, 'fileName', {});
+    funcs = struct('startPos', {}, 'endPos', {}, 'tree', {}, 'fileName', {});
     return;
 end
-
-funcs = struct('startLine', cell(nFuncs, 1), 'endLine', cell(nFuncs, 1), ...
-              'tree', cell(nFuncs, 1), 'fileName', cell(nFuncs, 1));
-
-nLines = numel(splitlines(string(fileread(filePath))));
+funcRows = MATLAB.DataTypes.InsertiveTable();
 
 for i = 1:nFuncs
     nd = FullTree.select(fnIdx(i));
-    funcs(i).startLine = double(nd.lineno);
+    startPos = lefttreepos(nd);
+    endPos = righttreepos(nd);
 
-    if i < nFuncs
-        funcs(i).endLine = double(FullTree.select(fnIdx(i + 1)).lineno) - 1;
-    else
-        funcs(i).endLine = nLines;
-    end
-
-    funcs(i).tree = nd;
-    funcs(i).fileName = filePath;
+    funcRows(end+1, {'startPos','endPos','tree','fileName'}) = ...
+        {startPos, endPos, nd, string(filePath)};
 end
+
+funcTable = table(funcRows);
+treeCells = num2cell(funcTable.tree);
+funcs = struct('startPos', num2cell(funcTable.startPos), ...
+    'endPos', num2cell(funcTable.endPos), ...
+    'tree', treeCells, ...
+    'fileName', cellstr(funcTable.fileName));
 end

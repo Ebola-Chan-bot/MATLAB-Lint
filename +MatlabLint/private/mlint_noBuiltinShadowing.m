@@ -11,22 +11,18 @@ end
 Tree = List(mtree(filePath, '-file'));
 issuesBuilder = MATLAB.DataTypes.InsertiveTable();
 
-ids = Tree.mtfind('Kind', 'ID');
-if count(ids) == 0
+decls = iCollectDeclaredNames(Tree);
+if isempty(decls)
     issues = table(issuesBuilder);
     return;
 end
 
-ix = ids.indices;
-reported = dictionary;
+reported = configureDictionary('string', 'logical');
 
-for i = 1:numel(ix)
-    nd = Tree.select(ix(i));
-    name = string(nd.string);
-    if strlength(name) == 0 ...
-            || iIsCallTarget(nd) ...
-            || iIsFieldName(nd) ...
-            || iIsDotLeft(nd)
+for i = 1:height(decls)
+    name = string(decls.name(i));
+    line = double(decls.line(i));
+    if strlength(name) == 0
         continue;
     end
     % 排除 MATLAB 语言关键字（大小写不敏感）
@@ -44,52 +40,127 @@ for i = 1:numel(ix)
     if ~iShadowsBuiltin(name)
         continue;
     end
-    reported(char(name)) = true;
+    reported(char(lowerName)) = true;
+    fnPath = which(name);
     issuesBuilder(end+1, {'file','line','rule','message'}) = { ...
-        filePath, double(nd.lineno), "mlint_noBuiltinShadowing", ...
-        sprintf('标识符 "%s" 与 MATLAB 函数 "%s" 重名，建议改为大小写不敏感也不冲突的首字母大写标识符', ...
-        name, char(which(name)))}; %#ok<AGROW>
+        filePath, line, "mlint_noBuiltinShadowing", ...
+        sprintf('标识符 "%s" 与 MATLAB 函数 "%s" 重名，建议为 "%s"', ...
+        name, char(fnPath), char(iSuggestedName(name)))}; %#ok<AGROW>
 end
 
 issues = table(issuesBuilder);
 end
 
 % -------------------------------------------------------------------------
-function tf = iIsCallTarget(idNode)
-% 检查 ID 是否是函数调用的目标（如 sin(x) 中的 sin）
-tf = false;
-try
-    p = Parent(idNode);
-    if count(p) > 0 && strcmp(char(p.kind), 'CALL')
-        tf = (count(Left(p)) > 0 && Left(p) == idNode);
+function suggested = iSuggestedName(name)
+% 用 matlab.lang.makeValidName + makeUniqueStrings 生成首字母大写且不重复的建议名。
+base = upper(string(extractBetween(name, 1, 1))) + extractAfter(name, 1);
+suggested = matlab.lang.makeUniqueStrings(matlab.lang.makeValidName(base));
+suggested = suggested(1);
+end
+
+% -------------------------------------------------------------------------
+function decls = iCollectDeclaredNames(Tree)
+builder = MATLAB.DataTypes.InsertiveTable();
+
+% 1) 函数输入/输出变量
+fnIdx = Tree.mtfind('Kind', 'FUNCTION').indices;
+for i = 1:numel(fnIdx)
+    fn = Tree.select(fnIdx(i));
+    ln = double(fn.lineno);
+    try
+        builder = iAppendNodeListIds(builder, Outs(fn), ln);
+    catch
     end
-catch
+    try
+        builder = iAppendNodeListIds(builder, Ins(fn), ln);
+    catch
+    end
+end
+
+% 2) 赋值左值目标变量
+eqIdx = Tree.mtfind('Kind', 'EQUALS').indices;
+for i = 1:numel(eqIdx)
+    nd = Tree.select(eqIdx(i));
+    ln = double(nd.lineno);
+    names = iCollectAssignmentTargetNames(Left(nd));
+    for ni = 1:numel(names)
+        if strlength(names(ni)) == 0
+            continue;
+        end
+        builder(end+1, {'name','line'}) = {string(names(ni)), ln}; %#ok<AGROW>
+    end
+end
+
+decls = table(builder);
+end
+
+% -------------------------------------------------------------------------
+function builder = iAppendNodeListIds(builder, nodeList, lineNo)
+if count(nodeList) == 0
+    return;
+end
+
+if count(nodeList) == 1 && strcmp(char(nodeList.kind), 'LB')
+    cur = Arg(nodeList);
+else
+    cur = nodeList;
+end
+
+while count(cur) > 0
+    if strcmp(char(cur.kind), 'ID')
+        nm = string(cur.string);
+        if strlength(nm) > 0
+            builder(end+1, {'name','line'}) = {nm, lineNo}; %#ok<AGROW>
+        end
+    end
+    try
+        cur = Next(cur);
+    catch
+        break;
+    end
 end
 end
 
 % -------------------------------------------------------------------------
-function tf = iIsFieldName(idNode)
-% 检查 ID 是否是结构体字段名（如 s.field 中的 field）
-tf = false;
-try
-    p = Parent(idNode);
-    if count(p) > 0 && strcmp(char(p.kind), 'DOT')
-        tf = (count(Right(p)) > 0 && Right(p) == idNode);
-    end
-catch
-end
+function names = iCollectAssignmentTargetNames(lhs)
+vec = MATLAB.Containers.Vector();
+iCollectTargetNamesRec(lhs, vec);
+names = unique(string(vec.Data(:)));
 end
 
-% -------------------------------------------------------------------------
-function tf = iIsDotLeft(idNode)
-% 检查 ID 是否是 DOT 链的左侧（如 MATLAB.DataTypes 中的 MATLAB）
-tf = false;
-try
-    p = Parent(idNode);
-    if count(p) > 0 && strcmp(char(p.kind), 'DOT')
-        tf = (count(Left(p)) > 0 && Left(p) == idNode);
+function iCollectTargetNamesRec(node, vec)
+if count(node) == 0
+    return;
+end
+k = char(node.kind);
+
+if strcmp(k, 'ID')
+    vec.PushBack(string(node.string));
+    return;
+end
+
+if strcmp(k, 'LB') || strcmp(k, 'ROW')
+    cur = Arg(node);
+    while count(cur) > 0
+        iCollectTargetNamesRec(cur, vec);
+        try
+            cur = Next(cur);
+        catch
+            break;
+        end
     end
-catch
+    return;
+end
+
+if strcmp(k, 'SUBSCR') || strcmp(k, 'DOT') || strcmp(k, 'PARENS') || strcmp(k, 'CELL')
+    iCollectTargetNamesRec(Left(node), vec);
+    return;
+end
+
+% 回退：优先看 Left
+if count(Left(node)) > 0
+    iCollectTargetNamesRec(Left(node), vec);
 end
 end
 
@@ -99,7 +170,7 @@ function tf = iShadowsBuiltin(name)
 % 变量遮蔽仅发生在精确大小写匹配时；大写变量 Missing 不遮蔽 missing 函数。
 persistent cache;
 if isempty(cache)
-    cache = dictionary;
+    cache = configureDictionary('string', 'logical');
 end
 
 if isKey(cache, char(name))

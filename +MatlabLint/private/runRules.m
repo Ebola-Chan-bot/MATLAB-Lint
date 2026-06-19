@@ -1,5 +1,5 @@
 function issues = runRules(fileList, rules)
-%RUNRULES 按历史累计耗时降序并行执行所有规则。
+%RUNRULES 按历史累计耗时降序执行所有规则；文件级并行执行。
 
 nFiles = numel(fileList);
 nRules = numel(rules);
@@ -15,7 +15,7 @@ end
 % 按历史累计耗时降序排序（最耗时的规则先执行）
 db = ruleTimingDB('load');
 if isfield(db, 'Rules') && ~isempty(db.Rules)
-    timingMap = dictionary;
+    timingMap = configureDictionary('string', 'double');
     for ti = 1:numel(db.Rules)
         timingMap(char(db.Rules(ti).id)) = db.Rules(ti).totalSec;
     end
@@ -31,22 +31,32 @@ if isfield(db, 'Rules') && ~isempty(db.Rules)
     ruleIds = ruleIds(order);
 end
 
-% parfor 按规则并行：每个 worker 处理一个规则在所有文件上的结果
+% 按规则执行；每条规则对文件列表使用并行。
 allResults = cell(nRules, 1);
 ruleTimes = zeros(nRules, 1);
 
-parfor r = 1:nRules
-    localBuilder = MATLAB.DataTypes.InsertiveTable();
+for r = 1:nRules
+    t0 = tic;
     fn = ruleFns{r};
-    for f = 1:nFiles
+    perFile = cell(nFiles, 1);
+    parfor f = 1:nFiles
         out = fn(fileList{f});
+        perFile{f} = out;
+    end
+
+    localBuilder = MATLAB.DataTypes.InsertiveTable();
+    for f = 1:nFiles
+        out = perFile{f};
+        if isempty(out)
+            continue;
+        end
         for ri = 1:height(out)
             localBuilder(end+1, {'file','line','rule','message'}) = ...
                 {char(string(out.file(ri))), out.line(ri), char(string(out.rule(ri))), char(string(out.message(ri)))};
         end
     end
     allResults{r} = localBuilder;
-    ruleTimes(r) = toc;
+    ruleTimes(r) = toc(t0);
 end
 
 % 合并所有规则的结果
